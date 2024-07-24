@@ -1,4 +1,4 @@
-package com.nighthawk.spring_portfolio.mvc.chathistory;
+package com.nighthawk.spring_portfolio.mvc.chatBot;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
