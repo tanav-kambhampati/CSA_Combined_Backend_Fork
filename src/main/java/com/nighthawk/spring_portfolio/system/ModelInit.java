@@ -14,6 +14,8 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
+import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
+import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,11 +29,22 @@ public class ModelInit {
     @Autowired NoteJpaRepository noteRepo;
     @Autowired PersonRoleJpaRepository roleJpaRepository;
     @Autowired PersonDetailsService personDetailsService;
+    @Autowired AnnouncementJPA announcementJPA;
 
     @Bean
     @Transactional
     CommandLineRunner run() {  // The run() method will be executed after the application starts
         return args -> {
+            
+            // Announcement API is populated with starting announcements
+            List<Announcement> announcements = Announcement.init();
+            for (Announcement announcement : announcements) {
+                Announcement announcementFound = announcementJPA.findByAuthor(announcement.getAuthor());  // JPA lookup
+                if (announcementFound == null) {
+                    announcementJPA.save(new Announcement(announcement.getAuthor(), announcement.getTitle(), announcement.getBody(), announcement.getTags())); // JPA save
+                }
+            }
+
 
             // Joke database is populated with starting jokes
             String[] jokesArray = Jokes.init();
