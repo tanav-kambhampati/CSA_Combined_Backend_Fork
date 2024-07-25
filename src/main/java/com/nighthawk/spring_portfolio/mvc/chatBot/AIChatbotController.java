@@ -1,5 +1,5 @@
 //Justin Nguyen was here. see this full project here: https://github.com/Jyustin/gptbasedchatbot (7/10/24)
-package com.nighthawk.spring_portfolio.mvc.chathistory;
+package com.nighthawk.spring_portfolio.mvc.chatBot;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -68,11 +68,14 @@ public class AIChatbotController {
 	public ResponseEntity<?> chat(@RequestParam String message,@RequestParam Long personid) {
 		try {
 			// user sends a message that is sent to chat gpt and a response is returned
+			System.out.println("Message: " + message);
+			if(message == null) {
+				return new ResponseEntity<String>("Message is null, replace your key or add your GPT key to .env if you haven't done so", HttpStatus.BAD_REQUEST);
+			}
 			String response = getResponseFromAI(message);
 			// getResponseFromAI method is used to send actual request.
 			System.out.println("Chat: " + message);
 			System.out.println("Response: " + response);
-			
 			Chat chat = new Chat(message, response, new Date(System.currentTimeMillis()), personid);
 			Chat chatUpdated = chatJpaRepository.save(chat);
 			System.out.println("Chat saved in db: " + chatUpdated.getId());
@@ -168,6 +171,9 @@ public class AIChatbotController {
 		String bodyStr = "{\"role\": \"user\",\"content\": \"" + userQuery + "\"}";
 
 		JSONObject message = sendHttpPost(createMessageUrl, bodyStr, contentType, auth, openAiBeta, org);
+		if(message == null) {
+			System.out.println("message is null, replace your key or add your GPT key in .env if you haven't done so");			
+		}
 		String messageId = (String) message.get("id");
 		System.out.println("Message ID:" + messageId);
 		
