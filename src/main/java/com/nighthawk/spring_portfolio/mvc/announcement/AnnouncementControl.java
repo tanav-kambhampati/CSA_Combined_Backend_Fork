@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/announcements")
@@ -23,8 +26,8 @@ public class AnnouncementControl {
         this.announcementRepo = announcementRepo;
     }
 
-    // Endpoint to create a new Announcement using request parameters
-    @PostMapping("/create")
+    // Create Example
+    @PostMapping("/create") 
     public ResponseEntity<Announcement> createAnnouncement( @RequestParam String author, @RequestParam String title, @RequestParam String body, @RequestParam String tags) {
         
         Announcement newAnnouncement = new Announcement(author, title, body, tags);
@@ -33,21 +36,34 @@ public class AnnouncementControl {
         return new ResponseEntity<>(savedAnnouncement, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteAnnouncement(@PathVariable Long id) {
+    // Read Example
+    @GetMapping 
+    public ResponseEntity<List<Announcement>> getAllAnnouncements() {
+        List<Announcement> announcements = announcementRepo.findAll();
+        return new ResponseEntity<>(announcements, HttpStatus.OK);
+    }
+
+    // Update Example
+    @PostMapping("/edit/{title}")
+    public ResponseEntity<Announcement> editAnnouncement(@PathVariable String title, @RequestBody String body) {
+        Announcement announcement = announcementRepo.findByTitle(title);
+        announcement.setBody(body);
+        announcementRepo.save(announcement);
+        return new ResponseEntity<>(announcement, HttpStatus.OK);
+    }
+
+    // Delete Example
+    @PostMapping("/delete/{title}")
+    public ResponseEntity<HttpStatus> deleteAnnouncement(@PathVariable String title) {
         try {
-            announcementRepo.deleteById(id);
+            Announcement announcement = announcementRepo.findByTitle(title);
+            announcementRepo.delete(announcement);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<Announcement>> getAllAnnouncements() {
-        List<Announcement> announcements = announcementRepo.findAll();
-        return new ResponseEntity<>(announcements, HttpStatus.OK);
-    }
 
     @GetMapping("/author/{author}")
     public ResponseEntity<Announcement> getAnnouncementByAuthor(@PathVariable String author) {
