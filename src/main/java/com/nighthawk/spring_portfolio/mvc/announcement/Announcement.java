@@ -49,8 +49,6 @@ public class Announcement {
         // Create announcements with formatted timestamp
         announcements.add(new Announcement("Finn", "Test of innit", "Don't mind this message", "welcome"));
 
-        
-
         return announcements;
     }
 

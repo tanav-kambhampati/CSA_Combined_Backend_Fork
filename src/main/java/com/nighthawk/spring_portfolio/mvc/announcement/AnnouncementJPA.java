@@ -10,5 +10,7 @@ public interface AnnouncementJPA extends JpaRepository<Announcement, Long> {
 
     List<Announcement> findByTags(String tags); // Example method to find announcements by tags
 
+    Announcement findByTitle(String title); // Example method to find announcements by title
+
     List<Announcement> findAllByOrderByTimestampDesc();
 }
