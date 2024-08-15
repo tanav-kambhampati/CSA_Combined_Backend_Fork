@@ -53,10 +53,11 @@ public class AnnouncementControl {
     }
 
     // Delete Example
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteAnnouncement(@PathVariable Long id) {
+    @PostMapping("/delete/{title}")
+    public ResponseEntity<HttpStatus> deleteAnnouncement(@PathVariable String title) {
         try {
-            announcementRepo.deleteById(id);
+            Announcement announcement = announcementRepo.findByTitle(title);
+            announcementRepo.delete(announcement);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
