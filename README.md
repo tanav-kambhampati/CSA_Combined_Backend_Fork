@@ -1,9 +1,10 @@
 ## Recent Changes
+
 [Upgrading old dependencies to newest versions.](https://github.com/nighthawkcoders/spring_portfolio/issues/12)
 
 # [Spring Portfolio Starter](https://nighthawkcodingsociety.com/projectsearch/details/Spring%20Portfolio%20Starter)
 
-- Runtime link: https://spring.nighthawkcodingsociety.com/
+- Runtime link: https://spring2025.nighthawkcodingsociety.com/
 - JWT Login: https://nighthawkcoders.github.io/APCSA/data/login
 - Jokes endpoint: https://spring.nighthawkcodingsociety.com/api/jokes/
 
