@@ -1,5 +1,6 @@
-package com.nighthawk.spring_portfolio.socket;
+package com.nighthawk.spring_portfolio.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -7,13 +8,16 @@ import com.corundumstudio.socketio.SocketIOServer;
 
 
 @Configuration
-public class SocketConfig {
+public class socketIOConfig {
 
-    private String hostname = "localhost";
-    private int port = 8080;
+    @Value("${socket-server.host}")
+    private String hostname;
+
+    @Value("${socket-server.port}")
+    private int port;
 
     @Bean
-    public SocketIOServer socketServer()
+    public SocketIOServer socketIOServer()
     {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(hostname);
