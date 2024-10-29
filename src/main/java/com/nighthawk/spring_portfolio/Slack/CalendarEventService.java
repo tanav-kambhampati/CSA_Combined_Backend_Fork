@@ -1,4 +1,4 @@
-package com.nighthawk.spring_portfolio.Calendar;
+package com.nighthawk.spring_portfolio.Slack;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
