@@ -182,7 +182,9 @@ public class Person implements Comparable<Person> {
         return person;
     }
    
-    /** Static method to initialize an array list of Person objects 
+    /** Static method to initialize an array list of Person objects
+     * uses createPerson method to create Person objects
+     * sorts the list of Person objects using Collections.sort which uses the compareTo method 
      * @return Person[], an array of Person objects
      */
     public static Person[] init() {
