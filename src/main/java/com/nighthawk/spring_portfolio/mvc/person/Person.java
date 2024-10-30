@@ -211,6 +211,7 @@ public class Person implements Comparable<Person> {
         // iterate using "enhanced for loop"
         for( Person person : persons) {
             System.out.println(person);  // print object
+            System.out.println();
         }
     }
 
