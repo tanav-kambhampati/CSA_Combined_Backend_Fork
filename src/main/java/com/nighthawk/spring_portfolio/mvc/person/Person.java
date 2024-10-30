@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ import lombok.NonNull;
 @NoArgsConstructor
 @Entity
 @Convert(attributeName ="person", converter = JsonType.class)
-public class Person {
+public class Person implements Comparable<Person> {
 
     /** automatic unique identifier for Person record
      * --- Id annotation is used to specify the identifier property of the entity.
@@ -113,6 +114,10 @@ public class Person {
     
 
     /** Custom constructor for Person when building a new Person object from an API call
+     * @param email, a String
+     * @param password, a String
+     * @param name, a String
+     * @param dob, a Date
      */
     public Person(String email, String password, String name, Date dob, PersonRole role) {
         this.email = email;
@@ -123,12 +128,22 @@ public class Person {
     }
 
     /** Custom getter to return age from dob attribute
+     * @return int, the age of the person
     */
     public int getAge() {
         if (this.dob != null) {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             return Period.between(birthDay, LocalDate.now()).getYears(); }
         return -1;
+    }
+
+    /** Custom compareTo method to compare Person objects by name
+     * @param other, a Person object
+     * @return int, the result of the comparison
+     */
+    @Override
+    public int compareTo(Person other) {
+        return this.name.compareTo(other.name);
     }
 
     /** 1st telescoping method to create a Person object with USER role
@@ -171,14 +186,17 @@ public class Person {
      * @return Person[], an array of Person objects
      */
     public static Person[] init() {
-        ArrayList<Person> persons = new ArrayList<>();
-        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER")));
-        persons.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "01-01-1847"));
-        persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "01-01-1850"));
-        persons.add(createPerson("Madam Currie", "madam@gmail.com", "123madam", "01-01-1860"));
-        persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "12-09-1906"));
-        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "10-21-1959", Arrays.asList("ROLE_ADMIN")));
-        return persons.toArray(new Person[0]);
+        List<Person> people = new ArrayList<>();
+        people.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER")));
+        people.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "01-01-1847"));
+        people.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "01-01-1850"));
+        people.add(createPerson("Madam Currie", "madam@gmail.com", "123madam", "01-01-1860"));
+        people.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "12-09-1906"));
+        people.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "10-21-1959", Arrays.asList("ROLE_ADMIN")));
+
+        Collections.sort(people);
+
+        return people.toArray(new Person[0]);
     }
 
     /** Static method to print Person objects from an array
