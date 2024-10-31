@@ -7,32 +7,31 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/calendar")
+@CrossOrigin(origins = "*") // Allows cross-origin requests
 public class CalendarEventController {
 
     @Autowired
     private CalendarEventService calendarEventService;
 
-    @PostMapping("/add")
-    public void addEventsFromSlackMessage(@RequestBody String jsonString) {
-        LocalDate weekStartDate = LocalDate.parse("2024-10-30"); // Example start date
-        calendarEventService.parseSlackMessage(jsonString, weekStartDate);
+    // Fetch all events (GET /api/calendar)
+    @GetMapping
+    public List<CalendarEvent> getAllEvents() {
+        return calendarEventService.getAllEvents();
     }
 
+    // Fetch events by specific date (GET /api/calendar/events/{date})
     @GetMapping("/events/{date}")
     public List<CalendarEvent> getEventsByDate(@PathVariable String date) {
         LocalDate localDate = LocalDate.parse(date);
         return calendarEventService.getEventsByDate(localDate);
     }
 
-    @GetMapping("/events")
-    public List<CalendarEvent> getAllEvents() {
-        return calendarEventService.getAllEvents();
-    }
-
+    // Fetch events within a date range (GET /api/calendar/events/range)
     @GetMapping("/events/range")
     public List<CalendarEvent> getEventsWithinDateRange(@RequestParam String start, @RequestParam String end) {
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
         return calendarEventService.getEventsWithinDateRange(startDate, endDate);
     }
+
 }
