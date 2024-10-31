@@ -14,7 +14,7 @@ public class SubmissionApiController {
 
     @Autowired
     private SubmissionJpaRepository repository_sub;
-    private AssignmentJpaRepository repository_ass;
+    // private AssignmentJpaRepository repository_ass;
 
     // GET queue for a specific assignment
     

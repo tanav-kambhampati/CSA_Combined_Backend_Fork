@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.springframework.expression.spel.ast.Assign;
 
+import groovy.cli.Option;
+
 import java.util.ArrayList;
 @Data
 @NoArgsConstructor
@@ -31,4 +33,7 @@ public class Submission {
 
     private long assignment_id;
     
+    @ManyToOne
+    @JoinColumn(name = "assignment")
+    private Assignment assignment;
 }

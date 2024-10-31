@@ -30,6 +30,7 @@ public class AssignmentApiController {
         Optional<Assignment> optional = repository.findById(id);
         if (optional.isPresent()) {
             Assignment assignment = optional.get();
+            
             return new ResponseEntity<>(assignment.getAssignmentQueue(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
