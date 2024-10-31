@@ -15,6 +15,13 @@ public class AssignmentApiController {
     @Autowired
     private AssignmentJpaRepository repository;
 
+    @GetMapping("/getAssignments")
+    public ResponseEntity<List<Assignment>> getPeople() {
+        List<Assignment> assignments = repository.findAllByOrderByNameAsc();
+        ResponseEntity<List<Assignment>> responseEntity = new ResponseEntity<>(assignments, HttpStatus.OK);
+        return responseEntity;
+    }
+
     // GET queue for a specific assignment
     @GetMapping("/getQueue/{id}")
     public ResponseEntity<Queue> getQueue(@PathVariable long id) {
