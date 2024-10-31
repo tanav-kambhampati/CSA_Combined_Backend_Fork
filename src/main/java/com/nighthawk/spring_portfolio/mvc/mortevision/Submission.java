@@ -18,7 +18,7 @@ public class Submission {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long SubmissiontId;
 
-    private String user;
+    private String userId;
 
     private String submission_link;
 
@@ -29,5 +29,7 @@ public class Submission {
     @ManyToOne
     @JoinColumn(name = "assignment_id")
     private Assignment assignment;
+
+    private Long Assignmentid;
     
 }
