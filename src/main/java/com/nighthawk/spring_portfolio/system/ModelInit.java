@@ -52,7 +52,7 @@ public class ModelInit {
             // Assignment API is populated with starting assignments
             Assignment[] assignments = Assignment.init();
             for (Assignment assignment : assignments) {
-                Assignment assignmentFound = assignmentJpa.findByAssignmentId(assignment.getAssignmentId());  // JPA lookup
+                Assignment assignmentFound = assignmentJpa.findByName(assignment.getName());  // JPA lookup
                 if (assignmentFound == null) {
                     assignmentJpa.save(new Assignment(assignment.getAssignmentId(), assignment.getName(), assignment.getStartDate(), assignment.getDueDate(), assignment.getRubric(), assignment.getPoints(), null)); // JPA save
                 }

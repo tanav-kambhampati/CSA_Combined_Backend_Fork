@@ -22,12 +22,15 @@ public class AssignmentApiController {
         return responseEntity;
     }
 
+    
+
     // GET queue for a specific assignment
     @GetMapping("/getQueue/{id}")
     public ResponseEntity<Queue> getQueue(@PathVariable long id) {
         Optional<Assignment> optional = repository.findById(id);
         if (optional.isPresent()) {
             Assignment assignment = optional.get();
+            
             return new ResponseEntity<>(assignment.getAssignmentQueue(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
