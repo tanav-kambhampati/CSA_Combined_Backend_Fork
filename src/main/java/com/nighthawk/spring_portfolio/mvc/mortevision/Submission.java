@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 import java.util.List;
+
+import org.springframework.expression.spel.ast.Assign;
+
 import java.util.ArrayList;
 @Data
 @NoArgsConstructor
@@ -16,20 +19,16 @@ import java.util.ArrayList;
 public class Submission {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long SubmissiontId;
+    private Long SubmissionId;
 
-    private String userId;
+    private Long userId;
 
     private String submission_link;
 
-    private String submission_time;
+    private String submission_time; // do in this format "09:33:55AM"
 
     private String assignment_name;
 
-    @ManyToOne
-    @JoinColumn(name = "assignment_id")
-    private Assignment assignment;
-
-    private Long Assignmentid;
+    private long assignment_id;
     
 }

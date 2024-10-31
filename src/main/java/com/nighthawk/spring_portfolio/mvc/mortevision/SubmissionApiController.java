@@ -14,14 +14,21 @@ public class SubmissionApiController {
 
     @Autowired
     private SubmissionJpaRepository repository_sub;
+    private AssignmentJpaRepository repository_ass;
+
     // GET queue for a specific assignment
     
 
     // adding a submission
     @PostMapping("/Submit")
     public ResponseEntity<Submission> createAssignment(@RequestBody Submission submission) {
+        System.out.println("here");
+        // Optional<Assignment> optional = repository_ass.findByassignmentId(submission.getAssignment_id());
+        // Set the associated assignment in the submission
+        // submission.setAssignment(optional.get());
         repository_sub.save(submission);
         return new ResponseEntity<>(submission, HttpStatus.CREATED);
+
     }
     // adding a comment NOT COPLETELY DONE KAYDEN PLS FILL IT OUT IF U WANNA DO THROUGH HERE
     @PutMapping("/comment")
