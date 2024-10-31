@@ -11,9 +11,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/submissions")
 public class SubmissionApiController {
-    
-    @Autowired
-    private AssignmentJpaRepository repository_assign;
 
     @Autowired
     private SubmissionJpaRepository repository_sub;

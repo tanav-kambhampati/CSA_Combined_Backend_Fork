@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
 import com.nighthawk.spring_portfolio.mvc.jokes.JokesJpaRepository;
+import com.nighthawk.spring_portfolio.mvc.mortevision.Assignment;
+import com.nighthawk.spring_portfolio.mvc.mortevision.AssignmentJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.note.Note;
 import com.nighthawk.spring_portfolio.mvc.note.NoteJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.person.Person;
@@ -30,6 +32,7 @@ public class ModelInit {
     @Autowired PersonRoleJpaRepository roleJpaRepository;
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
+    @Autowired AssignmentJpaRepository assignmentJpa;
 
     @Bean
     @Transactional
@@ -42,6 +45,16 @@ public class ModelInit {
                 Announcement announcementFound = announcementJPA.findByAuthor(announcement.getAuthor());  // JPA lookup
                 if (announcementFound == null) {
                     announcementJPA.save(new Announcement(announcement.getAuthor(), announcement.getTitle(), announcement.getBody(), announcement.getTags())); // JPA save
+                }
+            }
+
+
+            // Assignment API is populated with starting assignments
+            Assignment[] assignments = Assignment.init();
+            for (Assignment assignment : assignments) {
+                Assignment assignmentFound = assignmentJpa.findByAssignmentId(assignment.getAssignmentId());  // JPA lookup
+                if (assignmentFound == null) {
+                    assignmentJpa.save(new Assignment(assignment.getAssignmentId(), assignment.getName(), assignment.getStartDate(), assignment.getDueDate(), assignment.getRubric(), assignment.getPoints(), null)); // JPA save
                 }
             }
 
