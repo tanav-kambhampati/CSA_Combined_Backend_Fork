@@ -91,10 +91,21 @@ public class ModelInit {
                 }
             }
             
+            // String[] jokesArray = Jokes.init();
+            // for (String joke : jokesArray) {
+            //     List<Jokes> jokeFound = jokesRepo.findByJokeIgnoreCase(joke);  // JPA lookup
+            //     if (jokeFound.size() == 0)
+            //         jokesRepo.save(new Jokes(null, joke, 0, 0)); //JPA save
+            // }
         Issue[] issueArray = Issue.init();
         for(Issue issue: issueArray)
         {
-            issueJPARepository.save(issue);
+            List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(),issue.getBathroom());
+            if(issueFound.size() == 0)
+            {
+                issueJPARepository.save(issue);
+            }
+            
         }
 
         Queue[] queueArray = Queue.init();
