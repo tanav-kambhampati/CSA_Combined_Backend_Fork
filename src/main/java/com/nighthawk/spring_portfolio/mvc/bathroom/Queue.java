@@ -1,59 +1,42 @@
 package com.nighthawk.spring_portfolio.mvc.bathroom;
 
+import java.util.ArrayList;
+
+import groovy.transform.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Convert;
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @Entity
 public class Queue {
     @Id
-    private Long studentId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     
-    @Column(unique = true)
-    private String studentName;
-    
-    @Convert(converter = QueuePositionsConverter.class)
-    private Map<String, Integer> queuePositions = new HashMap<>();
+    @Column
+    private String teacherName;
+    private Integer queuePositions;
 
     // Custom constructor
-    public Queue(Long studentId, String studentName, Map<String, Integer> queuePositions) {
-        this.studentId = studentId;
-        this.studentName = studentName;
+    public Queue(String teacherName, Integer queuePositions) {
+        this.teacherName = teacherName;
         this.queuePositions = queuePositions;
     }
-}
 
-@Converter
-class QueuePositionsConverter implements AttributeConverter<Map<String, Integer>, String> {
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Override
-    public String convertToDatabaseColumn(Map<String, Integer> attribute) {
-        try {
-            return objectMapper.writeValueAsString(attribute);
-        } catch (Exception e) {
-            return "{}";
-        }
-    }
-
-    @Override
-    public Map<String, Integer> convertToEntityAttribute(String dbData) {
-        try {
-            return objectMapper.readValue(dbData, new TypeReference<Map<String, Integer>>() {});
-        } catch (Exception e) {
-            return new HashMap<>();
-        }
+    public static Queue[] init() {
+        ArrayList<Queue> queues = new ArrayList<>();
+        queues.add(new Queue("Mortensen", 1));
+        queues.add(new Queue("Mortensen", 2));
+        queues.add(new Queue("Mortensen", 3));
+        queues.add(new Queue("Campillo", 1));
+        queues.add(new Queue("Campillo", 2));
+        queues.add(new Queue("Campillo", 3));
+        return queues.toArray(new Queue[0]);
     }
 }

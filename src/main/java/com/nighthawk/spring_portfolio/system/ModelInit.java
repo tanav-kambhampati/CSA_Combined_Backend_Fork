@@ -14,6 +14,8 @@ import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
 import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
+import com.nighthawk.spring_portfolio.mvc.bathroom.Queue;
+import com.nighthawk.spring_portfolio.mvc.bathroom.QueueJPARepository;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
 import com.nighthawk.spring_portfolio.mvc.jokes.JokesJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.note.Note;
@@ -32,6 +34,7 @@ public class ModelInit {
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired IssueJPARepository issueJPARepository;
+    @Autowired QueueJPARepository queueJPARepository;
 
     @Bean
     @Transactional
@@ -92,6 +95,12 @@ public class ModelInit {
         for(Issue issue: issueArray)
         {
             issueJPARepository.save(issue);
+        }
+
+        Queue[] queueArray = Queue.init();
+        for(Queue queue: queueArray)
+        {
+            queueJPARepository.save(queue);
         }
         };
     }

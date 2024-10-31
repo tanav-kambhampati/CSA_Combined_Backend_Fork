@@ -1,123 +1,60 @@
 package com.nighthawk.spring_portfolio.mvc.bathroom;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.Getter;
 
 @RestController
 @RequestMapping("/api/queue")
 public class QueueApiController {
-    
+
     @Autowired
     private QueueJPARepository repository;
 
-    // Add student to a teacher's queue
-    @PostMapping("/add/{studentId}/{teacherName}")
-    public ResponseEntity<Object> addToQueue(
-            @PathVariable Long studentId,
-            @PathVariable String teacherName,
-            @RequestParam String studentName) {
+    // DTO class for queue entries
+    @Getter
+    public static class QueueDto {
+        private String teacherName;
+        private int queuePositions;
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<Object> addToQueue(@RequestBody QueueDto queueDto) {
+        // Check if a queue entry for the teacher already exists
+        Optional<Queue> existingQueue = repository.findByTeacherName(queueDto.getTeacherName());
+        if (existingQueue.isPresent()) {
+            return new ResponseEntity<>("A queue for " + queueDto.getTeacherName() + " already exists.", HttpStatus.CONFLICT);
+        }
         
-        // Get current maximum position for this teacher
-        Integer maxPosition = repository.findMaxPositionForTeacher(teacherName);
-        int newPosition = (maxPosition != null) ? maxPosition + 1 : 1;
-
-        // Get or create student queue entry
-        Queue queue = repository.findByStudentId(studentId)
-            .orElse(new Queue(studentId, studentName, new HashMap<>()));
-
-        // Add or update position in teacher's queue
-        queue.getQueuePositions().put(teacherName, newPosition);
+        Queue queue = new Queue(queueDto.getTeacherName(), queueDto.getQueuePositions());
         repository.save(queue);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("studentId", studentId);
-        response.put("studentName", studentName);
-        response.put("teacherQueue", Map.of(teacherName, newPosition));
-        
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>("Student added to " + queueDto.getTeacherName() + "'s queue at position " + queueDto.getQueuePositions(), HttpStatus.CREATED);
     }
 
-    // Remove student from a teacher's queue
-    @DeleteMapping("/remove/{studentId}/{teacherName}")
-    public ResponseEntity<Object> removeFromQueue(
-            @PathVariable Long studentId,
-            @PathVariable String teacherName) {
-        
-        Optional<Queue> queueOpt = repository.findByStudentId(studentId);
-        
-        if (queueOpt.isPresent()) {
-            Queue queue = queueOpt.get();
-            Map<String, Integer> positions = queue.getQueuePositions();
-            
-            if (positions.containsKey(teacherName)) {
-                int removedPosition = positions.get(teacherName);
-                positions.remove(teacherName);
-                
-                // If no more queues, remove the entire entry
-                if (positions.isEmpty()) {
-                    repository.delete(queue);
-                } else {
-                    repository.save(queue);
-                }
-                
-                // Update other students' positions for this teacher
-                List<Queue> allQueues = repository.findAll();
-                for (Queue q : allQueues) {
-                    Map<String, Integer> pos = q.getQueuePositions();
-                    if (pos.containsKey(teacherName) && pos.get(teacherName) > removedPosition) {
-                        pos.put(teacherName, pos.get(teacherName) - 1);
-                        repository.save(q);
-                    }
-                }
-                
-                return new ResponseEntity<>(Map.of("removed", Map.of(
-                    "studentId", studentId,
-                    "teacherName", teacherName
-                )), HttpStatus.OK);
-            }
+    @DeleteMapping("/remove")
+    public ResponseEntity<Object> removeFromQueue(@RequestParam Long id) {
+        Optional<Queue> queueEntry = repository.findById(id);
+        if (queueEntry.isPresent()) {
+            repository.delete(queueEntry.get());
+            return new ResponseEntity<>("Removed student from queue", HttpStatus.OK);
         }
-        return new ResponseEntity<>(Map.of("error", "Student not found in teacher's queue"), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Queue entry not found", HttpStatus.NOT_FOUND);
     }
 
-    // Get current queue for a specific teacher
-    @GetMapping("/teacher/{teacherName}")
-    public ResponseEntity<List<Map<String, Object>>> getTeacherQueue(@PathVariable String teacherName) {
-        List<Queue> allQueues = repository.findAll();
-        List<Map<String, Object>> teacherQueue = new ArrayList<>();
-        
-        for (Queue q : allQueues) {
-            if (q.getQueuePositions().containsKey(teacherName)) {
-                Map<String, Object> entry = new HashMap<>();
-                entry.put("studentId", q.getStudentId());
-                entry.put("studentName", q.getStudentName());
-                entry.put("position", q.getQueuePositions().get(teacherName));
-                teacherQueue.add(entry);
-            }
-        }
-        
-        // Sort by position
-        teacherQueue.sort((a, b) -> 
-            ((Integer)a.get("position")).compareTo((Integer)b.get("position")));
-            
-        return new ResponseEntity<>(teacherQueue, HttpStatus.OK);
-    }
-
-    // Get all queues for a specific student
-    @GetMapping("/student/{studentId}")
-    public ResponseEntity<Object> getStudentQueues(@PathVariable Long studentId) {
-        Optional<Queue> queueOpt = repository.findByStudentId(studentId);
-        
-        if (queueOpt.isPresent()) {
-            Queue queue = queueOpt.get();
-            Map<String, Object> response = new HashMap<>();
-            response.put("studentId", queue.getStudentId());
-            response.put("studentName", queue.getStudentName());
-            response.put("queues", queue.getQueuePositions());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(Map.of("error", "Student not found"), HttpStatus.NOT_FOUND);
+    @GetMapping("/all")
+    public ResponseEntity<List<Queue>> getAllQueues() {
+        return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
     }
 }
