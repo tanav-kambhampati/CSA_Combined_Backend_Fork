@@ -30,11 +30,4 @@ public class Submission {
     @JoinColumn(name = "assignment_id")
     private Assignment assignment;
     
-    
-    
-
-
-    
-
-    
 }

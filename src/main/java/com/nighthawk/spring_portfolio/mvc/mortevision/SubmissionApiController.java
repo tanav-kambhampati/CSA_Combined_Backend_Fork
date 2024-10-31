@@ -20,9 +20,7 @@ public class SubmissionApiController {
     // adding a submission
     @PostMapping("/Submit")
     public ResponseEntity<Submission> createAssignment(@RequestBody Submission submission) {
-        System.out.println("thing");
         repository_sub.save(submission);
-        System.out.println("thing2");
         return new ResponseEntity<>(submission, HttpStatus.CREATED);
     }
     // adding a comment NOT COPLETELY DONE KAYDEN PLS FILL IT OUT IF U WANNA DO THROUGH HERE
