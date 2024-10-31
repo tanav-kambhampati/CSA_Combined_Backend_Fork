@@ -1,12 +1,12 @@
 package com.nighthawk.spring_portfolio.Slack;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,10 +37,8 @@ public class CalendarEventService {
     }
 
     // Method to parse a Slack message and create calendar events
-    public void parseSlackMessage(String jsonString, LocalDate weekStartDate) {
-        JSONObject jsonObject = new JSONObject(jsonString);
-        String text = jsonObject.getString("text");
-
+    public void parseSlackMessage(Map<String, String> jsonMap, LocalDate weekStartDate) {
+        String text = jsonMap.get("text");
         List<CalendarEvent> events = extractEventsFromText(text, weekStartDate);
         for (CalendarEvent event : events) {
             saveEvent(event); // Save each parsed event

@@ -1,9 +1,10 @@
 package com.nighthawk.spring_portfolio.Slack;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/calendar")
@@ -13,9 +14,9 @@ public class CalendarEventController {
     private CalendarEventService calendarEventService;
 
     @PostMapping("/add")
-    public void addEventsFromSlackMessage(@RequestBody String jsonString) {
+    public void addEventsFromSlackMessage(@RequestBody Map<String, String> jsonMap) {
         LocalDate weekStartDate = LocalDate.parse("2024-10-30"); // Example start date
-        calendarEventService.parseSlackMessage(jsonString, weekStartDate);
+        calendarEventService.parseSlackMessage(jsonMap, weekStartDate);
     }
 
     @GetMapping("/events/{date}")
