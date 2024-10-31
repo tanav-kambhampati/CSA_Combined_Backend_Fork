@@ -2,7 +2,6 @@ package com.nighthawk.spring_portfolio.mvc.bathroom;
 
 import java.util.ArrayList;
 
-import groovy.transform.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
