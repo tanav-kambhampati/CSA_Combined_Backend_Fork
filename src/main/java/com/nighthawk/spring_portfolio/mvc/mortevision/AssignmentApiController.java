@@ -47,11 +47,11 @@ public class AssignmentApiController {
     }
 
     @PutMapping("/addQueue/{id}")
-    public ResponseEntity<Assignment> addQueue(@PathVariable long id, @RequestBody String person) {
+    public ResponseEntity<Assignment> addQueue(@PathVariable long id, @RequestBody List<String> person) {
         Optional<Assignment> optional = repository.findById(id);
         if (optional.isPresent()) {
             Assignment assignment = optional.get();
-            assignment.addQueue(person);
+            assignment.addQueue(person.get(0));
             repository.save(assignment);
             return new ResponseEntity<>(assignment, HttpStatus.OK);
         }
@@ -59,11 +59,11 @@ public class AssignmentApiController {
     }
 
     @PutMapping("/removeQueue/{id}")
-    public ResponseEntity<Assignment> removeQueue(@PathVariable long id, @RequestBody String person) {
+    public ResponseEntity<Assignment> removeQueue(@PathVariable long id, @RequestBody List<String> person) {
         Optional<Assignment> optional = repository.findById(id);
         if (optional.isPresent()) {
             Assignment assignment = optional.get();
-            assignment.removeQueue(person);
+            assignment.removeQueue(person.get(0));
             repository.save(assignment);
             return new ResponseEntity<>(assignment, HttpStatus.OK);
         }
@@ -71,11 +71,11 @@ public class AssignmentApiController {
     }
 
     @PutMapping("/doneQueue/{id}")
-    public ResponseEntity<Assignment> doneQueue(@PathVariable long id, @RequestBody String person) {
+    public ResponseEntity<Assignment> doneQueue(@PathVariable long id, @RequestBody List<String> person) {
         Optional<Assignment> optional = repository.findById(id);
         if (optional.isPresent()) {
             Assignment assignment = optional.get();
-            assignment.doneQueue(person);
+            assignment.doneQueue(person.get(0));
             repository.save(assignment);
             return new ResponseEntity<>(assignment, HttpStatus.OK);
         }

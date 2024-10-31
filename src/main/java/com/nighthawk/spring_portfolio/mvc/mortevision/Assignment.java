@@ -71,7 +71,7 @@ public class Assignment {
                 '}';
     }
 
-    public static Assignment createAssignment(String name,  String startDate, String dueDate, String rubric, double points) {
+    public static Assignment createAssignment(String name, String startDate, String dueDate, String rubric, double points) {
         Assignment assign = new Assignment();
         assign.setName(name); // setting name
         
@@ -88,7 +88,8 @@ public class Assignment {
 
         assign.setRubric(rubric);
         assign.setPoints(points);
-    
+
+        assign.setAssignmentQueue(new Queue());
     
         return assign;
     }
