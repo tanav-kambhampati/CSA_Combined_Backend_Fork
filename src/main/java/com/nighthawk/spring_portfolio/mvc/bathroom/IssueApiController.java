@@ -36,9 +36,21 @@ public class IssueApiController {
     @PostMapping("/add")
     public ResponseEntity<Object> addIssue(@RequestBody IssueDto issueDto)
     {
-        Issue issue = new Issue(issueDto.getBathroomName(), issueDto.getIssue(), issueDto.getCount());
-        repository.save(issue);
-        return new ResponseEntity<>("Issue at: " + issueDto.getBathroomName() + " for " + issueDto.getIssue() + "has been successfully created", HttpStatus.CREATED);
+        List<Issue> issues = repository.findByIssueAndBathroomIgnoreCase(issueDto.getIssue(), issueDto.getBathroomName());
+        if(issues.size()==0)
+        {
+            Issue issue = new Issue(issueDto.getBathroomName(), issueDto.getIssue(), issueDto.getCount());
+            repository.save(issue);
+            return new ResponseEntity<>("Issue at: " + issueDto.getBathroomName() + " for " + issueDto.getIssue() + "has been successfully created", HttpStatus.CREATED);
+        }
+        else {
+            Optional<Issue> optionalIssue = repository.findByIssueAndBathroom(issueDto.getIssue(), issueDto.getBathroomName());
+            Issue report = optionalIssue.get();
+
+            report.setCount(report.getCount() + 1);
+            repository.save(report);
+            return new ResponseEntity<>(report, HttpStatus.OK);
+        }
     }
 
     @Getter
