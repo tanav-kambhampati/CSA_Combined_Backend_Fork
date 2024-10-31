@@ -16,7 +16,10 @@ import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.issue.Issue;
+import com.nighthawk.spring_portfolio.mvc.issue.IssueJPARepository;
 
+import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public class ModelInit {
     @Autowired PersonRoleJpaRepository roleJpaRepository;
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
+    @Autowired IssueJPARepository issueJPARepository;
 
     @Bean
     @Transactional
@@ -85,7 +89,12 @@ public class ModelInit {
                     noteRepo.save(n);  // JPA Save                  
                 }
             }
-
+            
+        Issue[] issueArray = Issue.init();
+        for(Issue issue: issueArray)
+        {
+            issueJPARepository.save(issue);
+        }
         };
     }
 }
