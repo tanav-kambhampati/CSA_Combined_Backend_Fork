@@ -26,11 +26,15 @@ public class Submission {
 
     private String assignment_name;
 
-    private List<String> comments;
+    @ManyToOne
+    @JoinColumn(name = "assignment_id")
+    private Assignment assignment;
+    
+    
+    
 
 
-    public void addComment(String comment){
-        this.comments.add(comment);
-    }
+    
+
     
 }

@@ -28,13 +28,12 @@ public class SubmissionApiController {
         System.out.println("thing2");
         return new ResponseEntity<>(submission, HttpStatus.CREATED);
     }
-    // adding a comment
+    // adding a comment NOT COPLETELY DONE KAYDEN PLS FILL IT OUT IF U WANNA DO THROUGH HERE
     @PutMapping("/comment")
     public ResponseEntity<Submission> comment(@PathVariable long id, @RequestBody String comment) {
         Optional<Submission> optional = repository_sub.findById(id);
         if (optional.isPresent()) {
             Submission submission = optional.get();
-            submission.addComment(comment);
             repository_sub.save(submission);
             return new ResponseEntity<>(submission, HttpStatus.OK);
         }

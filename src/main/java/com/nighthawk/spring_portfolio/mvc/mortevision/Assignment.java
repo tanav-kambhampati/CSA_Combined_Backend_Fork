@@ -5,9 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import java.util.List;
+
+import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,7 +32,7 @@ public class Assignment {
     private Date dueDate;
 
     private String rubric;
-    private int points;
+    private double points;
 
     @Convert(converter = QueueConverter.class)
     private Queue assignmentQueue = new Queue();
@@ -55,6 +61,56 @@ public class Assignment {
     }
 
     public String toString() {
-        return "{haventGone: [" + this.assignmentQueue.getHaventGone() + "], queue: [" + this.assignmentQueue.getQueue() + "], done: [" + this.assignmentQueue.getDone() + "]}";
+        return "Assignment{" +
+                "assignmentId=" + assignmentId +
+                ", name='" + name + '\'' +
+                ", startDate=" + startDate +
+                ", dueDate=" + dueDate +
+                ", rubric='" + rubric + '\'' +
+                ", points=" + points +
+                '}';
+    }
+
+    public static Assignment createAssignment(String name,  String startDate, String dueDate, String rubric, double points) {
+        Assignment assign = new Assignment();
+        assign.setName(name); // setting name
+        
+
+        // setting the start/due dates
+        try {
+            Date date_start = new SimpleDateFormat("MM-dd-yyyy").parse(startDate); // start date
+            assign.setStartDate(date_start);
+            Date date_due = new SimpleDateFormat("MM-dd-yyyy").parse(dueDate); // start date
+            assign.setDueDate(date_due);
+        } catch (Exception e) {
+            // handle exception
+        }
+
+        assign.setRubric(rubric);
+        assign.setPoints(points);
+    
+    
+        return assign;
+    }
+
+    public static Assignment[] init() {
+        ArrayList<Assignment> assignments = new ArrayList<>();
+        assignments.add(createAssignment("Math Homework", "10-01-2024", "10-15-2024", "Solve all problems in chapter 3", 100));
+        assignments.add(createAssignment("Science Project", "10-05-2024", "10-20-2024", "Create a model of a cell", 200));
+        assignments.add(createAssignment("History Essay", "10-10-2024", "10-25-2024", "Write about the industrial revolution", 150));
+        return assignments.toArray(new Assignment[0]);
+    }
+
+    /** Static method to print Person objects from an array
+     * @param args, not used
+     */
+    public static void main(String[] args) {
+        // obtain Person from initializer
+        Assignment assignments[] = init();
+
+        // iterate using "enhanced for loop"
+        for( Assignment assignment : assignments) {
+            System.out.println(assignment);  // print object
+        }
     }
 }
