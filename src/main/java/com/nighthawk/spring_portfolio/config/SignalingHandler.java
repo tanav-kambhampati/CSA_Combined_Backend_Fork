@@ -4,11 +4,12 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SignalingHandler extends TextWebSocketHandler {
-    private final Set<WebSocketSession> sessions = new HashSet<>();
+    private final List<WebSocketSession> sessions = new ArrayList<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -17,16 +18,15 @@ public class SignalingHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // Broadcast signaling messages (SDP, ICE candidates) to all connected clients
-        for (WebSocketSession wsSession : sessions) {
-            if (wsSession.isOpen() && !wsSession.equals(session)) {
-                wsSession.sendMessage(message);
+        for (WebSocketSession peerSession : sessions) {
+            if (peerSession != session && peerSession.isOpen()) {
+                peerSession.sendMessage(message); 
             }
         }
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
     }
 }
