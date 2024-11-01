@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.Getter;
@@ -47,21 +46,21 @@ public class QueueApiController {
     }
 
     @DeleteMapping("/remove")
-    public ResponseEntity<Object> removeFromQueue(@RequestParam String teacherName, @RequestParam String studentName) {
-        Optional<BathroomQueue> queueEntry = repository.findByTeacherName(teacherName);
+    public ResponseEntity<Object> removeFromQueue(@RequestBody QueueDto queueDto) {
+        Optional<BathroomQueue> queueEntry = repository.findByTeacherName(queueDto.getTeacherName());
         if (queueEntry.isPresent()) {
             BathroomQueue bathroomQueue = queueEntry.get();
             try {
-                bathroomQueue.removeStudent(studentName);
+                bathroomQueue.removeStudent(queueDto.getStudentName());
                 repository.save(bathroomQueue);
-                return new ResponseEntity<>("Removed " + studentName + " from " + teacherName + "'s queue", HttpStatus.OK);
+                return new ResponseEntity<>("Removed " + queueDto.getStudentName() + " from " + queueDto.getTeacherName() + "'s queue", HttpStatus.OK);
             } 
             catch (IllegalArgumentException e) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
             }
         }
         
-        return new ResponseEntity<>("Queue for " + teacherName + " not found", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Queue for " + queueDto.getTeacherName() + " not found", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/all")
