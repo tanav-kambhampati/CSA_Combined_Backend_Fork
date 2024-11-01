@@ -1,8 +1,9 @@
 package com.nighthawk.spring_portfolio.Slack;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CalendarEventRepository extends JpaRepository<CalendarEvent, Long> {
     List<CalendarEvent> findByDate(LocalDate date);
