@@ -1,4 +1,5 @@
 package com.nighthawk.spring_portfolio.Slack;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -12,7 +13,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.util.Map;
 import java.util.List;
 
-
 @RestController
 public class SlackController {
     Dotenv dotenv = Dotenv.load();
@@ -24,38 +24,32 @@ public class SlackController {
 
     @Autowired
     private SlackMessageRepository messageRepository;
+
     public SlackController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     @GetMapping("/slack/")
     public ResponseEntity<List<SlackMessage>> returnSlackData() {
-        // Fetch all messages from the SlackMessageRepository
         List<SlackMessage> messages = messageRepository.findAll();
-
-        // Return the data as JSON
         return ResponseEntity.ok(messages);
     }
+
     @PostMapping("/slack/getUsername")
-        public ResponseEntity<String> getUsername(@RequestBody Map<String, String> requestBody) {
-        String userId = requestBody.get("userId"); // Get the user ID from the request body
+    public ResponseEntity<String> getUsername(@RequestBody Map<String, String> requestBody) {
+        String userId = requestBody.get("userId");
         if (userId == null || userId.isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid user ID");
         }
 
-        // Prepare the Slack API request
         String url = "https://slack.com/api/users.info?user=" + userId;
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + slackToken);
         headers.set("Content-Type", "application/x-www-form-urlencoded");
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make the API request to Slack
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 
-        // Extract username from the response
         Map<String, Object> body = response.getBody();
         if (body == null || !(boolean) body.get("ok")) {
             return ResponseEntity.status(400).body("Failed to fetch user info");
@@ -66,9 +60,9 @@ public class SlackController {
 
         return ResponseEntity.ok(username);
     }
+
     @PostMapping("/slack/events")
     public ResponseEntity<String> handleSlackEvent(@RequestBody SlackEvent payload) {
-        // Check if this is a challenge request
         if (payload.getChallenge() != null) {
             return ResponseEntity.ok(payload.getChallenge());
         }
@@ -78,18 +72,26 @@ public class SlackController {
             String eventType = messageEvent.getType();
 
             if ("message".equals(eventType)) {
-                // Convert the message event to a JSON string
                 ObjectMapper objectMapper = new ObjectMapper();
                 String messageContent = objectMapper.writeValueAsString(messageEvent);
 
-                // Save the message content using MessageService
                 messageService.saveMessage(messageContent);
 
                 System.out.println("Message saved to database: " + messageContent);
+
+                String calendarUrl = "http://localhost:8085/api/calendar/add";
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Content-Type", "application/json");
+
+                HttpEntity<String> calendarEntity = new HttpEntity<>(messageContent, headers);
+                ResponseEntity<String> calendarResponse = restTemplate.postForEntity(calendarUrl, calendarEntity, String.class);
+
+                System.out.println("Message sent to calendar service: " + calendarResponse.getBody());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return ResponseEntity.ok("OK");
     }
 }
