@@ -84,6 +84,10 @@ public class Person {
     @NotEmpty
     private String password;
 
+    @NotEmpty
+    @Size(min = 7, max = 7, message = "MyPlan username must be your 7 digit ID number.")
+    private String myplan;
+
     /** name, dob are attributes to describe the person
      * --- @NonNull annotation is used to generate a constructor with AllArgsConstructor Lombox annotation.
      * --- @Size annotation is used to validate that the annotated field is between the specified boundaries, in this case between 2 and 30 characters.
@@ -114,9 +118,10 @@ public class Person {
 
     /** Custom constructor for Person when building a new Person object from an API call
      */
-    public Person(String email, String password, String name, Date dob, PersonRole role) {
+    public Person(String email, String password, String myplan, String name, Date dob, PersonRole role) {
         this.email = email;
         this.password = password;
+        this.myplan = myplan;
         this.name = name;
         this.dob = dob;
         this.roles.add(role);
@@ -131,25 +136,30 @@ public class Person {
         return -1;
     }
 
-    /** 1st telescoping method to create a Person object with USER role
+    /**
+     * 1st telescoping method to create a Person object with USER role
+     * 
      * @param name
      * @param email
      * @param password
+     * @param myplan
      * @param dob
      * @return Person
-     *  */ 
-    public static Person createPerson(String name, String email, String password, String dob) {
+     */ 
+    public static Person createPerson(String name, String email, String password, String myplan, String dob) {
         // By default, Spring Security expects roles to have a "ROLE_" prefix.
-        return createPerson(name, email, password, dob, Arrays.asList("ROLE_USER"));
+        return createPerson(name, email, password, myplan, dob, Arrays.asList("ROLE_USER"));
     }
     /** 2nd telescoping method to create a Person object with parameterized roles
      * @param roles 
      */
-    public static Person createPerson(String name, String email, String password, String dob, List<String> roleNames) {
+    public static Person createPerson(String name, String email, String password, String myplan, String dob, List<String> roleNames) {
         Person person = new Person();
         person.setName(name);
         person.setEmail(email);
         person.setPassword(password);
+        person.setMyplan(myplan);
+
         try {
             Date date = new SimpleDateFormat("MM-dd-yyyy").parse(dob);
             person.setDob(date);
@@ -172,12 +182,12 @@ public class Person {
      */
     public static Person[] init() {
         ArrayList<Person> persons = new ArrayList<>();
-        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER")));
-        persons.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "01-01-1847"));
-        persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "01-01-1850"));
-        persons.add(createPerson("Madam Currie", "madam@gmail.com", "123madam", "01-01-1860"));
-        persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "12-09-1906"));
-        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "10-21-1959", Arrays.asList("ROLE_ADMIN")));
+        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "0000000", "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER")));
+        persons.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "0000000", "01-01-1847"));
+        persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "0000000", "01-01-1850"));
+        persons.add(createPerson("Madam Currie", "madam@gmail.com", "123madam", "0000000", "01-01-1860"));
+        persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "0000000", "12-09-1906"));
+        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "0000000", "10-21-1959", Arrays.asList("ROLE_ADMIN")));
         return persons.toArray(new Person[0]);
     }
 

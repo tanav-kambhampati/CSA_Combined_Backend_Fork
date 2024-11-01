@@ -111,6 +111,7 @@ public class PersonApiController {
         private String email;
         private String password;
         private String name;
+        private String myplan;
         private String dob;
     }
 
@@ -129,7 +130,7 @@ public class PersonApiController {
             return new ResponseEntity<>(personDto.getDob() + " error; try MM-dd-yyyy", HttpStatus.BAD_REQUEST);
         }
         // A person object WITHOUT ID will create a new record in the database
-        Person person = new Person(personDto.getEmail(), personDto.getPassword(), personDto.getName(), dob, personDetailsService.findRole("USER"));
+        Person person = new Person(personDto.getEmail(), personDto.getPassword(), personDto.getMyplan(), personDto.getName(), dob, personDetailsService.findRole("USER"));
         personDetailsService.save(person);
         return new ResponseEntity<>(personDto.getEmail() + " is created successfully", HttpStatus.CREATED);
     }
