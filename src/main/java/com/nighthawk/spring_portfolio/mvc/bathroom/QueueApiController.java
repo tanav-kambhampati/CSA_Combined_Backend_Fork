@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +44,7 @@ public class QueueApiController {
         }
         return new ResponseEntity<>(queueDto.getStudentName() + " was added to " + queueDto.getTeacherName(), HttpStatus.CREATED);
     }
-
+    @CrossOrigin(origins = "http://127.0.0.1:4100")
     @DeleteMapping("/remove")
     public ResponseEntity<Object> removeFromQueue(@RequestBody QueueDto queueDto) {
         Optional<BathroomQueue> queueEntry = repository.findByTeacherName(queueDto.getTeacherName());
