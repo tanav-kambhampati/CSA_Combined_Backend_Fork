@@ -1,7 +1,8 @@
 package com.nighthawk.spring_portfolio.mvc.bathroom;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,19 +22,29 @@ public class BathroomQueue {
 
     @Column
     private String teacherName;
-    private List<String> peopleQueue;
+    private String peopleQueue;
 
     // Custom constructor
     public BathroomQueue(String teacherName) {
         this.teacherName = teacherName;
-        this.peopleQueue = new ArrayList<>();
+        this.peopleQueue = "";
     }
+    
     public void addStudent(String studentName) {
-        this.peopleQueue.add(studentName);
+        if (this.peopleQueue == null || this.peopleQueue.isEmpty()) {
+            this.peopleQueue = studentName;
+        } else {
+            this.peopleQueue += "," + studentName;
+        }
     }
     public void removeStudent(String studentName) {
-        this.peopleQueue.remove(studentName);
+        if (this.peopleQueue != null) {
+            this.peopleQueue = Arrays.stream(this.peopleQueue.split(","))
+                .filter(s -> !s.equals(studentName))
+                .collect(Collectors.joining(","));
+        }
     }
+    
 
     public static BathroomQueue[] init() {
         ArrayList<BathroomQueue> queues = new ArrayList<>();
