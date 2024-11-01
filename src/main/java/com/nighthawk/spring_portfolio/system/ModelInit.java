@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.bathroom.BathroomQueue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
-import com.nighthawk.spring_portfolio.mvc.bathroom.Queue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.QueueJPARepository;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
 import com.nighthawk.spring_portfolio.mvc.jokes.JokesJpaRepository;
@@ -108,8 +108,8 @@ public class ModelInit {
             
         }
 
-        Queue[] queueArray = Queue.init();
-        for(Queue queue: queueArray)
+        BathroomQueue[] queueArray = BathroomQueue.init();
+        for(BathroomQueue queue: queueArray)
         {
             queueJPARepository.save(queue);
         }

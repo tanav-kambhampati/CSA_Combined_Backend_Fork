@@ -27,34 +27,45 @@ public class QueueApiController {
     @Getter
     public static class QueueDto {
         private String teacherName;
-        private int queuePositions;
+        private String studentName;
     }
 
     @PostMapping("/add")
     public ResponseEntity<Object> addToQueue(@RequestBody QueueDto queueDto) {
         // Check if a queue entry for the teacher already exists
-        Optional<Queue> existingQueue = repository.findByTeacherName(queueDto.getTeacherName());
+        Optional<BathroomQueue> existingQueue = repository.findByTeacherName(queueDto.getTeacherName());
         if (existingQueue.isPresent()) {
-            return new ResponseEntity<>("A queue for " + queueDto.getTeacherName() + " already exists.", HttpStatus.CONFLICT);
+            existingQueue.get().addStudent(queueDto.getStudentName());
+            repository.save(existingQueue.get());
         }
-        
-        Queue queue = new Queue(queueDto.getTeacherName(), queueDto.getQueuePositions());
-        repository.save(queue);
-        return new ResponseEntity<>("Student added to " + queueDto.getTeacherName() + "'s queue at position " + queueDto.getQueuePositions(), HttpStatus.CREATED);
+        else {
+            BathroomQueue newQueue = new BathroomQueue(queueDto.getTeacherName());
+            newQueue.addStudent(queueDto.getStudentName());
+            repository.save(newQueue);
+        }
+        return new ResponseEntity<>(queueDto.getStudentName() + " was added to " + queueDto.getTeacherName(), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/remove")
-    public ResponseEntity<Object> removeFromQueue(@RequestParam Long id) {
-        Optional<Queue> queueEntry = repository.findById(id);
+    public ResponseEntity<Object> removeFromQueue(@RequestParam String teacherName, @RequestParam String studentName) {
+        Optional<BathroomQueue> queueEntry = repository.findByTeacherName(teacherName);
         if (queueEntry.isPresent()) {
-            repository.delete(queueEntry.get());
-            return new ResponseEntity<>("Removed student from queue", HttpStatus.OK);
+            BathroomQueue bathroomQueue = queueEntry.get();
+            try {
+                bathroomQueue.removeStudent(studentName);
+                repository.save(bathroomQueue);
+                return new ResponseEntity<>("Removed " + studentName + " from " + teacherName + "'s queue", HttpStatus.OK);
+            } 
+            catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            }
         }
-        return new ResponseEntity<>("Queue entry not found", HttpStatus.NOT_FOUND);
+        
+        return new ResponseEntity<>("Queue for " + teacherName + " not found", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Queue>> getAllQueues() {
+    public ResponseEntity<List<BathroomQueue>> getAllQueues() {
         return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
     }
 }
