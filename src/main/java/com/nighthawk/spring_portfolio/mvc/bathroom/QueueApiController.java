@@ -38,8 +38,7 @@ public class QueueApiController {
             repository.save(existingQueue.get());
         }
         else {
-            BathroomQueue newQueue = new BathroomQueue(queueDto.getTeacherName());
-            newQueue.addStudent(queueDto.getStudentName());
+            BathroomQueue newQueue = new BathroomQueue(queueDto.getTeacherName(), queueDto.getStudentName());
             repository.save(newQueue);
         }
         return new ResponseEntity<>(queueDto.getStudentName() + " was added to " + queueDto.getTeacherName(), HttpStatus.CREATED);
