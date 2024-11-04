@@ -19,7 +19,7 @@ public class SignalingHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         for (WebSocketSession peerSession : sessions) {
-            if (peerSession != session && peerSession.isOpen()) {
+            if (!peerSession.getId().equals(session.getId()) && peerSession.isOpen()) {
                 peerSession.sendMessage(message); 
             }
         }
