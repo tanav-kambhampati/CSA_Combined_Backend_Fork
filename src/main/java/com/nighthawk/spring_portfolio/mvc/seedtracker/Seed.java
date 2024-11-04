@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 
 /**
  * Seed is a POJO, Plain Old Java Object.
@@ -16,10 +16,8 @@ import jakarta.validation.constraints.NotEmpty;
  * --- @Entity annotation is used to mark the class as a persistent Java class.
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Convert(attributeName="seed" , converter = JsonType.class)
 public class Seed {
 
     /** automatic unique identifier for Seed record
@@ -45,7 +43,7 @@ public class Seed {
     /** grade is the student's grade for a given assignment or project
      * --- Represented as a double to allow fractional grades.
      */
-    @NotEmpty
+    @NotNull
     private Double grade;
 
     public Seed(Long studentId, String comment, Double grade) {
@@ -54,32 +52,27 @@ public class Seed {
         this.grade = grade;
     }
     
-    public static Seed createSeed(Long studentId , String comment, Double grade) {
-        Seed seed = new Seed(studentId, comment, grade);
-
-        return seed;
-    }
-    /** Static method to initialize an array list of Seed objects 
+    /** Static method to initialize an array of Seed objects for testing
      * @return Seed[], an array of Seed objects
      */
     public static Seed[] init() {
-        ArrayList<Seed> seeds = new ArrayList<>();
-        seeds.add(new Seed(1L, "Good work on the project.", 85.5)); // Use 1L instead of 1
-        seeds.add(new Seed(2L, "Needs improvement in certain areas.", 70.0)); // Use 2L instead of 2
-        seeds.add(new Seed(3L, "Excellent performance!", 95.0)); // Use 3L instead of 3
-        seeds.add(new Seed(4L, "Incomplete assignment.", 50.0)); // Use 4L instead of 4
-        seeds.add(new Seed(5L, "Average performance.", 75.0)); // Use 5L instead of 5
-        return seeds.toArray(new Seed[0]);
+        return new Seed[] {
+            new Seed(1L, "Good work on the project.", 85.5),
+            new Seed(2L, "Needs improvement in certain areas.", 70.0),
+            new Seed(3L, "Excellent performance!", 95.0),
+            new Seed(4L, "Incomplete assignment.", 50.0),
+            new Seed(5L, "Average performance.", 75.0)
+        };
     }
 
     /** Static method to print Seed objects from an array
      * @param args, not used
      */
     public static void main(String[] args) {
-        // obtain Seed from initializer
+        // Obtain Seed from initializer
         Seed[] seeds = init();
 
-        // iterate using "enhanced for loop"
+        // Iterate using "enhanced for loop"
         for (Seed seed : seeds) {
             System.out.println(seed);  // print object
         }
