@@ -16,6 +16,7 @@ import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.student.Student.StudentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +31,7 @@ public class ModelInit {
     @Autowired PersonRoleJpaRepository roleJpaRepository;
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
+    @Autowired StudentService studentService;
 
     @Bean
     @Transactional
@@ -45,6 +47,7 @@ public class ModelInit {
                 }
             }
 
+            studentService.initializeData();
 
             // Joke database is populated with starting jokes
             String[] jokesArray = Jokes.init();
