@@ -33,15 +33,38 @@ public class BathroomQueue {
     public void addStudent(String studentName) {
         if (this.peopleQueue == null || this.peopleQueue.isEmpty()) {
             this.peopleQueue = studentName;
-        } else {
+        } 
+        else {
             this.peopleQueue += "," + studentName;
         }
     }
+
     public void removeStudent(String studentName) {
         if (this.peopleQueue != null) {
             this.peopleQueue = Arrays.stream(this.peopleQueue.split(","))
                 .filter(s -> !s.equals(studentName))
                 .collect(Collectors.joining(","));
+        }
+    }
+
+    public String getFrontStudent() {
+        if (this.peopleQueue != null && !this.peopleQueue.isEmpty()) {
+            return this.peopleQueue.split(",")[0];
+        }
+        return null;
+    }
+
+    public void approveFrontStudent() {
+        if (this.peopleQueue != null && !this.peopleQueue.isEmpty()) {
+            String[] students = this.peopleQueue.split(",");
+            if (students.length > 1) {
+                this.peopleQueue = String.join(",", Arrays.copyOfRange(students, 1, students.length));
+            } else {
+                this.peopleQueue = "";
+            }
+        } 
+        else {
+            throw new IllegalStateException("Queue is empty");
         }
     }
     

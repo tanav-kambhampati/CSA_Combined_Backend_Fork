@@ -62,6 +62,23 @@ public class QueueApiController {
         
         return new ResponseEntity<>("Queue for " + queueDto.getTeacherName() + " not found", HttpStatus.NOT_FOUND);
     }
+    @PostMapping("/approve")
+    public ResponseEntity<Object> approveFrontStudent(@RequestBody QueueDto queueDto) {
+        Optional<BathroomQueue> queueEntry = repository.findByTeacherName(queueDto.getTeacherName());
+        if (queueEntry.isPresent()) {
+            BathroomQueue bathroomQueue = queueEntry.get();
+            String frontStudent = bathroomQueue.getFrontStudent();
+            if (frontStudent != null && frontStudent.equals(queueDto.getStudentName())) {
+                bathroomQueue.approveFrontStudent();
+                repository.save(bathroomQueue);
+                return new ResponseEntity<>("Approved " + queueDto.getStudentName(), HttpStatus.OK);
+            } 
+            else {
+                return new ResponseEntity<>("Student is not at the front of the queue", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>("Queue for " + queueDto.getTeacherName() + " not found", HttpStatus.NOT_FOUND);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<BathroomQueue>> getAllQueues() {
