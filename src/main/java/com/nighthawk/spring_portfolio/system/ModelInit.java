@@ -2,6 +2,7 @@ package com.nighthawk.spring_portfolio.system;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -113,9 +114,11 @@ public class ModelInit {
         }
 
         BathroomQueue[] queueArray = BathroomQueue.init();
-        for(BathroomQueue queue: queueArray)
-        {
-            queueJPARepository.save(queue);
+        for (BathroomQueue queue : queueArray) {
+            Optional<BathroomQueue> queueFound = queueJPARepository.findByTeacherName(queue.getTeacherName());
+            if (!queueFound.isPresent()) {
+                queueJPARepository.save(queue);
+            }
         }
         
         Profile profiles[] = Profile.init();
