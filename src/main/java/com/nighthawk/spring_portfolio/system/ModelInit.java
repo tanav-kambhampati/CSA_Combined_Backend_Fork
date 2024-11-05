@@ -16,6 +16,8 @@ import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.seedtracker.Seed;
+import com.nighthawk.spring_portfolio.mvc.seedtracker.SeedJpaRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +32,7 @@ public class ModelInit {
     @Autowired PersonRoleJpaRepository roleJpaRepository;
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
+    @Autowired SeedJpaRepository seedJpaRepository;  // New repository for seeds
 
     @Bean
     @Transactional
@@ -44,7 +47,6 @@ public class ModelInit {
                     announcementJPA.save(new Announcement(announcement.getAuthor(), announcement.getTitle(), announcement.getBody(), announcement.getTags())); // JPA save
                 }
             }
-
 
             // Joke database is populated with starting jokes
             String[] jokesArray = Jokes.init();
@@ -73,7 +75,7 @@ public class ModelInit {
                         // Accumulate reference to role from database
                         updatedRoles.add(roleFound);
                     }
-                    // Update person with roles from role databasea
+                    // Update person with roles from role database
                     person.setRoles(updatedRoles); // Object reference is updated
 
                     // Save person to database
@@ -86,7 +88,14 @@ public class ModelInit {
                 }
             }
 
+            // Seed database is populated with starting seeds
+            Seed[] seeds = Seed.init();
+            for (Seed seed : seeds) {
+                List<Seed> seedFound = seedJpaRepository.findByStudentId(seed.getStudentId());  // JPA lookup
+                if (seedFound.isEmpty()) {
+                    seedJpaRepository.save(seed); // JPA save
+                }
+            }
         };
     }
 }
-
