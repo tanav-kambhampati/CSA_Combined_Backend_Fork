@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/mvc/synergy/gradebook").hasAnyRole("TEACHER", "ADMIN", "STUDENT")
                         .requestMatchers(HttpMethod.GET, "/mvc/synergy/view-requests").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/mvc/synergy/create-grade-request").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
-                )       
+                )
                 .cors(Customizer.withDefaults())
                 .headers(headers -> headers
                         .addHeaderWriter(new StaticHeadersWriter("Access-Control-Allow-Credentials", "true"))
