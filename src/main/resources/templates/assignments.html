@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/base}" lang="en">
+
+<head>
+    <title>Assignment Tracker</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-delete {
+            background-color: #f44336;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+<th:block layout:fragment="body" th:remove="tag">
+    <div class="container">
+        <h1>Assignment Tracker</h1>
+        <button class="btn" onclick="addAssignment()">Add Assignment</button>
+        
+        <table id="assignmentTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="assignmentList">
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</body>
+
+<th:block layout:fragment="script" th:remove="tag">
+<script src="/static/vanta/three.r119.min.js" th:src="@{/vanta/three.r119.min.js}"></script>
+<script src="/static/vanta/vanta.birds.min.js" th:src="@{/vanta/vanta.birds.min.js}"></script>
+<script>
+    let assignments = [];
+
+    function addAssignment() {
+        const name = prompt("Enter assignment name:");
+        if (!name) return;
+        
+        const type = prompt("Enter assignment type:");
+        if (!type) return;
+        
+        const description = prompt("Enter assignment description:");
+        if (!description) return;
+        
+        const dueDate = prompt("Enter due date:");
+        if (!dueDate) return;
+        
+        const assignment = {
+            id: Date.now(),
+            name: name,
+            type: type,
+            description: description,
+            dueDate: dueDate
+        };
+        
+        assignments.push(assignment);
+        updateTable();
+    }
+
+    function deleteAssignment(id) {
+        assignments = assignments.filter(assignment => assignment.id !== id);
+        updateTable();
+    }
+
+    function updateTable() {
+        const tableBody = document.getElementById('assignmentList');
+        tableBody.innerHTML = '';
+        
+        assignments.forEach(assignment => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${assignment.name}</td>
+                <td>${assignment.type}</td>
+                <td>${assignment.description}</td>
+                <td>${assignment.dueDate}</td>
+                <td>
+                    <button class="btn btn-delete" onclick="deleteAssignment(${assignment.id})">
+                        Delete
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+</script>
+</th:block>
+
+</html>

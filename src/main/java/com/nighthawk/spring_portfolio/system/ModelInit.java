@@ -14,8 +14,8 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
-import com.nighthawk.spring_portfolio.mvc.synergy.Assignment;
-import com.nighthawk.spring_portfolio.mvc.synergy.AssignmentJpaRepository;
+import com.nighthawk.spring_portfolio.mvc.assignments.Assignment;
+import com.nighthawk.spring_portfolio.mvc.assignments.AssignmentJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
 
@@ -94,7 +94,7 @@ public class ModelInit {
             for (Assignment assignment : assignmentArray) {
                 Assignment assignmentFound = assignmentJpaRepository.findByName(assignment.getName());
                 if (assignmentFound == null) { // if the assignment doesn't exist
-                    assignmentJpaRepository.save(new Assignment(assignment.getName(), assignment.getDetails(), assignment.getPoints()));
+                    assignmentJpaRepository.save(new Assignment(assignment.getName(), assignment.getType(), assignment.getDescription(), assignment.getPoints(), assignment.getDueDate()));
                 }
             }
         };

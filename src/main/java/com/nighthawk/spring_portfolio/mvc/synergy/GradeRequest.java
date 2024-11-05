@@ -1,5 +1,6 @@
 package com.nighthawk.spring_portfolio.mvc.synergy;
 
+import com.nighthawk.spring_portfolio.mvc.assignments.Assignment;
 import com.nighthawk.spring_portfolio.mvc.person.Person;
 
 import jakarta.persistence.Entity;
