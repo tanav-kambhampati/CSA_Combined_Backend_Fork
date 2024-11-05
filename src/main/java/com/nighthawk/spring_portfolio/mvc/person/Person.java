@@ -152,6 +152,15 @@ public class Person {
         this.roles.add(role);
     }
 
+    public boolean hasRoleWithName(String roleName) {
+        for (PersonRole role : roles) {
+            if (role.getName().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Custom getter to return age from dob attribute
      */

@@ -32,34 +32,34 @@ public class SynergyViewController {
     @Autowired
     private PersonJpaRepository personRepository;
 
-    @GetMapping("/view-grades")
-    public String viewStudentGrades(@AuthenticationPrincipal Person student, Model model) {
-        List<Grade> grades = gradeRepository.findByStudent(student);
+    @GetMapping("/gradebook")
+    public String editGrades(@AuthenticationPrincipal Person user, Model model) {
         List<Assignment> assignments = assignmentRepository.findAll();
-    
-        Map<Long, Grade> assignmentGrades = new HashMap<>();
-        for (Grade grade : grades) {
-            assignmentGrades.put(grade.getAssignment().getId(), grade);
+
+        // students can't edit grades, teachers can edit
+        if (user.hasRoleWithName("ROLE_STUDENT")) {
+            List<Grade> studentGrades = gradeRepository.findByStudent(user);
+        
+            Map<Long, Grade> assignmentGrades = new HashMap<>();
+            for (Grade grade : studentGrades) {
+                assignmentGrades.put(grade.getAssignment().getId(), grade);
+            }
+        
+            model.addAttribute("assignments", assignments);
+            model.addAttribute("assignmentGrades", assignmentGrades);
+            return "synergy/view_student_grades";
+        } else {
+            List<Person> students = personRepository.findPeopleWithRole("ROLE_STUDENT");
+            List<Grade> gradesList = gradeRepository.findAll();
+
+            Map<Long, Map<Long, Double>> grades = createGradesMap(gradesList, assignments, students);
+
+            model.addAttribute("assignments", assignments);
+            model.addAttribute("students", students);
+            model.addAttribute("grades", grades);
+
+            return "synergy/edit_grades";
         }
-    
-        model.addAttribute("assignments", assignments);
-        model.addAttribute("assignmentGrades", assignmentGrades);
-        return "synergy/view_student_grades";
-    }
-
-    @GetMapping("/edit-grades")
-    public String editGrades(Model model) {
-        List<Assignment> assignments = assignmentRepository.findAll();
-        List<Person> students = personRepository.findPeopleWithRole("ROLE_STUDENT");
-        List<Grade> gradesList = gradeRepository.findAll();
-
-        Map<Long, Map<Long, Double>> grades = createGradesMap(gradesList, assignments, students);
-
-        model.addAttribute("assignments", assignments);
-        model.addAttribute("students", students);
-        model.addAttribute("grades", grades);
-
-        return "synergy/edit_grades";
     }
 
     private Map<Long, Map<Long, Double>> createGradesMap(List<Grade> gradesList, List<Assignment> assignments, List<Person> students) {
@@ -85,7 +85,6 @@ public class SynergyViewController {
     @GetMapping("/view-requests")
     public String viewRequests(Model model) {
         List<GradeRequest> requests = gradeRequestRepository.findAll();
-        System.out.println("Fetched requests: " + requests);
         model.addAttribute("requests", requests);
         return "synergy/view_grade_requests";
     }
