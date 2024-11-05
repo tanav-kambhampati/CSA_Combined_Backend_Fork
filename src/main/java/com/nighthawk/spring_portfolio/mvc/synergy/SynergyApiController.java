@@ -57,14 +57,12 @@ public class SynergyApiController {
             }
         }
 
-        return "redirect:/mvc/synergy/edit-grades";
+        return "redirect:/mvc/synergy/gradebook";
     }
     
     @PostMapping("/create-grade-request")
-    public String createGradeRequest(
+    public ResponseEntity<Object> createGradeRequest(@AuthenticationPrincipal UserDetails userDetails,
                                      @RequestParam Map<String, String> form) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
         Person grader = personRepository.findByEmail(email);
         if (grader == null) {
@@ -87,11 +85,11 @@ public class SynergyApiController {
         GradeRequest gradeRequest = new GradeRequest(assignment, student, grader, explanation, gradeSuggestion);
         gradeRequestRepository.save(gradeRequest);
 
-        return "redirect:/mvc/synergy/create-grade-request";
+        return new ResponseEntity<>("Successfully created grade request.", HttpStatus.CREATED);
     }
 
     @PostMapping("/accept-request")
-    public String acceptRequest(@RequestParam Long requestId) {
+    public ResponseEntity<Object> acceptRequest(@RequestParam Long requestId) {
         GradeRequest request = gradeRequestRepository.findById(requestId).orElse(null);
         if (request == null) {
             throw new ResponseStatusException(
@@ -118,11 +116,11 @@ public class SynergyApiController {
         request.accept();
         gradeRequestRepository.save(request);
 
-        return "redirect:/mvc/synergy/view-requests";
+        return new ResponseEntity<>("Successfully accepted the grade request.", HttpStatus.OK);
     }
 
     @PostMapping("/reject-request")
-    public String rejectRequest(@RequestParam Long requestId) {
+    public ResponseEntity<Object> rejectRequest(@RequestParam Long requestId) {
         GradeRequest request = gradeRequestRepository.findById(requestId).orElse(null);
         if (request == null) {
             throw new ResponseStatusException(
@@ -138,7 +136,7 @@ public class SynergyApiController {
         request.reject();
         gradeRequestRepository.save(request);
 
-        return "redirect:/mvc/synergy/view-requests";
+        return new ResponseEntity<>("Successfully rejected the grade request.", HttpStatus.OK);
     }
 
     private boolean isNumeric(String str) {

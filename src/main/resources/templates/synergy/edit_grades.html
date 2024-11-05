@@ -87,8 +87,9 @@
                         <td th:each="assignment : ${assignments}">
                             <div class="grade-cell">
                                 <input 
-                                    type="number" 
-                                    step="any" 
+                                    type="number"
+                                    min="0"
+                                    step="any"
                                     class="grade-input"
                                     th:name="'grades[' + ${assignment.id} + '][' + ${student.id} + ']'" 
                                     th:value="${grades[assignment.id][student.id] != null ? grades[assignment.id][student.id] : ''}" 

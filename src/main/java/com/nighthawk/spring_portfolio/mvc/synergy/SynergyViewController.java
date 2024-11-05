@@ -1,11 +1,14 @@
 package com.nighthawk.spring_portfolio.mvc.synergy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.nighthawk.spring_portfolio.mvc.assignments.Assignment;
 import com.nighthawk.spring_portfolio.mvc.assignments.AssignmentJpaRepository;
@@ -33,7 +36,15 @@ public class SynergyViewController {
     private PersonJpaRepository personRepository;
 
     @GetMapping("/gradebook")
-    public String editGrades(@AuthenticationPrincipal Person user, Model model) {
+    public String editGrades(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        Person user = personRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "You must be a logged in user to view this"
+            );
+        }
+
         List<Assignment> assignments = assignmentRepository.findAll();
 
         // students can't edit grades, teachers can edit

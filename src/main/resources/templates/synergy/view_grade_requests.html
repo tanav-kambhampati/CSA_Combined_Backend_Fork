@@ -168,7 +168,7 @@
             </div>
             
             <div class="grade-display">
-                Grade: <span th:text="${request.gradeSuggestion + '/1 (' + #numbers.formatDecimal(request.gradeSuggestion * 100, 1, 1) + '%'}">0.9/1 (90%)</span>
+                Grade: <span th:text="${request.gradeSuggestion + '/1 (' + #numbers.formatDecimal(request.gradeSuggestion * 100, 1, 1) + '%)'}">0.9/1 (90%)</span>
             </div>
         </div>
         
@@ -191,15 +191,8 @@
             </div>
 
             <div class="action-buttons" th:if="${request.status == 0}">
-                <form th:id="'acceptForm' + ${request.id}" th:action="@{/mvc/synergy/accept-request}" method="post" style="display: inline;">
-                    <input type="hidden" name="requestId" th:value="${request.id}" />
-                    <button type="button" th:onclick="'showAcceptModal(' + ${request.id} + ')'" class="btn-accept">Accept Request</button>
-                </form>
-                
-                <form th:id="'rejectForm' + ${request.id}" th:action="@{/mvc/synergy/reject-request}" method="post" style="display: inline;">
-                    <input type="hidden" name="requestId" th:value="${request.id}" />
-                    <button type="button" th:onclick="'showRejectModal(' + ${request.id} + ')'" class="btn-reject">Reject Request</button>
-                </form>
+                <button type="button" th:onclick="'showAcceptModal(' + ${request.id} + ')'" class="btn-accept">Accept Request</button>
+                <button type="button" th:onclick="'showRejectModal(' + ${request.id} + ')'" class="btn-reject">Reject Request</button>
             </div>
         </div>
 
@@ -219,8 +212,8 @@
                 <h3>Confirm Reject</h3>
                 <p>Are you sure you want to reject this grade request? This action cannot be undone.</p>
                 <div class="modal-buttons">
-                    <button onclick="hideModal('rejectModal' + ${request.id})" class="btn-secondary">Cancel</button>
-                    <button th:onclick="'submitForm(\'rejectForm' + ${request.id} + '\')'" class="btn-reject">Confirm Reject</button>
+                    <button onclick="submitForm(true, ${request.id})" class="btn-secondary">Cancel</button>
+                    <button onclick="submitForm(false, ${request.id})" class="btn-reject">Confirm Reject</button>
                 </div>
             </div>
         </div>
@@ -242,7 +235,27 @@
         document.getElementById(modalId).style.display = 'none';
     }
 
-    function submitForm(formId) {
+    function submit(accepted, requestId) {
+        const body = {
+            requestId: requestId
+        };
+
+        var url = 'skibidi';
+        if (accepted) {
+            url = '/api/synergy/accept-request';
+        } else {
+            url = '/api/synergy/reject-request';
+        }
+
+        fetch(url, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(body),
+            cache: "no-cache",
+            headers: new Headers({
+                "content-type": "application/json"
+            })
+        });
         document.getElementById(formId).submit();
     }
 
