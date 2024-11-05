@@ -24,6 +24,8 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
+import com.nighthawk.spring_portfolio.mvc.profile.Profile;
+import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
 
 @Component
 @Configuration // Scans Application for ModelInit Bean, this detects CommandLineRunner
@@ -35,6 +37,8 @@ public class ModelInit {
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired IssueJPARepository issueJPARepository;
     @Autowired QueueJPARepository queueJPARepository;
+    @Autowired ProfileJpaRepository profileJpaRepository;
+
 
     @Bean
     @Transactional
@@ -112,6 +116,11 @@ public class ModelInit {
         for(BathroomQueue queue: queueArray)
         {
             queueJPARepository.save(queue);
+        }
+        
+        Profile profiles[] = Profile.init();
+        for( Profile profile : profiles) {
+            profileJpaRepository.save(profile);
         }
         };
     }
