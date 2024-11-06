@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.List;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * Seed is a POJO, Plain Old Java Object.
@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * --- @Entity annotation is used to mark the class as a persistent Java class.
  */
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Seed {
@@ -43,34 +44,38 @@ public class Seed {
     /** grade is the student's grade for a given assignment or project
      * --- Represented as a double to allow fractional grades.
      */
-    @NotNull
+    @NotEmpty
     private Double grade;
 
+    // Constructor with required fields
     public Seed(Long studentId, String comment, Double grade) {
         this.studentId = studentId;
         this.comment = comment;
         this.grade = grade;
     }
-    
-    /** Static method to initialize an array of Seed objects for testing
-     * @return Seed[], an array of Seed objects
-     */
-    public static Seed[] init() {
-        return new Seed[] {
-            new Seed(1L, "Good work on the project.", 85.5),
-            new Seed(2L, "Needs improvement in certain areas.", 70.0),
-            new Seed(3L, "Excellent performance!", 95.0),
-            new Seed(4L, "Incomplete assignment.", 50.0),
-            new Seed(5L, "Average performance.", 75.0)
-        };
+
+    // Static method to create initial data
+    public static List<Seed> createInitialData() {
+        List<Seed> seeds = new ArrayList<>();
+        seeds.add(new Seed(1L, "Good work on the project.", 85.5));
+        seeds.add(new Seed(2L, "Needs improvement in certain areas.", 70.0));
+        seeds.add(new Seed(3L, "Excellent performance!", 95.0));
+        seeds.add(new Seed(4L, "Incomplete assignment.", 50.0));
+        seeds.add(new Seed(5L, "Average performance.", 75.0));
+        return seeds;
     }
 
-    /** Static method to print Seed objects from an array
+    // Static method to initialize the data
+    public static List<Seed> init() {
+        return createInitialData();
+    }
+
+    /** Main method for testing Seed objects initialization
      * @param args, not used
      */
     public static void main(String[] args) {
         // Obtain Seed from initializer
-        Seed[] seeds = init();
+        List<Seed> seeds = init();
 
         // Iterate using "enhanced for loop"
         for (Seed seed : seeds) {
@@ -78,4 +83,5 @@ public class Seed {
         }
     }
 }
+
 
