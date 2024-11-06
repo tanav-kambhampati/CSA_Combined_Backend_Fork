@@ -1,6 +1,5 @@
 package com.nighthawk.spring_portfolio.mvc.mortevision;
 
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

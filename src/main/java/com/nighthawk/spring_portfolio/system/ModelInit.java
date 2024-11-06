@@ -18,9 +18,8 @@ import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
-import com.nighthawk.spring_portfolio.mvc.comment.commentApiController;
-import com.nighthawk.spring_portfolio.mvc.comment.commentJPA;
-import com.nighthawk.spring_portfolio.mvc.comment.comment;
+import com.nighthawk.spring_portfolio.mvc.comment.CommentJPA;
+import com.nighthawk.spring_portfolio.mvc.comment.Comment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,7 +35,7 @@ public class ModelInit {
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired AssignmentJpaRepository assignmentJpa;
-    @Autowired commentJPA commentJPA;
+    @Autowired CommentJPA CommentJPA;
 
     @Bean
     @Transactional
@@ -51,11 +50,11 @@ public class ModelInit {
                 }
             }
 
-            List<comment> comments = comment.init();
-            for (comment comment : comments) {
-                List<comment> commentFound = commentJPA.findByAssignment(comment.getAssignment()); 
-                if (commentFound.isEmpty()) {
-                    commentJPA.save(new comment(comment.getAssignment(), comment.getAuthor(), comment.getText())); // JPA save
+            List<Comment> Comments = Comment.init();
+            for (Comment Comment : Comments) {
+                List<Comment> CommentFound = CommentJPA.findByAssignment(Comment.getAssignment()); 
+                if (CommentFound.isEmpty()) {
+                    CommentJPA.save(new Comment(Comment.getAssignment(), Comment.getAuthor(), Comment.getText())); // JPA save
                 }
             }
 

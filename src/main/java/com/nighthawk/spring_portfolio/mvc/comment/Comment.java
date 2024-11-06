@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class comment {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -33,7 +33,7 @@ public class comment {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     // Constructor with necessary fields
-    public comment(String text, String author, String assigment) {
+    public Comment(String text, String author, String assigment) {
         this.assignment = assigment;
         this.text = text;
         this.author = author;
@@ -41,17 +41,17 @@ public class comment {
     }
 
     // Static method to create initial data
-    public static List<comment> createInitialData() {
-        List<comment> comments = new ArrayList<>();
+    public static List<Comment> createInitialData() {
+        List<Comment> Comments = new ArrayList<>();
 
-        // Create comments with formatted timestamp
-        comments.add(new comment("Reading Log", "This is a test comment", "Kayden"));
+        // Create Comments with formatted timestamp
+        Comments.add(new Comment("Reading Log", "This is a test Comment", "Kayden"));
 
-        return comments;
+        return Comments;
     }
 
     // Static method to initialize the data
-    public static List<comment> init() {
+    public static List<Comment> init() {
         return createInitialData();
     }
 }
