@@ -3,6 +3,7 @@ package com.nighthawk.spring_portfolio.system;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -40,12 +41,10 @@ public class ModelInit {
     @Autowired QueueJPARepository queueJPARepository;
     @Autowired ProfileJpaRepository profileJpaRepository;
 
-
     @Bean
     @Transactional
     CommandLineRunner run() {  // The run() method will be executed after the application starts
         return args -> {
-            
             // Announcement API is populated with starting announcements
             List<Announcement> announcements = Announcement.init();
             for (Announcement announcement : announcements) {
@@ -55,39 +54,31 @@ public class ModelInit {
                 }
             }
 
-
             // Joke database is populated with starting jokes
             String[] jokesArray = Jokes.init();
             for (String joke : jokesArray) {
                 List<Jokes> jokeFound = jokesRepo.findByJokeIgnoreCase(joke);  // JPA lookup
-                if (jokeFound.size() == 0)
-                    jokesRepo.save(new Jokes(null, joke, 0, 0)); //JPA save
+                if (jokeFound.size() == 0) {
+                    jokesRepo.save(new Jokes(null, joke, 0, 0)); // JPA save
+                }
             }
 
             // Person database is populated with starting people
             Person[] personArray = Person.init();
             for (Person person : personArray) {
-                // Name and email are used to lookup the person
                 List<Person> personFound = personDetailsService.list(person.getName(), person.getEmail());  // lookup
                 if (personFound.size() == 0) { // add if not found
-                    // Roles are added to the database if they do not exist
                     List<PersonRole> updatedRoles = new ArrayList<>();
                     for (PersonRole role : person.getRoles()) {
-                        // Name is used to lookup the role
                         PersonRole roleFound = roleJpaRepository.findByName(role.getName());  // JPA lookup
-                        if (roleFound == null) { // add if not found
-                            // Save the new role to database
+                        if (roleFound == null) {
                             roleJpaRepository.save(role);  // JPA save
                             roleFound = role;
                         }
-                        // Accumulate reference to role from database
                         updatedRoles.add(roleFound);
                     }
-                    // Update person with roles from role databasea
-                    person.setRoles(updatedRoles); // Object reference is updated
-
-                    // Save person to database
-                    personDetailsService.save(person); // JPA save
+                    person.setRoles(updatedRoles);
+                    personDetailsService.save(person);
 
                     // Add a "test note" for each new person
                     String text = "Test " + person.getEmail();
@@ -95,37 +86,36 @@ public class ModelInit {
                     noteRepo.save(n);  // JPA Save                  
                 }
             }
-            
-            // String[] jokesArray = Jokes.init();
-            // for (String joke : jokesArray) {
-            //     List<Jokes> jokeFound = jokesRepo.findByJokeIgnoreCase(joke);  // JPA lookup
-            //     if (jokeFound.size() == 0)
-            //         jokesRepo.save(new Jokes(null, joke, 0, 0)); //JPA save
-            // }
-        Issue[] issueArray = Issue.init();
-        for(Issue issue: issueArray)
-        {
-            List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(),issue.getBathroom());
-            if(issueFound.size() == 0)
-            {
-                issueJPARepository.save(issue);
-            }
-            
-        }
 
-        BathroomQueue[] queueArray = BathroomQueue.init();
-        for (BathroomQueue queue : queueArray) {
-            Optional<BathroomQueue> queueFound = queueJPARepository.findByTeacherName(queue.getTeacherName());
-            if (!queueFound.isPresent()) {
-                queueJPARepository.save(queue);
+            // Issue database initialization
+            Issue[] issueArray = Issue.init();
+            for (Issue issue : issueArray) {
+                List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
+                if (issueFound.size() == 0) {
+                    issueJPARepository.save(issue);
+                }
             }
-        }
-        
-        Profile profiles[] = Profile.init();
-        for( Profile profile : profiles) {
-            profileJpaRepository.save(profile);
-        }
+
+            // BathroomQueue database initialization
+            BathroomQueue[] queueArray = BathroomQueue.init();
+            for (BathroomQueue queue : queueArray) {
+                Optional<BathroomQueue> queueFound = queueJPARepository.findByTeacherName(queue.getTeacherName());
+                if (!queueFound.isPresent()) {
+                    queueJPARepository.save(queue);
+                }
+            }
+
+            // Profile database initialization with a duplicate check
+            Profile[] profiles = Profile.init();
+            for (Profile profile : profiles) {
+                Optional<Profile> existingProfiles = profileJpaRepository.findByEmail(profile.getEmail());
+                if (existingProfiles.isEmpty()) {
+                    profileJpaRepository.save(profile);
+                } else {
+                    // Handle duplicates if necessary, for example:
+                    System.out.println("Duplicate profile found for email: " + profile.getEmail());
+                }
+            }
         };
     }
 }
-

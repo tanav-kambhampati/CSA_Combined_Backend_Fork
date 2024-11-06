@@ -1,5 +1,6 @@
 package com.nighthawk.spring_portfolio.security;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,58 +22,71 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
+import com.nighthawk.spring_portfolio.mvc.profile.Profile;
+import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
 
 @RestController
 @CrossOrigin
 public class JwtApiController {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
-	@Autowired
-	private PersonDetailsService personDetailsService;
+    @Autowired
+    private PersonDetailsService personDetailsService;
 
-	@PostMapping("/authenticate")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody Person authenticationRequest) throws Exception {
-		authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
-		final UserDetails userDetails = personDetailsService
-				.loadUserByUsername(authenticationRequest.getEmail());
+    @Autowired
+    private ProfileJpaRepository profileJpaRepository;
 
-		// Get the roles of the user
-		List<String> roles = userDetails.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.toList());
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody Person authenticationRequest) throws Exception {
+        authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+        final UserDetails userDetails = personDetailsService
+                .loadUserByUsername(authenticationRequest.getEmail());
 
-		// Generate the token with the roles
-		final String token = jwtTokenUtil.generateToken(userDetails, roles);
+        // Get the roles of the user
+        List<String> roles = userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
 
-		if (token == null) {
-			return new ResponseEntity<>("Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+        // Generate the token with the roles
+        final String token = jwtTokenUtil.generateToken(userDetails, roles);
 
-		final ResponseCookie tokenCookie = ResponseCookie.from("jwt_java_spring", token)
-			.httpOnly(true)
-			.secure(true)
-			.path("/")
-			.maxAge(3600)
-			.sameSite("None; Secure")
-			.build();
+        if (token == null) {
+            return new ResponseEntity<>("Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, tokenCookie.toString()).body(authenticationRequest.getEmail() + " was authenticated successfully");
-	}
+        // Update login date
+        profileJpaRepository.findByEmail(authenticationRequest.getEmail()).ifPresent(user -> {
+            user.setDate(LocalDate.now()); // Set current date
+            profileJpaRepository.save(user); // Save updated profile with new date
+        });
 
-	private void authenticate(String username, String password) throws Exception {
-		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
-		} catch (BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
-		} catch (Exception e) {
-			throw new Exception(e);
-		}
-	}
+        final ResponseCookie tokenCookie = ResponseCookie.from("jwt_java_spring", token)
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(3600)
+            .sameSite("None; Secure")
+            .build();
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
+            .body(authenticationRequest.getEmail() + " was authenticated successfully");
+    }
+
+    private void authenticate(String username, String password) throws Exception {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
 }
