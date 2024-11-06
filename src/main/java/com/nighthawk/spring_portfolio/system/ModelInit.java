@@ -3,7 +3,6 @@ package com.nighthawk.spring_portfolio.system;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -18,6 +17,8 @@ import com.nighthawk.spring_portfolio.mvc.bathroom.BathroomQueue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
 import com.nighthawk.spring_portfolio.mvc.bathroom.QueueJPARepository;
+import com.nighthawk.spring_portfolio.mvc.bathroom.Teacher;
+import com.nighthawk.spring_portfolio.mvc.bathroom.TeacherJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
 import com.nighthawk.spring_portfolio.mvc.jokes.JokesJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.note.Note;
@@ -40,6 +41,7 @@ public class ModelInit {
     @Autowired IssueJPARepository issueJPARepository;
     @Autowired QueueJPARepository queueJPARepository;
     @Autowired ProfileJpaRepository profileJpaRepository;
+    @Autowired TeacherJpaRepository teacherJPARepository;
 
     @Bean
     @Transactional
@@ -103,6 +105,14 @@ public class ModelInit {
                 if (!queueFound.isPresent()) {
                     queueJPARepository.save(queue);
                 }
+            }
+
+            // Teacher API is populated with starting announcements
+            List<Teacher> teachers = Teacher.init();
+            for (Teacher teacher : teachers) {
+                List<Teacher> existTeachers = teacherJPARepository.findByFirstnameIgnoreCaseAndLastnameIgnoreCase(teacher.getFirstname(), teacher.getLastname());
+                if(existTeachers.isEmpty())
+                teacherJPARepository.save(teacher); // JPA save
             }
 
             // Profile database initialization with a duplicate check

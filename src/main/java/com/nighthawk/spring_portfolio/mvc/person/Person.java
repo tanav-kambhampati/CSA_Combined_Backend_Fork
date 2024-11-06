@@ -223,6 +223,9 @@ public class Person {
         persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "0000000", "12-09-1906"));
         persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "0000000", "10-21-1959",
                 Arrays.asList("ROLE_ADMIN")));
+        persons.add(createPerson("Tara Sehdave", "tarasehdave@gmail.com", "123tara", "0000000", "12-21-2006",
+                Arrays.asList("ROLE_ADMIN")));
+                
         return persons.toArray(new Person[0]);
     }
 

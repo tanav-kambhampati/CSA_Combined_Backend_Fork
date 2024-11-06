@@ -50,6 +50,7 @@ public class Profile {
         profiles.add(new Profile("Thomas Edison", "toby@gmail.com", "123toby", "2001-01-02"));
         profiles.add(new Profile("Alexander Graham Bell", "lexb@gmail.com", "123lex", "2001-01-18"));
         profiles.add(new Profile("Nikola Tesla", "niko@gmail.com", "123niko", "2001-01-18"));
+        profiles.add(new Profile("Tara Sehdave", "tarasehdave@gmail.com", "123tara", "2001-01-18"));    
         return profiles.toArray(new Profile[0]);
     }
 }
