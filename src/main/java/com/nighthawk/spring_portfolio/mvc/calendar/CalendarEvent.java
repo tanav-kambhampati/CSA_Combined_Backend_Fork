@@ -15,10 +15,13 @@ import lombok.NoArgsConstructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 
 /**
  * CalendarEvent is a POJO, Plain Old Java Object.
@@ -55,6 +58,9 @@ public class CalendarEvent {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> additionalDetails = new HashMap<>();
+
+    @NotNull
+    private LocalDate date;
 
     /** Custom constructor for CalendarEvent when building a new CalendarEvent object from an API call */
     public CalendarEvent(String type, String lecturer, String eventLink) {
