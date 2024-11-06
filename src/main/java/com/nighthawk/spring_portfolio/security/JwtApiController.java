@@ -1,6 +1,7 @@
 package com.nighthawk.spring_portfolio.security;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
-import com.nighthawk.spring_portfolio.mvc.profile.Profile;
 import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
 
 @RestController
@@ -59,10 +59,11 @@ public class JwtApiController {
             return new ResponseEntity<>("Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // Update login date
+        // Update login date and timeIn
         profileJpaRepository.findByEmail(authenticationRequest.getEmail()).ifPresent(user -> {
-            user.setDate(LocalDate.now()); // Set current date
-            profileJpaRepository.save(user); // Save updated profile with new date
+            user.setDate(LocalDate.now());          // Save the current date
+            user.setTimeIn(LocalTime.now());     // Save the current time as timeIn
+            profileJpaRepository.save(user);         // Save updated profile with new date and timeIn
         });
 
         final ResponseCookie tokenCookie = ResponseCookie.from("jwt_java_spring", token)
@@ -76,7 +77,7 @@ public class JwtApiController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
             .body(authenticationRequest.getEmail() + " was authenticated successfully");
-    }
+        }
 
     private void authenticate(String username, String password) throws Exception {
         try {
