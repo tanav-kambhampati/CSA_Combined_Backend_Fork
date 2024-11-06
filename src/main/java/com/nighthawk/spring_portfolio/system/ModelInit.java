@@ -18,6 +18,9 @@ import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.comment.commentApiController;
+import com.nighthawk.spring_portfolio.mvc.comment.commentJPA;
+import com.nighthawk.spring_portfolio.mvc.comment.comment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,33 +36,37 @@ public class ModelInit {
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired AssignmentJpaRepository assignmentJpa;
+    @Autowired commentJPA commentJPA;
 
     @Bean
     @Transactional
-    CommandLineRunner run() {  // The run() method will be executed after the application starts
+    CommandLineRunner run() {  
         return args -> {
             
-            // Announcement API is populated with starting announcements
             List<Announcement> announcements = Announcement.init();
             for (Announcement announcement : announcements) {
-                Announcement announcementFound = announcementJPA.findByAuthor(announcement.getAuthor());  // JPA lookup
+                Announcement announcementFound = announcementJPA.findByAuthor(announcement.getAuthor());  
                 if (announcementFound == null) {
                     announcementJPA.save(new Announcement(announcement.getAuthor(), announcement.getTitle(), announcement.getBody(), announcement.getTags())); // JPA save
                 }
             }
 
+            List<comment> comments = comment.init();
+            for (comment comment : comments) {
+                List<comment> commentFound = commentJPA.findByAssignment(comment.getAssignment()); 
+                if (commentFound.isEmpty()) {
+                    commentJPA.save(new comment(comment.getAssignment(), comment.getAuthor(), comment.getText())); // JPA save
+                }
+            }
 
-            // Assignment API is populated with starting assignments
             Assignment[] assignments = Assignment.init();
             for (Assignment assignment : assignments) {
-                Assignment assignmentFound = assignmentJpa.findByName(assignment.getName());  // JPA lookup
+                Assignment assignmentFound = assignmentJpa.findByName(assignment.getName());  
                 if (assignmentFound == null) {
                     assignmentJpa.save(new Assignment(assignment.getAssignmentId(), assignment.getName(), assignment.getStartDate(), assignment.getDueDate(), assignment.getRubric(), assignment.getPoints(), null)); // JPA save
                 }
             }
 
-
-            // Joke database is populated with starting jokes
             String[] jokesArray = Jokes.init();
             for (String joke : jokesArray) {
                 List<Jokes> jokeFound = jokesRepo.findByJokeIgnoreCase(joke);  // JPA lookup
@@ -67,16 +74,12 @@ public class ModelInit {
                     jokesRepo.save(new Jokes(null, joke, 0, 0)); //JPA save
             }
 
-            // Person database is populated with starting people
             Person[] personArray = Person.init();
             for (Person person : personArray) {
-                // Name and email are used to lookup the person
                 List<Person> personFound = personDetailsService.list(person.getName(), person.getEmail());  // lookup
-                if (personFound.size() == 0) { // add if not found
-                    // Roles are added to the database if they do not exist
+                if (personFound.size() == 0) { 
                     List<PersonRole> updatedRoles = new ArrayList<>();
                     for (PersonRole role : person.getRoles()) {
-                        // Name is used to lookup the role
                         PersonRole roleFound = roleJpaRepository.findByName(role.getName());  // JPA lookup
                         if (roleFound == null) { // add if not found
                             // Save the new role to database
@@ -89,12 +92,10 @@ public class ModelInit {
                     // Update person with roles from role databasea
                     person.setRoles(updatedRoles); // Object reference is updated
 
-                    // Save person to database
                     personDetailsService.save(person); // JPA save
 
-                    // Add a "test note" for each new person
                     String text = "Test " + person.getEmail();
-                    Note n = new Note(text, person);  // constructor uses new person as Many-to-One association
+                    Note n = new Note(text, person);  
                     noteRepo.save(n);  // JPA Save                  
                 }
             }
