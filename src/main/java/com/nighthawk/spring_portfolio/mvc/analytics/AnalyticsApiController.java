@@ -3,9 +3,20 @@ package com.nighthawk.spring_portfolio.mvc.analytics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import java.util.Collections;  // Add this line for Collections
+import org.springframework.web.server.ResponseStatusException;
+
+import com.nighthawk.spring_portfolio.mvc.assignments.Assignment;
+import com.nighthawk.spring_portfolio.mvc.assignments.AssignmentJpaRepository;
+import com.nighthawk.spring_portfolio.mvc.person.Person;
+import com.nighthawk.spring_portfolio.mvc.synergy.Grade;
+import com.nighthawk.spring_portfolio.mvc.synergy.GradeJpaRepository;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
 @RestController
@@ -14,81 +25,82 @@ import java.util.ArrayList;
 public class AnalyticsApiController {
 
     @Autowired
-    private AnalyticsJpaRepository repository;
+    private AssignmentJpaRepository assignmentJpaRepository;
+
+    @Autowired
+    private GradeJpaRepository gradeJpaRepository;
 
     // Get all analytics records
+    // Get all analytics records
     @GetMapping("/")
-    public ResponseEntity<List<Analytics>> getAllAnalytics() {
-        List<Analytics> analyticsList = repository.findAll();
-        if (analyticsList.isEmpty()) {
+    public ResponseEntity<List<Grade>> getAllAnalytics() {
+        List<Grade> gradeList = gradeJpaRepository.findAll();  // Fetch all grade records from database
+        if (gradeList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // No records found
         }
-        return new ResponseEntity<>(analyticsList, HttpStatus.OK); // Return found records
+        return new ResponseEntity<>(gradeList, HttpStatus.OK); // Return found records
     }
+
     
+    // Fetch all assignments from the database
     @GetMapping("/assignments")
-    public List<Analytics> getAssignments() {
-        List<Analytics> uniqueAssignments = new ArrayList<>();
-        for (Analytics a : Analytics.init()) {
-            boolean exists = uniqueAssignments.stream().anyMatch(existing -> existing.getAssignmentId() == a.getAssignmentId());
-            if (!exists) {
-                uniqueAssignments.add(a);
-            }
-        }
-        return uniqueAssignments;
-
+    public List<Assignment> getAssignments() {
+        List<Assignment> assignments = assignmentJpaRepository.findAll(); // Fetch all assignments
+        return assignments;  // Return assignments list
     }
 
+    // Fetch grades by assignment ID
     @GetMapping("/assignment/{assignment_id}/grades")
-    @CrossOrigin(origins = "http://localhost:8080")  // Enable CORS for this method
-    public ResponseEntity<GradeStatistics> getGradesByAssignment(@PathVariable int assignment_id) {
-        List<Analytics> analyticsList = repository.findByAssignmentId(assignment_id);  // Use the correct method
-        if (analyticsList.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);  // No records found
+    public ResponseEntity<GradeStatistics> getGradesByAssignment(@PathVariable Long assignmentId,  @AuthenticationPrincipal UserDetails userDetails) {
+        // Fetch grades associated with the assignment ID from the database
+        Optional<Assignment> assignment = assignmentJpaRepository.findById(assignmentId);
+        if (!assignment.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such assignment exists");
         }
 
-        // Extract grades from the analytics list and store them in an array
-        List<Integer> gradesList = new ArrayList<>();
-        for (Analytics analytics : analyticsList) {
-            gradesList.add(analytics.getGrade());  // Assuming `getGrade()` is the method to retrieve the grade
+        List<Grade> grades = gradeJpaRepository.findByAssignment(assignment.get());
+
+        // Extract grades from the list of Grade objects
+        List<Double> gradeValues = new ArrayList<>();
+        for (Grade grade : grades) {
+            gradeValues.add(grade.getGrade());
         }
 
-        // Convert list to array
-        int[] gradesArray = gradesList.stream().mapToInt(i -> i).toArray();
+        // Convert list to array for statistical calculations
+        double[] gradesArray = gradeValues.stream().mapToDouble(i -> i).toArray();
 
-        // Calculate statistics
+        // Calculate statistical values
         double mean = calculateMean(gradesArray);
         double stdDev = calculateStandardDeviation(gradesArray, mean);
-        double median = calculateMedian(gradesList);
-        double q1 = calculateQuartile(gradesList, 25);
-        double q3 = calculateQuartile(gradesList, 75);
+        double median = calculateMedian(gradeValues);
+        double q1 = calculateQuartile(gradeValues, 25);
+        double q3 = calculateQuartile(gradeValues, 75);
 
-        // Create response object
+        // Create and return GradeStatistics object
         GradeStatistics stats = new GradeStatistics(gradesArray, mean, stdDev, median, q1, q3);
-
-        return new ResponseEntity<>(stats, HttpStatus.OK);  // Return statistics
+        return new ResponseEntity<>(stats, HttpStatus.OK);
     }
 
     // Helper method to calculate mean
-    private double calculateMean(int[] grades) {
+    private double calculateMean(double[] grades) {
         double sum = 0;
-        for (int grade : grades) {
+        for (double grade : grades) {
             sum += grade;
         }
         return sum / grades.length;
     }
 
     // Helper method to calculate standard deviation
-    private double calculateStandardDeviation(int[] grades, double mean) {
+    private double calculateStandardDeviation(double[] grades, double mean) {
         double sum = 0;
-        for (int grade : grades) {
+        for (double grade : grades) {
             sum += Math.pow(grade - mean, 2);
         }
         return Math.sqrt(sum / grades.length);
     }
 
     // Helper method to calculate median
-    private double calculateMedian(List<Integer> gradesList) {
+    private double calculateMedian(List<Double> gradesList) {
         Collections.sort(gradesList);
         int size = gradesList.size();
         if (size % 2 == 0) {
@@ -98,23 +110,26 @@ public class AnalyticsApiController {
         }
     }
 
+
+    // Helper method to calculate quartiles (Q1, Q3)
     // Helper method to calculate quartiles
-    private double calculateQuartile(List<Integer> gradesList, int percentile) {
+    private double calculateQuartile(List<Double> gradesList, int percentile) {
         Collections.sort(gradesList);
         int index = (int) Math.ceil(percentile / 100.0 * gradesList.size()) - 1;
         return gradesList.get(Math.max(index, 0));
     }
 
-    // GradeStatistics class to hold all data
+
+    // GradeStatistics class to hold all statistical data
     public static class GradeStatistics {
-        private int[] grades;
+        private double[] grades;
         private double mean;
         private double standardDeviation;
         private double median;
         private double q1;
         private double q3;
 
-        public GradeStatistics(int[] grades, double mean, double standardDeviation, double median, double q1, double q3) {
+        public GradeStatistics(double[] grades, double mean, double standardDeviation, double median, double q1, double q3) {
             this.grades = grades;
             this.mean = mean;
             this.standardDeviation = standardDeviation;
@@ -123,8 +138,8 @@ public class AnalyticsApiController {
             this.q3 = q3;
         }
 
-        // Getters for JSON response
-        public int[] getGrades() {
+        // Getters for the JSON response
+        public double[] getGrades() {
             return grades;
         }
 
