@@ -94,10 +94,9 @@ public class Profile {
 
     public static Profile[] init() {
         ArrayList<Profile> profiles = new ArrayList<>();
-        profiles.add(new Profile("Thomas Edison", "toby@gmail.com", "123toby", "2001-01-02"));
-        profiles.add(new Profile("Alexander Graham Bell", "lexb@gmail.com", "123lex", "2001-01-18"));
-        profiles.add(new Profile("Nikola Tesla", "niko@gmail.com", "123niko", "2001-01-18"));
-        profiles.add(new Profile("Tara Sehdave", "tarasehdave@gmail.com", "123tara", "2001-01-18"));    
+        profiles.add(new Profile("Thomas Edison", "toby@gmail.com", "123toby", "2001-01-02", LocalTime.of(14, 0), LocalTime.of(15, 30)));
+        profiles.add(new Profile("Alexander Graham Bell", "lexb@gmail.com", "123lex", "2001-01-18", LocalTime.of(9, 15), LocalTime.of(10, 45)));
+        profiles.add(new Profile("Nikola Tesla", "niko@gmail.com", "123niko", "2001-01-18", LocalTime.of(16, 0), LocalTime.of(18, 0)));
         return profiles.toArray(new Profile[0]);
     }
 
