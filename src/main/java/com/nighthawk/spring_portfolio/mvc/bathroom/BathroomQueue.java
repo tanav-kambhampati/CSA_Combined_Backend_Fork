@@ -71,7 +71,7 @@ public class BathroomQueue {
 
     public static BathroomQueue[] init() {
         ArrayList<BathroomQueue> queues = new ArrayList<>();
-        queues.add(new BathroomQueue("Mortensen", "Trevor,Matthew,Aashray,Lilian,Tara"));
+        queues.add(new BathroomQueue("Mortensen", ""));
         queues.add(new BathroomQueue("Campillo","Ian,Hayden,Jon,Kanhay,Tanay"));
         queues.add(new BathroomQueue("Jenkins","Srijan,Bailey,Eric,Joshan"));
         queues.add(new BathroomQueue("Bernabeo","Lincoln,Sasha,Ronit,Aditya"));

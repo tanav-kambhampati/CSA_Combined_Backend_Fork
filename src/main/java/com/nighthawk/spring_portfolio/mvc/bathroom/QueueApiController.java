@@ -62,6 +62,8 @@ public class QueueApiController {
         
         return new ResponseEntity<>("Queue for " + queueDto.getTeacherName() + " not found", HttpStatus.NOT_FOUND);
     }
+    
+    @CrossOrigin(origins = "http://127.0.0.1:4100")
     @PostMapping("/approve")
     public ResponseEntity<Object> approveFrontStudent(@RequestBody QueueDto queueDto) {
         Optional<BathroomQueue> queueEntry = repository.findByTeacherName(queueDto.getTeacherName());
