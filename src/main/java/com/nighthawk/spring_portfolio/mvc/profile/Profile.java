@@ -21,7 +21,7 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
+    @Column(name = "email", unique = true)
     private String email;
     private String name;
     private String password;
