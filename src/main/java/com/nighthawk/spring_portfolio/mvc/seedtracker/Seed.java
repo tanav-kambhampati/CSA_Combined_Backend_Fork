@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 
 /**
@@ -44,8 +46,9 @@ public class Seed {
     /** grade is the student's grade for a given assignment or project
      * --- Represented as a double to allow fractional grades.
      */
-    @NotEmpty
+    @DecimalMin("0.0") // Ensures the grade is not less than 0.0
     private Double grade;
+
 
     // Constructor with required fields
     public Seed(Long studentId, String comment, Double grade) {
