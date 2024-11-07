@@ -1,5 +1,4 @@
 package com.nighthawk.spring_portfolio.mvc.mortevision;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

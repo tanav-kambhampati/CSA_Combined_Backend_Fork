@@ -21,32 +21,33 @@ import lombok.NoArgsConstructor;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long identifier;
+    private Long id;
 
     @Column(unique=false)
-    private Long assignmentNumber;
-
+    private String assignment;
     private String text;
+    private String author;
     private String timestamp;
 
     // Define a formatter for the timestamp
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     // Constructor with necessary fields
-    public Comment(Long assignmentNumber, String text) {
-        this.assignmentNumber = assignmentNumber;
+    public Comment(String text, String author, String assigment) {
+        this.assignment = assigment;
         this.text = text;
+        this.author = author;
         this.timestamp = LocalDateTime.now().format(formatter);
     }
 
     // Static method to create initial data
     public static List<Comment> createInitialData() {
-        List<Comment> comments = new ArrayList<>();
+        List<Comment> Comments = new ArrayList<>();
 
-        // Create comments with formatted timestamp
-        comments.add(new Comment(1L, "This is a test comment"));
+        // Create Comments with formatted timestamp
+        Comments.add(new Comment("Reading Log", "This is a test Comment", "Kayden"));
 
-        return comments;
+        return Comments;
     }
 
     // Static method to initialize the data
