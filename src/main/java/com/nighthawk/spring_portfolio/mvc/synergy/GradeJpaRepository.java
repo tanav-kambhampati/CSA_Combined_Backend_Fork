@@ -16,4 +16,6 @@ public interface GradeJpaRepository extends JpaRepository<Grade, Long> {
     List<Grade> findByStudent(Person student);
 
     List<Grade> findByAssignment(Assignment assignment);
+
+    List<Grade> findByAssignmentId(int assignmentId);
 }

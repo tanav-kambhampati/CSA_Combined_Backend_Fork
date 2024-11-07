@@ -59,7 +59,7 @@ public class SynergyViewController {
             model.addAttribute("assignments", assignments);
             model.addAttribute("assignmentGrades", assignmentGrades);
             return "synergy/view_student_grades";
-        } else {
+        } else if (user.hasRoleWithName("ROLE_TEACHER") || user.hasRoleWithName("ROLE_ADMIN")) {
             List<Person> students = personRepository.findPeopleWithRole("ROLE_STUDENT");
             List<Grade> gradesList = gradeRepository.findAll();
 
@@ -71,6 +71,10 @@ public class SynergyViewController {
 
             return "synergy/edit_grades";
         }
+
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN, "You must a student, teacher, or admin to view grades."
+        );
     }
 
     private Map<Long, Map<Long, Double>> createGradesMap(List<Grade> gradesList, List<Assignment> assignments, List<Person> students) {
