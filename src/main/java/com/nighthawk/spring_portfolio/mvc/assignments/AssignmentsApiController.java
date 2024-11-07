@@ -21,9 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/assignments")
-@CrossOrigin(origins = "http://localhost:8085")
-public class AssignmentsController {
-    private static final Logger logger = LoggerFactory.getLogger(AssignmentsController.class);
+public class AssignmentsApiController {
+    private static final Logger logger = LoggerFactory.getLogger(AssignmentsApiController.class);
 
     @Autowired
     private AssignmentJpaRepository assignmentRepo;
