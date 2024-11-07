@@ -42,44 +42,48 @@ public class AnalyticsApiController {
     }
 
     
-    // Fetch all assignments from the database
     @GetMapping("/assignments")
-    public List<Assignment> getAssignments() {
-        List<Assignment> assignments = assignmentJpaRepository.findAll(); // Fetch all assignments
-        return assignments;  // Return assignments list
+    public List<Integer> getAssignments() {
+        List<Integer> assignmentIds = gradeJpaRepository.findAllAssignmentIds(); // Fetch all unique assignment IDs
+        return assignmentIds;  // Return list of assignment IDs
     }
+
+
+
 
     // Fetch grades by assignment ID
     @GetMapping("/assignment/{assignment_id}/grades")
-    public ResponseEntity<GradeStatistics> getGradesByAssignment(@PathVariable Long assignmentId,  @AuthenticationPrincipal UserDetails userDetails) {
-        // Fetch grades associated with the assignment ID from the database
-        Optional<Assignment> assignment = assignmentJpaRepository.findById(assignmentId);
-        if (!assignment.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such assignment exists");
-        }
-
-        List<Grade> grades = gradeJpaRepository.findByAssignment(assignment.get());
-
-        // Extract grades from the list of Grade objects
-        List<Double> gradeValues = new ArrayList<>();
-        for (Grade grade : grades) {
-            gradeValues.add(grade.getGrade());
-        }
-
-        // Convert list to array for statistical calculations
-        double[] gradesArray = gradeValues.stream().mapToDouble(i -> i).toArray();
-
-        // Calculate statistical values
-        double mean = calculateMean(gradesArray);
-        double stdDev = calculateStandardDeviation(gradesArray, mean);
-        double median = calculateMedian(gradeValues);
-        double q1 = calculateQuartile(gradeValues, 25);
-        double q3 = calculateQuartile(gradeValues, 75);
-
-        // Create and return GradeStatistics object
-        GradeStatistics stats = new GradeStatistics(gradesArray, mean, stdDev, median, q1, q3);
-        return new ResponseEntity<>(stats, HttpStatus.OK);
+public ResponseEntity<GradeStatistics> getGradesByAssignment(@PathVariable("assignment_id") Long assignmentId,  
+                                                             @AuthenticationPrincipal UserDetails userDetails) {
+    // Fetch grades associated with the assignment ID from the database
+    Optional<Assignment> assignment = assignmentJpaRepository.findById(assignmentId);
+    if (!assignment.isPresent()) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such assignment exists");
     }
+
+    List<Grade> grades = gradeJpaRepository.findByAssignment(assignment.get());
+
+    // Extract grades from the list of Grade objects
+    List<Double> gradeValues = new ArrayList<>();
+    for (Grade grade : grades) {
+        gradeValues.add(grade.getGrade());
+    }
+
+    // Convert list to array for statistical calculations
+    double[] gradesArray = gradeValues.stream().mapToDouble(i -> i).toArray();
+
+    // Calculate statistical values
+    double mean = calculateMean(gradesArray);
+    double stdDev = calculateStandardDeviation(gradesArray, mean);
+    double median = calculateMedian(gradeValues);
+    double q1 = calculateQuartile(gradeValues, 25);
+    double q3 = calculateQuartile(gradeValues, 75);
+
+    // Create and return GradeStatistics object
+    GradeStatistics stats = new GradeStatistics(gradesArray, mean, stdDev, median, q1, q3);
+    return new ResponseEntity<>(stats, HttpStatus.OK);
+}
+
 
     // Helper method to calculate mean
     private double calculateMean(double[] grades) {
