@@ -23,11 +23,13 @@ public class BathroomQueue {
     @Column
     private String teacherName;
     private String peopleQueue;
+    private int away;
 
     // Custom constructor
     public BathroomQueue(String teacherName, String peopleQueue) {
         this.teacherName = teacherName;
         this.peopleQueue = peopleQueue;
+        this.away = 0;
     }
     
     public void addStudent(String studentName) {
@@ -54,16 +56,22 @@ public class BathroomQueue {
         return null;
     }
 
-    public void approveFrontStudent() {
+    public void approveStudent() {
         if (this.peopleQueue != null && !this.peopleQueue.isEmpty()) {
-            String[] students = this.peopleQueue.split(",");
-            if (students.length > 1) {
-                this.peopleQueue = String.join(",", Arrays.copyOfRange(students, 1, students.length));
+            if (this.away == 0) {
+                // Student is approved to go away
+                this.away = 1;
             } else {
-                this.peopleQueue = "";
+                // Student has returned; remove from queue
+                String[] students = this.peopleQueue.split(",");
+                if (students.length > 1) {
+                    this.peopleQueue = String.join(",", Arrays.copyOfRange(students, 1, students.length));
+                } else {
+                    this.peopleQueue = "";
+                }
+                this.away = 0;
             }
-        } 
-        else {
+        } else {
             throw new IllegalStateException("Queue is empty");
         }
     }

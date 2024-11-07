@@ -62,16 +62,16 @@ public class QueueApiController {
         
         return new ResponseEntity<>("Queue for " + queueDto.getTeacherName() + " not found", HttpStatus.NOT_FOUND);
     }
-    
+
     @CrossOrigin(origins = "http://127.0.0.1:4100")
     @PostMapping("/approve")
-    public ResponseEntity<Object> approveFrontStudent(@RequestBody QueueDto queueDto) {
+    public ResponseEntity<Object> approveStudent(@RequestBody QueueDto queueDto) {
         Optional<BathroomQueue> queueEntry = repository.findByTeacherName(queueDto.getTeacherName());
         if (queueEntry.isPresent()) {
             BathroomQueue bathroomQueue = queueEntry.get();
             String frontStudent = bathroomQueue.getFrontStudent();
             if (frontStudent != null && frontStudent.equals(queueDto.getStudentName())) {
-                bathroomQueue.approveFrontStudent();
+                bathroomQueue.approveStudent();
                 repository.save(bathroomQueue);
                 return new ResponseEntity<>("Approved " + queueDto.getStudentName(), HttpStatus.OK);
             } 
