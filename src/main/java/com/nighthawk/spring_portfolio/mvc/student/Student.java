@@ -1,11 +1,10 @@
 package com.nighthawk.spring_portfolio.mvc.student;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Arrays;
-
+import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +37,9 @@ public class Student {
     private ArrayList<String> completed;
     private int trimester;
     private int period;
+    private String project;
 
-    public Student(String name, String username, int tableNumber, String course, ArrayList<String> tasks, ArrayList<String> completed, int trimester, int period) {
+    public Student(String name, String username, int tableNumber, String course, ArrayList<String> tasks, ArrayList<String> completed, int trimester, int period, String project) {
         this.name = name;
         this.username = username;
         this.tableNumber = tableNumber;
@@ -48,6 +48,7 @@ public class Student {
         this.completed = completed;
         this.trimester = trimester;
         this.period = period;
+        this.project = project;
     }
 
     @Service
@@ -62,10 +63,10 @@ public class Student {
                 throw new RuntimeException("studentJPARepository is not initialized!");
             }
             List<Student> students = new ArrayList<>();
-            students.add(new Student("Akhil Singamneni", "Akhil353", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
-            students.add(new Student("Srinivas Nampalli", "srininampalli", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
-            students.add(new Student("Aditya Samavedam", "adityasamavedam", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
-            students.add(new Student("Nitin Balaji", "nitinsandiego", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            students.add(new Student("Akhil Singamneni", "Akhil353", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
+            students.add(new Student("Srinivas Nampalli", "SrinivasNampalli", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
+            students.add(new Student("Aditya Samavedam", "adityasamavedam", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
+            students.add(new Student("Nitin Balaji", "nitinsandiego", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
 
             for (Student student : students) {
             Optional<Student> existingStudent = studentJPARepository.findByUsername(student.getUsername());

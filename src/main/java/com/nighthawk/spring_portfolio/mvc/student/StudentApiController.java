@@ -29,14 +29,19 @@ public class StudentApiController {
         return ResponseEntity.ok(studentJPARepository.findAll());
     }
 
-    @GetMapping("/find")
+    @Getter
+    public static class CriteriaDto {
+        private String name;
+        private String course;
+        private int trimester;
+        private int period; 
+    }
+
+    @PostMapping("/find")
     public ResponseEntity<Student> getStudentByCriteria(
-            @RequestParam String name, 
-            @RequestParam String course, 
-            @RequestParam int trimester, 
-            @RequestParam int period) {
+            @RequestBody CriteriaDto criteriaDto) {
         
-        List<Student> students = studentJPARepository.findByNameCourseTrimesterPeriod(name, course, trimester, period);
+        List<Student> students = studentJPARepository.findByNameCourseTrimesterPeriod(criteriaDto.getName(), criteriaDto.getCourse(), criteriaDto.getTrimester(), criteriaDto.getPeriod());
         
         if (students.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -59,7 +64,7 @@ public class StudentApiController {
         }
     }
 
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     public ResponseEntity<String> deleteStudentByUsername(@RequestParam String username) {
         Optional<Student> student = studentJPARepository.findByUsername(username);
         
@@ -71,14 +76,19 @@ public class StudentApiController {
         }
     }
 
-    @GetMapping("/find-team")
+    @Getter
+    public static class TeamDto {
+        private String course;
+        private int trimester;
+        private int period; 
+        private int table;
+    }
+
+    @PostMapping("/find-team")
     public ResponseEntity<Iterable<Student>> getTeamByCriteria(
-            @RequestParam String course, 
-            @RequestParam int trimester, 
-            @RequestParam int period,
-            @RequestParam int table) {
+            @RequestBody TeamDto teamDto) {
         
-        List<Student> students = studentJPARepository.findTeam(course, trimester, period, table);
+        List<Student> students = studentJPARepository.findTeam(teamDto.getCourse(), teamDto.getTrimester(), teamDto.getPeriod(), teamDto.getTable());
         
         if (students.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -97,8 +107,8 @@ public class StudentApiController {
 
     @PostMapping("/update-tasks")
     public ResponseEntity<Student> updateTasks(@RequestBody StudentDto studentDto) {
-        String username = (String) studentDto.getUsername();
-        ArrayList<String> tasks = (ArrayList<String>) studentDto.getTasks();
+        String username =  studentDto.getUsername();
+        ArrayList<String> tasks = studentDto.getTasks();
 
         Optional<Student> student = studentJPARepository.findByUsername(username);
 
@@ -111,56 +121,55 @@ public class StudentApiController {
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 }
+@Getter
+public static class TasksDto {
+    private String username;
+    private String task;
+}
 
-    @Getter
-    public static class TasksDto {
-        private String username;
-        private String task;
-    }
-
-    @PostMapping("/complete-task")
-    public ResponseEntity<String> completeTask(
-        @RequestBody TasksDto tasksDto)
-        {
-
+@PostMapping("/complete-task")
+public ResponseEntity<String> completeTask(@RequestBody TasksDto tasksDto) {
     Optional<Student> optionalStudent = studentJPARepository.findByUsername(tasksDto.getUsername());
     String task = tasksDto.getTask();
 
     if (optionalStudent.isPresent()) {
         Student student = optionalStudent.get();
-        
+        if (student.getCompleted() == null) {
+            student.setCompleted(new ArrayList<>()); 
+        }
+
         if (student.getTasks().contains(task)) {
             student.getTasks().remove(task);
             student.getCompleted().add(task + " - Completed");
-            studentJPARepository.save(student); 
+            studentJPARepository.save(student);
             return ResponseEntity.ok("Task marked as completed.");
         } else {
             return ResponseEntity.badRequest().body("Task not found in the student's task list.");
         }
     } else {
         return ResponseEntity.status(404).body("Student not found.");
-        }
+    }
+}
+
+    @Getter 
+    public static class PeriodDto {
+        private String course;
+        private int trimester;
+        private int period;
     }
 
-        @Getter 
-        public static class PeriodDto {
-            private String course;
-            private int trimester;
-            private int period;
-        }
-
-        @GetMapping("/find-period")
-        public ResponseEntity<Iterable<Student>> getPeriodByTrimester(
-            @RequestBody PeriodDto periodDto) {
+    @PostMapping("/find-period")
+    public ResponseEntity<Iterable<Student>> getPeriodByTrimester(
+        @RequestBody PeriodDto periodDto) {
             
-            List<Student> students = studentJPARepository.findPeriod(periodDto.getCourse(), periodDto.getTrimester(), periodDto.getPeriod());
+        List<Student> students = studentJPARepository.findPeriod(periodDto.getCourse(), periodDto.getTrimester(), periodDto.getPeriod());
 
-            if (students.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            } else {
-                return ResponseEntity.ok(students);
-            }
+        if (students.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(students);
         }
+    }
 
 
 }
