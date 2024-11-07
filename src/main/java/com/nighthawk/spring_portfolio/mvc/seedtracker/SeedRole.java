@@ -18,6 +18,17 @@ public class SeedRole {
         roles.add(new PersonRole(roleName));
     }
 
+    public boolean updateRole(String oldRoleName, String newRoleName) {
+        for (PersonRole role : roles) {
+            if (role.getRoleName().equalsIgnoreCase(oldRoleName)) {
+                roles.remove(role);
+                roles.add(new PersonRole(newRoleName));
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Set<PersonRole> getRoles() {
         return roles;
     }
@@ -31,5 +42,9 @@ public class SeedRole {
         // Adding a new role
         seedRole.addRole("teacher");
         System.out.println("Roles after adding 'teacher': " + seedRole.getRoles());
+
+        // Updating a role
+        seedRole.updateRole("student", "mentor");
+        System.out.println("Roles after updating 'student' to 'mentor': " + seedRole.getRoles());
     }
 }
