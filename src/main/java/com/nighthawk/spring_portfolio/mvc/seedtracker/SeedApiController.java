@@ -49,4 +49,9 @@ public class SeedApiController {
     public void deleteSeed(@PathVariable Long id) {
         seedJpaRepository.deleteById(id);
     }
+
+    @GetMapping("/")
+    public List<Seed> getAllSeeds() {
+        return seedJpaRepository.findAll();
+    }
 }
