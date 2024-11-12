@@ -24,11 +24,9 @@ public class Seed {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true)
     private Long studentId;
 
-    // New field for student's name
     @NotEmpty
     private String name;
 
@@ -38,14 +36,12 @@ public class Seed {
     @DecimalMin("0.0")
     private Double grade;
 
-    // Constructor with required fields (excluding studentId and id, as they're auto-generated)
     public Seed(String name, String comment, Double grade) {
         this.name = name;
         this.comment = comment;
         this.grade = grade;
     }
 
-    // Static method to create initial data
     public static List<Seed> createInitialData() {
         List<Seed> seeds = new ArrayList<>();
         seeds.add(new Seed("John Doe", "Good work on the project.", 85.5));
