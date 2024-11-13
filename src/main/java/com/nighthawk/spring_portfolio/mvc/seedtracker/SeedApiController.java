@@ -31,14 +31,21 @@ public class SeedApiController {
     // Update a seed entry by id
     @PutMapping("/{id}")
     public Seed updateSeed(@PathVariable Long id, @RequestBody Seed updatedSeed) {
+        System.out.println("Received request to update seed with id: " + id);
+        System.out.println("Updated grade: " + updatedSeed.getGrade());
+
         return seedJpaRepository.findById(id)
                 .map(seed -> {
-                    seed.setName(updatedSeed.getName());
-                    seed.setComment(updatedSeed.getComment());
-                    seed.setGrade(updatedSeed.getGrade());
+                    if (updatedSeed.getGrade() != null) {
+                        seed.setGrade(updatedSeed.getGrade());
+                    }
+                    System.out.println("Saving updated seed: " + seed);
                     return seedJpaRepository.save(seed);
                 })
-                .orElseThrow(() -> new RuntimeException("Seed not found with id " + id));
+                .orElseThrow(() -> {
+                    System.out.println("Seed not found with id " + id);
+                    return new RuntimeException("Seed not found with id " + id);
+                });
     }
 
     // Delete a seed entry by id
