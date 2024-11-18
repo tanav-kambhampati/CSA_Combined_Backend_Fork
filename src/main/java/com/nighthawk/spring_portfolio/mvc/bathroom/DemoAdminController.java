@@ -35,7 +35,7 @@ public class DemoAdminController {
         // Get the current year and week
         LocalDate currentDate = LocalDate.now();
         int currentYear = currentDate.getYear();
-        int currentWeek = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
+        int currentWeek = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear()) - 2;
 
         // Initialize maps to store statistics for each user
         //Map<Long, Duration> totalDurationMap = new HashMap<>();

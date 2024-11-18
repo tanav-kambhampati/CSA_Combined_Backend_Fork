@@ -45,7 +45,19 @@ public class DemoAppConfig {
             demoUserRepository.save(new DemoUser(24L, 345678L, "Leo", LocalDate.of(2024,11,8), LocalTime.of(10, 22), LocalTime.of(10, 29)));
             demoUserRepository.save(new DemoUser(25L, 456789L, "Boss", LocalDate.of(2024,11,8), LocalTime.of(13, 3), LocalTime.of(13, 11)));
             demoUserRepository.save(new DemoUser(26L, 123456L, "Alice", LocalDate.of(2024,11,8), LocalTime.of(14, 6), LocalTime.of(14, 20)));
-        
+
+            demoUserRepository.save(new DemoUser(1000L, 123456L, "Alice", LocalDate.of(2024,11,11), LocalTime.of(9, 0), LocalTime.of(9, 7)));
+            demoUserRepository.save(new DemoUser(1001L, 234567L, "Cinder", LocalDate.of(2024,11,11), LocalTime.of(10, 0), LocalTime.of(10, 16)));
+            demoUserRepository.save(new DemoUser(1003L, 345678L, "Leo", LocalDate.of(2024,11,11), LocalTime.of(10, 20), LocalTime.of(10, 29)));
+            demoUserRepository.save(new DemoUser(1004L, 123456L, "Alice", LocalDate.of(2024,11,11), LocalTime.of(11, 0), LocalTime.of(11, 9)));
+            demoUserRepository.save(new DemoUser(1005L, 345678L, "Leo", LocalDate.of(2024,11,11), LocalTime.of(23, 5), LocalTime.of(23, 13)));
+
+ 
+            demoUserRepository.save(new DemoUser(1006L, 123456L, "Alice", LocalDate.of(2024,11,12), LocalTime.of(9, 10), LocalTime.of(9, 15)));
+            demoUserRepository.save(new DemoUser(1007L, 234567L, "Cinder", LocalDate.of(2024,11,12), LocalTime.of(10, 3), LocalTime.of(10, 19)));
+            demoUserRepository.save(new DemoUser(1008L, 345678L, "Leo", LocalDate.of(2024,11,12), LocalTime.of(10, 21), LocalTime.of(10, 28)));
+            demoUserRepository.save(new DemoUser(1009L, 123456L, "Alice", LocalDate.of(2024,11,12), LocalTime.of(11, 0), LocalTime.of(11, 9)));
+            demoUserRepository.save(new DemoUser(1010L, 345678L, "Leo", LocalDate.of(2024,11,12), LocalTime.of(23, 5), LocalTime.of(23, 13)));
         };
     }
 }
