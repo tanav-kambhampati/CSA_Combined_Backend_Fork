@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/synergy/reject-request").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/synergy/create-grade-request").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/mvc/synergy/gradebook").hasAnyRole("TEACHER", "ADMIN", "STUDENT")
-                        .requestMatchers(HttpMethod.GET, "/mvc/synergy/view-requests").hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/mvc/synergy/view-grade-requests").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/mvc/synergy/create-grade-request").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
                 )
                 .cors(Customizer.withDefaults())

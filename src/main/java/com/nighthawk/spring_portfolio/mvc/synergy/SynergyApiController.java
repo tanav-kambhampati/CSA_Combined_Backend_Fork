@@ -61,7 +61,7 @@ public class SynergyApiController {
     }
     
     @PostMapping("/create-grade-request")
-    public ResponseEntity<Object> createGradeRequest(@AuthenticationPrincipal UserDetails userDetails,
+    public String createGradeRequest(@AuthenticationPrincipal UserDetails userDetails,
                                      @RequestParam Map<String, String> form) {
         String email = userDetails.getUsername();
         Person grader = personRepository.findByEmail(email);
@@ -85,7 +85,7 @@ public class SynergyApiController {
         GradeRequest gradeRequest = new GradeRequest(assignment, student, grader, explanation, gradeSuggestion);
         gradeRequestRepository.save(gradeRequest);
 
-        return new ResponseEntity<>("Successfully created grade request.", HttpStatus.CREATED);
+        return "redirect:/mvc/synergy/create-grade-request";
     }
 
     @PostMapping("/accept-request")

@@ -201,8 +201,8 @@
                 <h3>Confirm Accept</h3>
                 <p>Are you sure you want to accept this grade request? This will update the student's grade to <span th:text="${request.gradeSuggestion + '/1 (' + #numbers.formatDecimal(request.gradeSuggestion * 100, 1, 1) + '%)'}">0.9/1 (90%)</span></p>
                 <div class="modal-buttons">
-                    <button onclick="hideModal('acceptModal' + ${request.id})" class="btn-secondary">Cancel</button>
-                    <button th:onclick="'submitForm(\'acceptForm' + ${request.id} + '\')'" class="btn-accept">Confirm Accept</button>
+                    <button th:onclick="'hideModal(\'acceptModal' + ${request.id} + '\')'" class="btn-secondary">Cancel</button>
+                    <button th:onclick="'submit(true, \'acceptForm' + ${request.id} + '\')'" class="btn-accept">Confirm Accept</button>
                 </div>
             </div>
         </div>
@@ -212,8 +212,8 @@
                 <h3>Confirm Reject</h3>
                 <p>Are you sure you want to reject this grade request? This action cannot be undone.</p>
                 <div class="modal-buttons">
-                    <button onclick="submitForm(true, ${request.id})" class="btn-secondary">Cancel</button>
-                    <button onclick="submitForm(false, ${request.id})" class="btn-reject">Confirm Reject</button>
+                    <button th:onclick="'hideModal(\'rejectModal' + ${request.id} + '\')'" class="btn-secondary">Cancel</button>
+                    <button th:onclick="'submit(false, \'rejectForm' + ${request.id} + '\')'" class="btn-reject">Confirm Reject</button>
                 </div>
             </div>
         </div>
@@ -235,28 +235,28 @@
         document.getElementById(modalId).style.display = 'none';
     }
 
-    function submit(accepted, requestId) {
-        const body = {
-            requestId: requestId
-        };
+    function submit(accepted, formId) {
+        // note for future, this bascially just removes the acceptForm and rejectForm part out to get the id itself
+        const requestId = formId.replace(/(acceptForm|rejectForm)/, '');
 
-        var url = 'skibidi';
+        const formData = new FormData();
+        formData.append("requestId", requestId);
+
+        var url = '/api/synergy/reject-request';
         if (accepted) {
             url = '/api/synergy/accept-request';
-        } else {
-            url = '/api/synergy/reject-request';
         }
 
         fetch(url, {
             method: "POST",
-            credentials: "include",
-            body: JSON.stringify(body),
-            cache: "no-cache",
-            headers: new Headers({
-                "content-type": "application/json"
-            })
-        });
-        document.getElementById(formId).submit();
+            body: formData,
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error('Error submitting form');
+            }
+        }).catch(error => console.error('Fetch error:', error));
     }
 
     window.onclick = function(event) {
