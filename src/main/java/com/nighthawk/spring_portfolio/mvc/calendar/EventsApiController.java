@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class EventsApiController {
 
     @Autowired
-    private CalendarEventRepository eventService;
+    private CalendarEventRepository eventRepository;
 
     @GetMapping("/calendar")
     public String calendar() {
@@ -23,11 +23,11 @@ public class EventsApiController {
 
     @PostMapping("/add")
     public CalendarEvent addEvent(@RequestBody CalendarEvent event) {
-        return eventService.save(event);
+        return eventRepository.save(event);
     }
 
     @GetMapping
     public List<CalendarEvent> getAllEvents() {
-        return eventService.findAllByOrderByDateAsc();
+        return eventRepository.findAllByOrderByDateAsc();
     }
 }
