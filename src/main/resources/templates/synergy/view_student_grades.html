@@ -44,7 +44,7 @@
             <tbody>
                 <tr th:each="assignment : ${assignments}">
                     <td th:text="${assignment.name}">Assignment Name</td>
-                    <td th:text="${assignmentGrades[assignment.id]?.score ?: 'N/A'}">Grade</td>
+                    <td th:text="${assignmentGrades[assignment.id]?.grade ?: 'N/A'}">Grade</td>
                 </tr>
             </tbody>
         </table>
