@@ -50,7 +50,20 @@
 <th:block layout:fragment="body" th:remove="tag">
     <div class="container">
         <h1>Assignment Tracker</h1>
-        <button class="btn" onclick="addAssignment()">Add Assignment</button>
+        <button class="btn" onclick="showAddAssignmentModal()">Add Assignment</button>
+        
+        <div id="addAssignmentModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+            <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
+                <h2>Add New Assignment</h2>
+                <label>Name: <input type="text" id="assignmentName"></label><br>
+                <label>Type: <input type="text" id="assignmentType"></label><br>
+                <label>Description: <input type="text" id="assignmentDescription"></label><br>
+                <label>Points: <input type="number" id="assignmentPoints"></label><br>
+                <label>Due Date: <input type="text" id="assignmentDueDate" placeholder="MM/DD/YYYY"></label><br>
+                <button onclick="createAssignment()">Submit</button>
+                <button onclick="closeAddAssignmentModal()">Cancel</button>
+            </div>
+        </div>
         
         <table id="assignmentTable">
             <thead>
@@ -58,6 +71,7 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Description</th>
+                    <th>Points</th>
                     <th>Due Date</th>
                     <th>Action</th>
                 </tr>
@@ -70,60 +84,62 @@
 </body>
 
 <th:block layout:fragment="script" th:remove="tag">
-<script src="/static/vanta/three.r119.min.js" th:src="@{/vanta/three.r119.min.js}"></script>
-<script src="/static/vanta/vanta.birds.min.js" th:src="@{/vanta/vanta.birds.min.js}"></script>
 <script>
-    let assignments = [];
+    document.addEventListener('DOMContentLoaded', fetchAssignments);
 
-    function addAssignment() {
-        const name = prompt("Enter assignment name:");
-        if (!name) return;
-        
-        const type = prompt("Enter assignment type:");
-        if (!type) return;
-        
-        const description = prompt("Enter assignment description:");
-        if (!description) return;
-        
-        const dueDate = prompt("Enter due date:");
-        if (!dueDate) return;
-        
-        const assignment = {
-            id: Date.now(),
-            name: name,
-            type: type,
-            description: description,
-            dueDate: dueDate
-        };
-        
-        assignments.push(assignment);
-        updateTable();
+    function fetchAssignments() {
+        fetch('/api/assignments/debug')
+            .then(response => response.json())
+            .then(assignments => {
+                const tableBody = document.getElementById('assignmentList');
+                tableBody.innerHTML = ''; 
+
+                assignments.forEach(assignment => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${assignment.name}</td>
+                        <td>${assignment.type}</td>
+                        <td>${assignment.description || ''}</td>
+                        <td>${assignment.points}</td>
+                        <td>${assignment.dueDate}</td>
+                        <td>
+                            <button class="btn btn-delete" onclick="deleteAssignment('${assignment.id}')">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            });
+    }
+
+    function showAddAssignmentModal() {
+        document.getElementById('addAssignmentModal').style.display = 'block';
+    }
+
+    function closeAddAssignmentModal() {
+        document.getElementById('addAssignmentModal').style.display = 'none';
+    }
+
+    function createAssignment() {
+        const name = document.getElementById('assignmentName').value;
+        const type = document.getElementById('assignmentType').value;
+        const description = document.getElementById('assignmentDescription').value;
+        const points = document.getElementById('assignmentPoints').value;
+        const dueDate = document.getElementById('assignmentDueDate').value;
+
+        const params = new URLSearchParams({
+            name, type, description, points, dueDate
+        });
+
+        fetch('/api/assignments/create', {
+            method: 'POST',
+            body: params
+        }).then(fetchAssignments).finally(closeAddAssignmentModal);
     }
 
     function deleteAssignment(id) {
-        assignments = assignments.filter(assignment => assignment.id !== id);
-        updateTable();
-    }
-
-    function updateTable() {
-        const tableBody = document.getElementById('assignmentList');
-        tableBody.innerHTML = '';
-        
-        assignments.forEach(assignment => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${assignment.name}</td>
-                <td>${assignment.type}</td>
-                <td>${assignment.description}</td>
-                <td>${assignment.dueDate}</td>
-                <td>
-                    <button class="btn btn-delete" onclick="deleteAssignment(${assignment.id})">
-                        Delete
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
+        fetch(`/api/assignments/delete/${id}`, {
+            method: 'POST'
+        }).then(fetchAssignments);
     }
 </script>
 </th:block>
