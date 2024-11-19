@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,20 +36,30 @@ public class TasksApiController {
         return new ResponseEntity<>(task, HttpStatus.CREATED);
     }
 
-    // UPDATE a task
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Tasks> updateTask(@PathVariable Long id, @RequestBody Tasks updatedTask) {
-        Optional<Tasks> optional = repository.findById(id);
-        if (optional.isPresent()) {
-            Tasks task = optional.get();
-            if (updatedTask.getTaskName() != null) task.setTaskName(updatedTask.getTaskName());
-            if (updatedTask.getTime() != null) task.setTime(updatedTask.getTime());
-            if (updatedTask.getStatus() != null) task.setStatus(updatedTask.getStatus());
-            if (updatedTask.getDescription() != null) task.setDescription(updatedTask.getDescription());
-            repository.save(task);
-            return new ResponseEntity<>(task, HttpStatus.OK);
+    @GetMapping("/getTasks/{username}")
+    public ResponseEntity<List<Tasks>> getTasksByUsername(@PathVariable String username) {
+        List<Tasks> tasks = repository.findByUsernameOrderByDueDateAsc(username);
+        if (!tasks.isEmpty()) {
+            return new ResponseEntity<>(tasks, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Tasks> updateTask(@PathVariable Long id, @RequestBody Tasks updatedTask) {
+        Optional<Tasks> optionalTask = repository.findById(id);
+        if (optionalTask.isPresent()) {
+            Tasks task = optionalTask.get();
+
+            // Update task details if fields are provided
+            if (updatedTask.getDueDate() != null) task.setDueDate(updatedTask.getDueDate());
+            if (updatedTask.getStatus() != null) task.setStatus(updatedTask.getStatus());
+            if (updatedTask.getDescription() != null) task.setDescription(updatedTask.getDescription());
+
+            Tasks savedTask = repository.save(task); // Save the updated task
+            return new ResponseEntity<>(savedTask, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Task not found
     }
 
     // DELETE a task
