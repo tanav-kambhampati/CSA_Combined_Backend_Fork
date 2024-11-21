@@ -8,18 +8,12 @@
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
         <style>
-                .sort-icon {
-                    cursor: pointer;
-                    margin-left: 5px;
-                    font-size: 0.8em;
-                    color: #555;
-                }
-                .sort-icon.asc::after {
-                    content: "↑"; /* Up arrow for ascending */
-                }
-                .sort-icon.desc::after {
-                    content: "↓"; /* Down arrow for descending */
-                }
+            .sort-icon.asc::after {
+                content: "↑"; /* Up arrow for ascending */
+            }
+            .sort-icon.desc::after {
+                content: "↓"; /* Down arrow for descending */
+            }
         </style>
         
     </head>
@@ -30,31 +24,25 @@
                 <tr>
                     <th>
                         User ID
-                        <span data-column="0" class="sort-icon asc"></span> <!-- Default ascending -->
+                        <span id="sortUserId" class="sort-icon asc"></span>
                     </th>
                     <th>
                         User Name
-                        <span data-column="1" class="sort-icon asc"></span> <!-- Default ascending -->
                     </th>
                     <th>
                         Login Date
-                        <span data-column="2" class="sort-icon asc"></span> <!-- Default ascending -->
                     </th>
                     <th>
                         Day of Week
-                        <span data-column="3" class="sort-icon asc"></span> <!-- Default ascending -->
                     </th>
                     <th>
                         Login Time
-                        <span data-column="4" class="sort-icon asc"></span> <!-- Default ascending -->
                     </th>
                     <th>
                         Logout Time
-                        <span data-column="5" class="sort-icon asc"></span> <!-- Default ascending -->
                     </th>
                     <th>
                         Duration (minutes)
-                        <span data-column="6" class="sort-icon asc"></span> <!-- Default ascending -->
                     </th>
                 </tr>
             </thead>
@@ -75,35 +63,30 @@
         
         <script>
             $(document).ready(function () {
-                $('.sort-icon').on('click', function () {
-                    var column = $(this).data('column'); // Get the column index
-                    var table = $('#userTable'); // Get the table
-                    var rows = table.find('tbody > tr').get(); // Get all rows
-            
-                    // Check the current state and toggle accordingly
+                $('#sortUserId').on('click', function () {
+                    var table = $('#userTable');
+                    var rows = table.find('tbody > tr').get();
                     var isAsc = $(this).hasClass('asc');
-                    $(this).removeClass('asc desc'); // Clear classes from all icons
-                    if (isAsc) {
-                        $(this).addClass('desc'); // Toggle to descending
-                    } else {
-                        $(this).addClass('asc'); // Toggle back to ascending
-                    }
-            
-                    // Perform sorting
+    
+                    // Toggle sort direction
+                    $(this).toggleClass('asc', !isAsc).toggleClass('desc', isAsc);
+    
+                    // Sort rows based on User ID column
                     rows.sort(function (a, b) {
-                        var cellA = $(a).children('td').eq(column).text();
-                        var cellB = $(b).children('td').eq(column).text();
-            
-                        // Numeric or text sorting based on content
+                        var cellA = $(a).children('td').eq(0).text();
+                        var cellB = $(b).children('td').eq(0).text();
+    
+                        // Numeric sort
                         if ($.isNumeric(cellA) && $.isNumeric(cellB)) {
-                            return isAsc ? cellB - cellA : cellA - cellB; // Numeric comparison
-                        } else {
-                            return isAsc
-                                ? cellB.localeCompare(cellA) // Descending order
-                                : cellA.localeCompare(cellB); // Ascending order
+                            return isAsc ? cellA - cellB : cellB - cellA;
                         }
+    
+                        // Text sort (fallback)
+                        return isAsc
+                            ? cellA.localeCompare(cellB)
+                            : cellB.localeCompare(cellA);
                     });
-            
+    
                     // Append sorted rows back to the table
                     $.each(rows, function (index, row) {
                         table.children('tbody').append(row);
