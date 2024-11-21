@@ -60,6 +60,7 @@ public class PersonViewController {
     public String personUpdateSave(@Valid Person person, BindingResult bindingResult) {
         // Validation of Decorated PersonForm attributes
         if (bindingResult.hasErrors()) {
+            logging.warn("errors "+bindingResult.toString());
             return "person/update";
         }
         repository.save(person);
