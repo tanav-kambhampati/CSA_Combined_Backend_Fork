@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.json.simple.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -152,7 +154,16 @@ public class PersonApiController {
         Person person = new Person(personDto.getEmail(), personDto.getPassword(), personDto.getName(), dob, "USER", true, personDetailsService.findRole("USER"));
 
         personDetailsService.save(person);
-        return new ResponseEntity<>(personDto.getEmail() + " is created successfully", HttpStatus.CREATED);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        JSONObject responseObject = new JSONObject();
+        responseObject.put("response",personDto.getEmail() + " is created successfully");
+
+        String reponseString = responseObject.toString();
+
+        return new ResponseEntity<>(reponseString,responseHeaders, HttpStatus.OK);
     }
 
 
