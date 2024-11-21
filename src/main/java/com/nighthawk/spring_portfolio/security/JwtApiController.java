@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
-import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
+// import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
 
 @RestController
 @CrossOrigin
@@ -38,8 +38,8 @@ public class JwtApiController {
     @Autowired
     private PersonDetailsService personDetailsService;
 
-    @Autowired
-    private ProfileJpaRepository profileJpaRepository;
+    // @Autowired
+    // private ProfileJpaRepository profileJpaRepository;
 
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody Person authenticationRequest) throws Exception {
@@ -59,12 +59,12 @@ public class JwtApiController {
             return new ResponseEntity<>("Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // Update login date and timeIn
-        profileJpaRepository.findByEmail(authenticationRequest.getEmail()).ifPresent(user -> {
-            user.setDate(LocalDate.now());          // Save the current date
-            user.setTimeIn(LocalTime.now());     // Save the current time as timeIn
-            profileJpaRepository.save(user);         // Save updated profile with new date and timeIn
-        });
+        // // Update login date and timeIn
+        // profileJpaRepository.findByEmail(authenticationRequest.getEmail()).ifPresent(user -> {
+        //     user.setDate(LocalDate.now());          // Save the current date
+        //     user.setTimeIn(LocalTime.now());     // Save the current time as timeIn
+        //     profileJpaRepository.save(user);         // Save updated profile with new date and timeIn
+        // });
 
         final ResponseCookie tokenCookie = ResponseCookie.from("jwt_java_spring", token)
             .httpOnly(true)

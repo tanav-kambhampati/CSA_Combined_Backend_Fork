@@ -29,8 +29,8 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
-import com.nighthawk.spring_portfolio.mvc.profile.Profile;
-import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
+// import com.nighthawk.spring_portfolio.mvc.profile.Profile;
+// import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
 
 @Component
 @Configuration // Scans Application for ModelInit Bean, this detects CommandLineRunner
@@ -42,7 +42,7 @@ public class ModelInit {
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired IssueJPARepository issueJPARepository;
     @Autowired QueueJPARepository queueJPARepository;
-    @Autowired ProfileJpaRepository profileJpaRepository;
+    // @Autowired ProfileJpaRepository profileJpaRepository;
     @Autowired TeacherJpaRepository teacherJPARepository;
     @Autowired AdminJPARepository adminJPARepository;
 
@@ -129,16 +129,16 @@ public class ModelInit {
             }
 
             // Profile database initialization with a duplicate check
-            Profile[] profiles = Profile.init();
-            for (Profile profile : profiles) {
-                Optional<Profile> existingProfiles = profileJpaRepository.findByEmail(profile.getEmail());
-                if (existingProfiles.isEmpty()) {
-                    profileJpaRepository.save(profile);
-                } else {
-                    // Handle duplicates if necessary, for example:
-                    System.out.println("Duplicate profile found for email: " + profile.getEmail());
-                }
-            }
+            // Profile[] profiles = Profile.init();
+            // for (Profile profile : profiles) {
+            //     Optional<Profile> existingProfiles = profileJpaRepository.findByEmail(profile.getEmail());
+            //     if (existingProfiles.isEmpty()) {
+            //         profileJpaRepository.save(profile);
+            //     } else {
+            //         // Handle duplicates if necessary, for example:
+            //         System.out.println("Duplicate profile found for email: " + profile.getEmail());
+            //     }
+            // }
         };
     }
 }
