@@ -17,6 +17,8 @@ import com.nighthawk.spring_portfolio.mvc.bathroom.BathroomQueue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
 import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
 import com.nighthawk.spring_portfolio.mvc.bathroom.QueueJPARepository;
+import com.nighthawk.spring_portfolio.mvc.bathroom.AdminJPARepository;
+import com.nighthawk.spring_portfolio.mvc.bathroom.Admin;
 import com.nighthawk.spring_portfolio.mvc.bathroom.Teacher;
 import com.nighthawk.spring_portfolio.mvc.bathroom.TeacherJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
@@ -42,6 +44,7 @@ public class ModelInit {
     @Autowired QueueJPARepository queueJPARepository;
     @Autowired ProfileJpaRepository profileJpaRepository;
     @Autowired TeacherJpaRepository teacherJPARepository;
+    @Autowired AdminJPARepository adminJPARepository;
 
     @Bean
     @Transactional
@@ -95,6 +98,16 @@ public class ModelInit {
                 List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
                 if (issueFound.size() == 0) {
                     issueJPARepository.save(issue);
+                }
+            }
+
+            Admin[] adminArray = Admin.init();
+            for (Admin admin: adminArray)
+            {
+                Optional<Admin> existAdmin = adminJPARepository.findByStudentEmail(admin.getStudentEmail());
+                if (!existAdmin.isPresent())
+                {
+                    adminJPARepository.save(admin);
                 }
             }
 
