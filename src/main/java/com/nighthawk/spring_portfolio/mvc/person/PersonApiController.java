@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,9 @@ public class PersonApiController {
      */
     @Autowired
     private PersonJpaRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Service for managing Person entities.
@@ -155,7 +159,6 @@ public class PersonApiController {
 
 
 
-
 @PostMapping(value = "/person/update", produces = MediaType.APPLICATION_JSON_VALUE)
 public ResponseEntity<Object> updatePerson(Authentication authentication, @RequestBody final PersonDto personDto) {
     // Get the email of the current user from the authentication context
@@ -172,8 +175,10 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
             existingPerson.setEmail(personDto.getEmail());
         }
         if (personDto.getPassword() != null) {
-            existingPerson.setPassword(personDto.getPassword()); // Ensure password encoding
+            existingPerson.setPassword(passwordEncoder.encode(personDto.getPassword()));
+
         }
+    
         if (personDto.getName() != null) {
             existingPerson.setName(personDto.getName());
         }
