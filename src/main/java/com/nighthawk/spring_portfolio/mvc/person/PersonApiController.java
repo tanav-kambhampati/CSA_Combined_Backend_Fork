@@ -7,11 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.json.simple.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -141,8 +139,8 @@ public class PersonApiController {
      * @param personDto
      * @return A ResponseEntity containing a success message if the Person entity is created, or a BAD_REQUEST status if not created.
      */
-   @PostMapping("/person/create")
-public ResponseEntity<Object> postPerson(@RequestBody PersonDto personDto) {
+    @PostMapping("/person/create")
+    public ResponseEntity<Object> postPerson(@RequestBody PersonDto personDto) {
         // Validate dob input
         Date dob;
         try {
@@ -150,25 +148,12 @@ public ResponseEntity<Object> postPerson(@RequestBody PersonDto personDto) {
         } catch (Exception e) {
             return new ResponseEntity<>(personDto.getDob() + " error; try MM-dd-yyyy", HttpStatus.BAD_REQUEST);
         }
-
-        // Check if email already exists
-        if (personDetailsService.existsByEmail(personDto.getEmail())) {
-            return new ResponseEntity<>("Email already in use", HttpStatus.BAD_REQUEST);
-        }
-
         // A person object WITHOUT ID will create a new record in the database
         Person person = new Person(personDto.getEmail(), personDto.getPassword(), personDto.getName(), dob, "USER", true, personDetailsService.findRole("USER"));
+
         personDetailsService.save(person);
-        
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-        JSONObject responseObject = new JSONObject();
-        responseObject.put("response",personDto.getEmail() + " is created successfully");
-        String reponseString = responseObject.toString();
-
-        return new ResponseEntity<>(reponseString,responseHeaders, HttpStatus.OK);
-}
+        return new ResponseEntity<>(personDto.getEmail() + " is created successfully", HttpStatus.CREATED);
+    }
 
 
 
