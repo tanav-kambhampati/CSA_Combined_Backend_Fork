@@ -18,16 +18,18 @@ public class CalendarEvent {
     private LocalDate date;
     private String title;
     private String description;
+    private String type; // Added new column for event type
 
     // Default constructor
     public CalendarEvent() {
     }
 
     // Constructor with fields
-    public CalendarEvent(LocalDate date, String title, String description) {
+    public CalendarEvent(LocalDate date, String title, String description, String type) {
         this.date = date;
         this.title = title;
         this.description = description;
+        this.type = type;
     }
 
     // Getters and setters
@@ -57,5 +59,13 @@ public class CalendarEvent {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
