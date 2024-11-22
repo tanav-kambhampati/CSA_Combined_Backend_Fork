@@ -32,6 +32,31 @@ public class Admin {
         this.averageDuration = averageDuration;
     }
 
+    public void addTimeIn(String timeIn)
+    {
+        if (this.timeIn == null || this.timeIn.isEmpty())
+        {
+            this.timeIn = timeIn;
+        }
+        else 
+        {
+            this.timeIn += "," + timeIn;
+        }
+
+    }
+
+    public void addAverageDuration(double averageDuration)
+    {
+        if (this.averageDuration == 0.0)
+        {
+            this.averageDuration = averageDuration;
+        }
+        else 
+        {
+            this.averageDuration += averageDuration;
+        }
+    }
+
     public static Admin[] init()
     {
         ArrayList<Admin> users = new ArrayList<>();

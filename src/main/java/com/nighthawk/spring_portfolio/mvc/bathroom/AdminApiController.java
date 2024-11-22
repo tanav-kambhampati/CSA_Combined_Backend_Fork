@@ -32,8 +32,8 @@ public class AdminApiController {
     public ResponseEntity<Object> timeInOut(@RequestBody AdminDto adminDto) {
         Optional<Admin> student = repository.findByStudentEmail(adminDto.getStudentEmail());
         if (student.isPresent()) {
-            student.get().setTimeIn(adminDto.getTimeIn());
-            student.get().setAverageDuration(adminDto.getAverageDuration());
+            student.get().addTimeIn(adminDto.getTimeIn());
+            student.get().addAverageDuration(adminDto.getAverageDuration());
             repository.save(student.get());
             return new ResponseEntity<>(student.get(), HttpStatus.OK);
         }
