@@ -123,7 +123,7 @@ public class Person {
 
     /** 1st telescoping method to create a Person object with USER role */
     public static Person createPerson(String name, String email, String password, Boolean kasmServerNeeded, String dob) {
-        return createPerson(name, email, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER"));
+        return createPerson(name, email, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER", "ROlE_STUDENT"));
     }
 
     /** 2nd telescoping method to create a Person object with parameterized roles */
@@ -154,12 +154,12 @@ public class Person {
     /** Static method to initialize an array list of Person objects */
     public static Person[] init() {
         ArrayList<Person> persons = new ArrayList<>();
-        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "pfp1", true, "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER")));
+        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "pfp1", true, "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER", "ROLE_TEACHER")));
         persons.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "pfp2", true, "01-01-1847", Arrays.asList("ROLE_USER")));
         persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "pfp3", true, "01-01-1850", Arrays.asList("ROLE_USER")));
         persons.add(createPerson("Madam Curie", "madam@gmail.com", "123madam", "pfp4", true, "01-01-1860", Arrays.asList("ROLE_USER")));
         persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "pfp5", true, "12-09-1906", Arrays.asList("ROLE_USER")));
-        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "pfp6", true, "10-21-1959", Arrays.asList("ROLE_ADMIN")));
+        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "pfp6", true, "10-21-1959", Arrays.asList("ROLE_ADMIN", "ROLE_TEACHER")));
         return persons.toArray(new Person[0]);
     }
 
