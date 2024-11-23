@@ -18,7 +18,8 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/mvc/person")
 public class PersonViewController {
-    // Autowired enables Control to connect HTML and POJO Object to database easily for CRUD
+    // Autowired enables Control to connect HTML and POJO Object to database easily
+    // for CRUD
     @Autowired
     private PersonDetailsService repository;
 
@@ -29,18 +30,25 @@ public class PersonViewController {
         return "person/read";
     }
 
-    /*  The HTML template Forms and PersonForm attributes are bound
-        @return - template for person form
-        @param - Person Class
-    */
+    /*
+     * The HTML template Forms and PersonForm attributes are bound
+     * 
+     * @return - template for person form
+     * 
+     * @param - Person Class
+     */
     @GetMapping("/create")
     public String personAdd(Person person) {
         return "person/create";
     }
 
-    /* Gathers the attributes filled out in the form, tests for and retrieves validation error
-    @param - Person object with @Valid
-    @param - BindingResult object
+    /*
+     * Gathers the attributes filled out in the form, tests for and retrieves
+     * validation error
+     * 
+     * @param - Person object with @Valid
+     * 
+     * @param - BindingResult object
      */
     @PostMapping("/create")
     public String personSave(@Valid Person person, BindingResult bindingResult) {

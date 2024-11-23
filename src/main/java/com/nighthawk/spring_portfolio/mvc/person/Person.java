@@ -39,9 +39,12 @@ import lombok.NonNull;
 
 /**
  * Person is a POJO, Plain Old Java Object.
- * --- @Data is Lombok annotation for @Getter @Setter @ToString @EqualsAndHashCode @RequiredArgsConstructor
- * --- @AllArgsConstructor is Lombok annotation for a constructor with all arguments
- * --- @NoArgsConstructor is Lombok annotation for a constructor with no arguments
+ * --- @Data is Lombox annotation
+ * for @Getter @Setter @ToString @EqualsAndHashCode @RequiredArgsConstructor
+ * --- @AllArgsConstructor is Lombox annotation for a constructor with all
+ * arguments
+ * --- @NoArgsConstructor is Lombox annotation for a constructor with no
+ * arguments
  * --- @Entity annotation is used to mark the class as a persistent Java class.
  */
 @Data
@@ -51,7 +54,15 @@ import lombok.NonNull;
 @Convert(attributeName = "person", converter = JsonType.class)
 public class Person {
 
-    /** Automatic unique identifier for Person record */
+    /** Automatic unique identifier for Person record 
+     * --- Id annotation is used to specify the identifier property of the entity.
+     * ----GeneratedValue annotation is used to specify the primary key generation
+     * strategy to use.
+     * ----- The strategy is to have the persistence provider pick an appropriate
+     * strategy for the particular database.
+     * ----- GenerationType.AUTO is the default generation type and it will pick the
+     * strategy based on the used database.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -64,12 +75,32 @@ public class Person {
     )
     private Collection<PersonSections> sections = new ArrayList<>();
 
-
-    /** Many to Many relationship with PersonRole */
+    /**
+     * Many to Many relationship with PersonRole
+     * --- @ManyToMany annotation is used to specify a many-to-many relationship
+     * between the entities.
+     * --- FetchType.EAGER is used to specify that data must be eagerly fetched,
+     * meaning that it must be loaded immediately.
+     * --- Collection is a root interface in the Java Collection Framework, in this
+     * case it is used to store PersonRole objects.
+     * --- ArrayList is a resizable array implementation of the List interface,
+     * allowing all elements to be accessed using an integer index.
+     * --- PersonRole is a POJO, Plain Old Java Object.
+     */
     @ManyToMany(fetch = EAGER)
     private Collection<PersonRole> roles = new ArrayList<>();
 
-    /** Email, password, roles are key attributes to login and authentication */
+    /**
+     * email, password, roles are key attributes to login and authentication
+     * --- @NotEmpty annotation is used to validate that the annotated field is not
+     * null or empty, meaning it has to have a value.
+     * --- @Size annotation is used to validate that the annotated field is between
+     * the specified boundaries, in this case greater than 5.
+     * --- @Email annotation is used to validate that the annotated field is a valid
+     * email address.
+     * --- @Column annotation is used to specify the mapped column for a persistent
+     * property or field, in this case unique and email.
+     */
     @NotEmpty
     @Size(min = 5)
     @Column(unique = true)
@@ -79,7 +110,15 @@ public class Person {
     @NotEmpty
     private String password;
 
-    /** name, dob are attributes to describe the person */
+    /**
+     * name, dob are attributes to describe the person
+     * --- @NonNull annotation is used to generate a constructor with
+     * AllArgsConstructor Lombox annotation.
+     * --- @Size annotation is used to validate that the annotated field is between
+     * the specified boundaries, in this case between 2 and 30 characters.
+     * --- @DateTimeFormat annotation is used to declare a field as a date, in this
+     * case the pattern is specified as yyyy-MM-dd.
+     */
     @NonNull
     @Size(min = 2, max = 30, message = "Name (2 to 30 chars)")
     private String name;
@@ -93,15 +132,29 @@ public class Person {
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean kasmServerNeeded = false;
-
-    /** stats is used to store JSON for daily stats */
+    
+    /**
+     * stats is used to store JSON for daily stats
+     * --- @JdbcTypeCode annotation is used to specify the JDBC type code for a
+     * column, in this case json.
+     * --- @Column annotation is used to specify the mapped column for a persistent
+     * property or field, in this case columnDefinition is specified as jsonb.
+     * * * Example of JSON data:
+     * "stats": {
+     * "2022-11-13": {
+     * "calories": 2200,
+     * "steps": 8000
+     * }
+     * }
+     */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Map<String, Object>> stats = new HashMap<>();
 
-    
-
-    /** Custom constructor for Person when building a new Person object from an API call */
+    /**
+     * Custom constructor for Person when building a new Person object from an API
+     * call
+     */
     public Person(String email, String password, String name, Date dob, String pfp, Boolean kasmServerNeeded, PersonRole role) {
         this.email = email;
         this.password = password;
@@ -112,7 +165,9 @@ public class Person {
         this.roles.add(role);
     }
 
-    /** Custom getter to return age from dob attribute */
+    /**
+     * Custom getter to return age from dob attribute
+     */
     public int getAge() {
         if (this.dob != null) {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -121,12 +176,25 @@ public class Person {
         return -1;
     }
 
-    /** 1st telescoping method to create a Person object with USER role */
+    /**
+     * 1st telescoping method to create a Person object with USER role
+     * 
+     * @param name
+     * @param email
+     * @param password
+     * @param dob
+     * @return Person
+     */
     public static Person createPerson(String name, String email, String password, Boolean kasmServerNeeded, String dob) {
+        // By default, Spring Security expects roles to have a "ROLE_" prefix.
         return createPerson(name, email, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER", "ROlE_STUDENT"));
     }
 
-    /** 2nd telescoping method to create a Person object with parameterized roles */
+    /**
+     * 2nd telescoping method to create a Person object with parameterized roles
+     * 
+     * @param roles
+     */
     public static Person createPerson(String name, String email, String password, String pfp, Boolean kasmServerNeeded, String dob, List<String> roleNames) {
         Person person = new Person();
         person.setName(name);
@@ -150,8 +218,12 @@ public class Person {
 
         return person;
     }
-
-    /** Static method to initialize an array list of Person objects */
+    
+    /**
+     * Static method to initialize an array list of Person objects
+     * 
+     * @return Person[], an array of Person objects
+     */
     public static Person[] init() {
         ArrayList<Person> persons = new ArrayList<>();
         persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "pfp1", true, "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER", "ROLE_TEACHER")));
@@ -163,7 +235,11 @@ public class Person {
         return persons.toArray(new Person[0]);
     }
 
-    /** Static method to print Person objects from an array */
+    /**
+     * Static method to print Person objects from an array
+     * 
+     * @param args, not used
+     */
     public static void main(String[] args) {
         // obtain Person from initializer
         Person[] persons = init();
