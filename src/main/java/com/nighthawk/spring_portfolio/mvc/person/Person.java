@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,8 +54,7 @@ import lombok.NonNull;
 @Convert(attributeName = "person", converter = JsonType.class)
 public class Person {
 
-    /**
-     * automatic unique identifier for Person record
+    /** Automatic unique identifier for Person record 
      * --- Id annotation is used to specify the identifier property of the entity.
      * ----GeneratedValue annotation is used to specify the primary key generation
      * strategy to use.
@@ -65,6 +66,14 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @ManyToMany(fetch = EAGER)
+    @JoinTable(
+        name = "person_person_sections",  // unique name to avoid conflicts
+        joinColumns = @JoinColumn(name = "person_id"),
+        inverseJoinColumns = @JoinColumn(name = "section_id")
+    )
+    private Collection<PersonSections> sections = new ArrayList<>();
 
     /**
      * Many to Many relationship with PersonRole
@@ -117,8 +126,15 @@ public class Person {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
 
+    /** Profile picture (pfp) in base64 */
+    @Column(length = 255, nullable = true)
+    private String pfp;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean kasmServerNeeded = false;
+    
     /**
-     * stats is used to store JSON for daily stat$
+     * stats is used to store JSON for daily stats
      * --- @JdbcTypeCode annotation is used to specify the JDBC type code for a
      * column, in this case json.
      * --- @Column annotation is used to specify the mapped column for a persistent
@@ -139,11 +155,13 @@ public class Person {
      * Custom constructor for Person when building a new Person object from an API
      * call
      */
-    public Person(String email, String password, String name, Date dob, PersonRole role) {
+    public Person(String email, String password, String name, Date dob, String pfp, Boolean kasmServerNeeded, PersonRole role) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.dob = dob;
+        this.kasmServerNeeded = kasmServerNeeded;
+        this.pfp = pfp;
         this.roles.add(role);
     }
 
@@ -167,9 +185,9 @@ public class Person {
      * @param dob
      * @return Person
      */
-    public static Person createPerson(String name, String email, String password, String dob) {
+    public static Person createPerson(String name, String email, String password, Boolean kasmServerNeeded, String dob) {
         // By default, Spring Security expects roles to have a "ROLE_" prefix.
-        return createPerson(name, email, password, dob, Arrays.asList("ROLE_USER"));
+        return createPerson(name, email, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER", "ROlE_STUDENT"));
     }
 
     /**
@@ -177,11 +195,13 @@ public class Person {
      * 
      * @param roles
      */
-    public static Person createPerson(String name, String email, String password, String dob, List<String> roleNames) {
+    public static Person createPerson(String name, String email, String password, String pfp, Boolean kasmServerNeeded, String dob, List<String> roleNames) {
         Person person = new Person();
         person.setName(name);
         person.setEmail(email);
         person.setPassword(password);
+        person.setKasmServerNeeded(kasmServerNeeded);
+        person.setPfp(pfp);
         try {
             Date date = new SimpleDateFormat("MM-dd-yyyy").parse(dob);
             person.setDob(date);
@@ -198,7 +218,7 @@ public class Person {
 
         return person;
     }
-
+    
     /**
      * Static method to initialize an array list of Person objects
      * 
@@ -206,14 +226,12 @@ public class Person {
      */
     public static Person[] init() {
         ArrayList<Person> persons = new ArrayList<>();
-        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "01-01-1840",
-                Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER")));
-        persons.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "01-01-1847"));
-        persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "01-01-1850"));
-        persons.add(createPerson("Madam Currie", "madam@gmail.com", "123madam", "01-01-1860"));
-        persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "12-09-1906"));
-        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "10-21-1959",
-                Arrays.asList("ROLE_ADMIN")));
+        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "pfp1", true, "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER", "ROLE_TEACHER")));
+        persons.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "pfp2", true, "01-01-1847", Arrays.asList("ROLE_USER")));
+        persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "pfp3", true, "01-01-1850", Arrays.asList("ROLE_USER")));
+        persons.add(createPerson("Madam Curie", "madam@gmail.com", "123madam", "pfp4", true, "01-01-1860", Arrays.asList("ROLE_USER")));
+        persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "pfp5", true, "12-09-1906", Arrays.asList("ROLE_USER")));
+        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "pfp6", true, "10-21-1959", Arrays.asList("ROLE_ADMIN", "ROLE_TEACHER")));
         return persons.toArray(new Person[0]);
     }
 
@@ -224,12 +242,11 @@ public class Person {
      */
     public static void main(String[] args) {
         // obtain Person from initializer
-        Person persons[] = init();
+        Person[] persons = init();
 
         // iterate using "enhanced for loop"
         for (Person person : persons) {
             System.out.println(person); // print object
         }
     }
-
 }
