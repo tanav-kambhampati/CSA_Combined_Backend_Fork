@@ -16,6 +16,7 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
+import com.nighthawk.spring_portfolio.Slack.SlackMessageRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
 import com.nighthawk.spring_portfolio.mvc.comment.CommentJPA;
