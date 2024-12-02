@@ -74,9 +74,17 @@ public class PersonViewController {
     public String personUpdateSave(@Valid Person person, BindingResult bindingResult) {
         // Validation of Decorated PersonForm attributes
         if (bindingResult.hasErrors()) {
-            return "person/update/";
+            return "redirect:/person/update/";
         }
-        repository.save(person);
+
+        Person personToUpdate = repository.getByEmail(person.getEmail());
+
+        personToUpdate.setPassword(person.getPassword());
+        personToUpdate.setName(person.getName());
+        personToUpdate.setDob(person.getDob());
+        personToUpdate.setKasmServerNeeded(person.getKasmServerNeeded());
+        repository.save(personToUpdate);
+
         repository.addRoleToPerson(person.getEmail(), "ROLE_USER");
 
         // Redirect to next step
