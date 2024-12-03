@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 // JPA is an object-relational mapping (ORM) to persistent data, originally relational databases (SQL). Today JPA implementations has been extended for NoSQL.
-public interface StudentJPARepository extends JpaRepository<StudentInformation, Long> {
-    Optional<StudentInformation> findByUsername(String username);
+public interface StudentInfoJPARepository extends JpaRepository<StudentInfo, Long> {
+    Optional<StudentInfo> findByUsername(String username);
     @Query(
         value = "SELECT * FROM students WHERE course = :course AND trimester = :trimester AND period = :period AND table_number = :table",
         nativeQuery = true
     )
-    List<StudentInformation> findTeam(
+    List<StudentInfo> findTeam(
         @Param("course") String course, 
         @Param("trimester") int trimester, 
         @Param("period") int period,
@@ -25,7 +25,7 @@ public interface StudentJPARepository extends JpaRepository<StudentInformation, 
         value = "SELECT * FROM students WHERE course = :course AND trimester = :trimester AND period = :period",
         nativeQuery = true
     )
-    List<StudentInformation> findPeriod(
+    List<StudentInfo> findPeriod(
         @Param("course") String course, 
         @Param("trimester") int trimester, 
         @Param("period") int period
@@ -37,7 +37,7 @@ public interface StudentJPARepository extends JpaRepository<StudentInformation, 
         value = "SELECT * FROM students WHERE username = :username AND course = :course AND trimester = :trimester AND period = :period",
         nativeQuery = true
     )
-    List<StudentInformation> findByUsernameCourseTrimesterPeriod(
+    List<StudentInfo> findByUsernameCourseTrimesterPeriod(
         @Param("username") String username, 
         @Param("course") String course, 
         @Param("trimester") int trimester, 
