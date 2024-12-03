@@ -80,8 +80,8 @@ inspiration from https://www.youtube.com/watch?v=QKcVjdLEX_s
                 response.json().then(function(data) {
                     // loop through JSON and build HTML output
                     const table = document.createElement("table");
-                    tableHead = document.createElement("thead");
-                    tableBody = document.createElement("tbody");
+                    const tableHead = document.createElement("thead");
+                    const tableBody = document.createElement("tbody");
 
                     const thr = document.createElement("tr");
                     const th1 = document.createElement("th");
@@ -90,11 +90,13 @@ inspiration from https://www.youtube.com/watch?v=QKcVjdLEX_s
                     th2.innerText="Email";
                     const th3 = document.createElement("th");
                     th3.innerText="Details";
+
                     thr.append(th1);
                     thr.append(th2);
                     thr.append(th3);
 
                     tableHead.append(thr);
+                    
                     table.append(tableHead);
 
                     for (let i = 0; i < data.length; i++) {
@@ -115,7 +117,9 @@ inspiration from https://www.youtube.com/watch?v=QKcVjdLEX_s
 
                         tableBody.append(tbr);
                     }
+
                     table.append(tableBody);
+
                     resultContainer.append(table);
                 })
             })
