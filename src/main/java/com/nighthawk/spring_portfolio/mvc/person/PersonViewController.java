@@ -1,5 +1,6 @@
 package com.nighthawk.spring_portfolio.mvc.person;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,14 @@ public class PersonViewController {
     public String person(Model model) {
         List<Person> list = repository.listAll();
         model.addAttribute("list", list);
+        return "person/read";
+    }
+
+    @GetMapping("/read/{id}")
+    public String person(@PathVariable("id") int id, Model model) {
+        Person person = repository.get(id);
+        List<Person> list = Arrays.asList(person);
+        model.addAttribute("list",list);
         return "person/read";
     }
 
