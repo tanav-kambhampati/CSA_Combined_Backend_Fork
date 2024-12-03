@@ -1,5 +1,8 @@
 package com.nighthawk.spring_portfolio.mvc.synergy;
 
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +14,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nighthawk.spring_portfolio.mvc.assignments.Assignment;
 import com.nighthawk.spring_portfolio.mvc.assignments.AssignmentJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonJpaRepository;
 
+import jakarta.validation.Valid;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/api/synergy")
 public class SynergyApiController {
     @Autowired
@@ -61,8 +73,7 @@ public class SynergyApiController {
     }
     
     @PostMapping("/create-grade-request")
-    public String createGradeRequest(@AuthenticationPrincipal UserDetails userDetails,
-                                     @RequestParam Map<String, String> form) {
+    public String createGradeRequest(@AuthenticationPrincipal UserDetails userDetails, @RequestBody GradeRequestDTO requestData) {
         String email = userDetails.getUsername();
         Person grader = personRepository.findByEmail(email);
         if (grader == null) {
@@ -71,26 +82,24 @@ public class SynergyApiController {
             );
         }
 
-        Long studentId = Long.valueOf(form.get("studentId"));
-        Long assignmentId = Long.valueOf(form.get("assignmentId"));
-        Double gradeSuggestion = Double.valueOf(form.get("gradeSuggestion"));
-        String explanation = form.get("explanation");
-    
-        Person student = personRepository.findById(studentId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid student ID: " + studentId));
-        Assignment assignment = assignmentRepository.findById(assignmentId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid assignment ID: " + assignmentId));
+        Person student = personRepository.findById(requestData.studentId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid student ID: " + requestData.studentId));
+        Assignment assignment = assignmentRepository.findById(requestData.assignmentId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid assignment ID: " + requestData.assignmentId));
         
-        // Create and save the GradeRequest
-        GradeRequest gradeRequest = new GradeRequest(assignment, student, grader, explanation, gradeSuggestion);
+        GradeRequest gradeRequest = new GradeRequest(assignment, student, grader, requestData.explanation, requestData.gradeSuggestion);
         gradeRequestRepository.save(gradeRequest);
 
-        return "redirect:/mvc/synergy/create-grade-request";
+        return "{'message': 'Successfully created the grade request'}";
     }
 
     @PostMapping("/accept-request")
-    public ResponseEntity<Object> acceptRequest(@RequestParam Long requestId) {
-        GradeRequest request = gradeRequestRepository.findById(requestId).orElse(null);
+    public String acceptRequest(@Valid @RequestBody RequestIdDTO body) {
+        if (body == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body");
+        }
+
+        GradeRequest request = gradeRequestRepository.findById((long) body.getRequestId()).orElse(null);
         if (request == null) {
             throw new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Grade request not found"
@@ -116,12 +125,16 @@ public class SynergyApiController {
         request.accept();
         gradeRequestRepository.save(request);
 
-        return new ResponseEntity<>("Successfully accepted the grade request.", HttpStatus.OK);
+        return "{'message': 'Successfully accepted the grade request'}";
     }
 
     @PostMapping("/reject-request")
-    public ResponseEntity<Object> rejectRequest(@RequestParam Long requestId) {
-        GradeRequest request = gradeRequestRepository.findById(requestId).orElse(null);
+    public String rejectRequest(@RequestBody RequestIdDTO body) {
+        if (body == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body");
+        }
+    
+        GradeRequest request = gradeRequestRepository.findById((long) body.getRequestId()).orElse(null);
         if (request == null) {
             throw new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Grade request not found"
@@ -136,7 +149,7 @@ public class SynergyApiController {
         request.reject();
         gradeRequestRepository.save(request);
 
-        return new ResponseEntity<>("Successfully rejected the grade request.", HttpStatus.OK);
+        return "{'message': 'Successfully rejected the grade request'}";
     }
 
     private boolean isNumeric(String str) {

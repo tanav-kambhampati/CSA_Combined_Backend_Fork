@@ -223,7 +223,7 @@ public class Person {
         persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "01-01-1850"));
         persons.add(createPerson("Madam Currie", "madam@gmail.com", "123madam", "01-01-1860"));
         persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "12-09-1906"));
-        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "10-21-1959", Arrays.asList("ROLE_ADMIN", "teacher")));
+        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "10-21-1959", Arrays.asList("ROLE_ADMIN", "ROLE_TEACHER")));
         return persons.toArray(new Person[0]);
     }
 

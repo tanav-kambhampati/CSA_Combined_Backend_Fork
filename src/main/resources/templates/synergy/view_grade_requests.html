@@ -237,10 +237,11 @@
 
     function submit(accepted, formId) {
         // note for future, this bascially just removes the acceptForm and rejectForm part out to get the id itself
-        const requestId = formId.replace(/(acceptForm|rejectForm)/, '');
-
-        const formData = new FormData();
-        formData.append("requestId", requestId);
+        const requestId = parseInt(formId.replace(/(acceptForm|rejectForm)/, ''));
+        const body = {
+            requestId: requestId
+        };
+        console.log(body);
 
         var url = '/api/synergy/reject-request';
         if (accepted) {
@@ -249,11 +250,18 @@
 
         fetch(url, {
             method: "POST",
-            body: formData,
-        }).then(response => {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        }).then(async response => {
             if (response.ok) {
                 location.reload();
             } else {
+                console.log(response.status);
+                console.log(response.statusText);
+                console.log(response.type);
+                console.log(await response.text());
                 console.error('Error submitting form');
             }
         }).catch(error => console.error('Fetch error:', error));

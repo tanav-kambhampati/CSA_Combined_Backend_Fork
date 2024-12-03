@@ -15,7 +15,7 @@
 
     <h2>Create a Grade Request</h2>
 
-    <form id="request-form" action="/api/synergy/create-grade-request" method="post">
+    <form id="request-form">
         <label for="student">Select Student:</label>
         <select name="studentId" id="student">
             <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.name}">Student Name</option>
@@ -50,7 +50,36 @@
 
 <th:block layout:fragment="script" th:remove="tag">
 <script>
-    // TODO: make site not be so ulgy
+    document.getElementById('request-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const body = {
+            studentId: document.getElementById('student').value,
+            assignmentId: document.getElementById('assignment').value,
+            gradeSuggestion: document.getElementById('gradeSuggestion').value,
+            explanation: document.getElementById('explanation').value
+        };
+
+        try {
+            const response = await fetch('/api/synergy/create-grade-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                alert('Grade request saved successfully!');
+                location.reload();
+            } else {
+                alert('Failed to save grade request.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while saving the grade request.');
+        }
+    });
 </script>
 </th:block>
 
