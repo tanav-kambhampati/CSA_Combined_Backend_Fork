@@ -24,20 +24,26 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity // Annotation to simplify creating an entity, which is a lightweight persistence domain object. Typically, an entity represents a table in a relational database, and each entity instance corresponds to a row in that table.
 @Table(name = "students" , uniqueConstraints = @UniqueConstraint(columnNames = "username"))
-public class Student {
+public class StudentInformation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String username;
+
     private int tableNumber;
+
     private String course;
+
     private ArrayList<String> tasks;
+    
     private ArrayList<String> completed;
+
     private int trimester;
+
     private int period;
 
-    public Student(String username, int tableNumber, String course, ArrayList<String> tasks, ArrayList<String> completed, int trimester, int period) {
+    public StudentInformation(String username, int tableNumber, String course, ArrayList<String> tasks, ArrayList<String> completed, int trimester, int period) {
         this.username = username;
         this.tableNumber = tableNumber;
         this.course = course;
@@ -58,14 +64,14 @@ public class Student {
             if (studentJPARepository == null) {
                 throw new RuntimeException("studentJPARepository is not initialized!");
             }
-            List<Student> students = new ArrayList<>();
-            students.add(new Student("Akhil353", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
-            students.add(new Student("SrinivasNampalli", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
-            students.add(new Student("adityasamavedam", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
-            students.add(new Student("nitinsandiego", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            List<StudentInformation> students = new ArrayList<>();
+            students.add(new StudentInformation("Akhil353", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            students.add(new StudentInformation("SrinivasNampalli", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            students.add(new StudentInformation("adityasamavedam", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            students.add(new StudentInformation("nitinsandiego", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
 
-            for (Student student : students) {
-            Optional<Student> existingStudent = studentJPARepository.findByUsername(student.getUsername());
+            for (StudentInformation student : students) {
+            Optional<StudentInformation> existingStudent = studentJPARepository.findByUsername(student.getUsername());
             
             if (existingStudent.isEmpty()) {
                 studentJPARepository.save(student);
@@ -73,17 +79,17 @@ public class Student {
         }
         }
 
-        public Iterable<Student> findAll() {
+        public Iterable<StudentInformation> findAll() {
             return studentJPARepository.findAll();
         }
 
-        public List<Student> findByUsernameCourseTrimesterPeriod(String username, String course, int trimester, int period) {
+        public List<StudentInformation> findByUsernameCourseTrimesterPeriod(String username, String course, int trimester, int period) {
             return studentJPARepository.findByUsernameCourseTrimesterPeriod(username, course, trimester, period);
         }
 
-        public Student createStudent(Student student) {
+        public StudentInformation createStudent(StudentInformation student) {
             // Check if a student with the same username already exists to avoid duplicates
-            Optional<Student> existingStudent = studentJPARepository.findByUsername(student.getUsername());
+            Optional<StudentInformation> existingStudent = studentJPARepository.findByUsername(student.getUsername());
             if (existingStudent.isPresent()) {
                 throw new RuntimeException("A student with this username already exists.");
             }
@@ -94,15 +100,15 @@ public class Student {
             studentJPARepository.deleteById(id);
         }
 
-        public Optional<Student> findByUsername(String username) {
+        public Optional<StudentInformation> findByUsername(String username) {
             return studentJPARepository.findByUsername(username);
         }
         
-        public List<Student> findTeam(String course, int trimester, int period, int table) {
+        public List<StudentInformation> findTeam(String course, int trimester, int period, int table) {
             return studentJPARepository.findTeam(course, trimester, period, table);
         }
 
-        public List<Student> findPeriod(String course, int trimester, int period) {
+        public List<StudentInformation> findPeriod(String course, int trimester, int period) {
             return studentJPARepository.findPeriod(course, trimester, period);
         }
 

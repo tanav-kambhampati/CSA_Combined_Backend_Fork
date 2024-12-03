@@ -24,7 +24,7 @@ public class StudentApiController {
     private StudentJPARepository studentJPARepository;
 
     @GetMapping("/all")
-    public ResponseEntity<Iterable<Student>> getAllStudents() {
+    public ResponseEntity<Iterable<StudentInformation>> getAllStudents() {
         return ResponseEntity.ok(studentJPARepository.findAll());
     }
 
@@ -37,10 +37,10 @@ public class StudentApiController {
     }
 
     @PostMapping("/find")
-    public ResponseEntity<Student> getStudentByCriteria(
+    public ResponseEntity<StudentInformation> getStudentByCriteria(
             @RequestBody CriteriaDto criteriaDto) {
         
-        List<Student> students = studentJPARepository.findByUsernameCourseTrimesterPeriod(criteriaDto.getUsername(), criteriaDto.getCourse(), criteriaDto.getTrimester(), criteriaDto.getPeriod());
+        List<StudentInformation> students = studentJPARepository.findByUsernameCourseTrimesterPeriod(criteriaDto.getUsername(), criteriaDto.getCourse(), criteriaDto.getTrimester(), criteriaDto.getPeriod());
         
         if (students.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -50,13 +50,13 @@ public class StudentApiController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
+    public ResponseEntity<StudentInformation> createStudent(@RequestBody StudentInformation student) {
         try {
-            Optional<Student> existingStudents = studentJPARepository.findByUsername(student.getUsername());
+            Optional<StudentInformation> existingStudents = studentJPARepository.findByUsername(student.getUsername());
             if (!existingStudents.isEmpty()) {
                 throw new RuntimeException("A student with this GitHub ID already exists.");
             }
-            Student createdStudent = studentJPARepository.save(student);
+            StudentInformation createdStudent = studentJPARepository.save(student);
             return ResponseEntity.ok(createdStudent);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
@@ -65,7 +65,7 @@ public class StudentApiController {
 
     @PostMapping("/delete")
     public ResponseEntity<String> deleteStudentByUsername(@RequestParam String username) {
-        Optional<Student> student = studentJPARepository.findByUsername(username);
+        Optional<StudentInformation> student = studentJPARepository.findByUsername(username);
         
         if (student.isPresent()) {
             studentJPARepository.deleteById(student.get().getId());  // Delete student by ID
@@ -84,10 +84,10 @@ public class StudentApiController {
     }
 
     @PostMapping("/find-team")
-    public ResponseEntity<Iterable<Student>> getTeamByCriteria(
+    public ResponseEntity<Iterable<StudentInformation>> getTeamByCriteria(
             @RequestBody TeamDto teamDto) {
         
-        List<Student> students = studentJPARepository.findTeam(teamDto.getCourse(), teamDto.getTrimester(), teamDto.getPeriod(), teamDto.getTable());
+        List<StudentInformation> students = studentJPARepository.findTeam(teamDto.getCourse(), teamDto.getTrimester(), teamDto.getPeriod(), teamDto.getTable());
         
         if (students.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -105,15 +105,15 @@ public class StudentApiController {
 
 
     @PostMapping("/update-tasks")
-    public ResponseEntity<Student> updateTasks(@RequestBody StudentDto studentDto) {
+    public ResponseEntity<StudentInformation> updateTasks(@RequestBody StudentDto studentDto) {
         String username =  studentDto.getUsername();
         ArrayList<String> tasks = studentDto.getTasks();
 
 
-        Optional<Student> student = studentJPARepository.findByUsername(username);
+        Optional<StudentInformation> student = studentJPARepository.findByUsername(username);
 
         if (student.isPresent()) {
-            Student student1 = student.get();
+            StudentInformation student1 = student.get();
             ArrayList<String> newTasks = student1.getTasks();
             
             for (String task: tasks) {
@@ -135,11 +135,11 @@ public static class TasksDto {
 
 @PostMapping("/complete-task")
 public ResponseEntity<String> completeTask(@RequestBody TasksDto tasksDto) {
-    Optional<Student> optionalStudent = studentJPARepository.findByUsername(tasksDto.getUsername());
+    Optional<StudentInformation> optionalStudent = studentJPARepository.findByUsername(tasksDto.getUsername());
     String task = tasksDto.getTask();
 
     if (optionalStudent.isPresent()) {
-        Student student = optionalStudent.get();
+        StudentInformation student = optionalStudent.get();
         if (student.getCompleted() == null) {
             student.setCompleted(new ArrayList<>()); 
         }
@@ -165,10 +165,10 @@ public ResponseEntity<String> completeTask(@RequestBody TasksDto tasksDto) {
     }
 
     @PostMapping("/find-period")
-    public ResponseEntity<Iterable<Student>> getPeriodByTrimester(
+    public ResponseEntity<Iterable<StudentInformation>> getPeriodByTrimester(
         @RequestBody PeriodDto periodDto) {
             
-        List<Student> students = studentJPARepository.findPeriod(periodDto.getCourse(), periodDto.getTrimester(), periodDto.getPeriod());
+        List<StudentInformation> students = studentJPARepository.findPeriod(periodDto.getCourse(), periodDto.getTrimester(), periodDto.getPeriod());
 
         if (students.isEmpty()) {
             return ResponseEntity.notFound().build();
