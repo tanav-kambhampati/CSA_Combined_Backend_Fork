@@ -1,10 +1,25 @@
 <!DOCTYPE HTML>
-
-<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http;//www.w3.org/1999/xhtml" layout:decorate="~{layouts/base}" lang="en">
-<html lang="en">
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/base}" lang="en">
 <head>
     <title>Person Form</title>
     <script>
+        // Function to handle image file input
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                document.getElementById("pfp_preview").src = base64Image; // Set the preview image
+                document.getElementById("pfp").value = base64Image; // Set the base64 string in the hidden field
+            };
+
+            if (file) {
+                reader.readAsDataURL(file); // Read the image file as base64
+            }
+        }
+
+        // Function to validate form (password confirmation)
         function validateForm(event) {
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirm_password").value;
@@ -17,7 +32,7 @@
     </script>
 </head>
 <body>
-    <th:block layout:fragment="body" th:remove="tag"> <!-- Page specific body additions -->
+    <th:block layout:fragment="body" th:remove="tag">
         <div class="container">
             <div class="row justify-content-md-center">
                 <h2>Enter the details to update</h2>
@@ -52,14 +67,20 @@
                                 <small th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}">Birth Date Error</small>
                             </div>
                             <div class="input-group mb-2 mr-sm-2">
-                                <label for="kasmServerNeeded">kasm Server Needed:</label>
+                                <label for="kasmServerNeeded">Kasm Server Needed:</label>
                                 <input type="checkbox" th:field="*{kasmServerNeeded}" id="kasmServerNeeded">
-                                <small th:if="${#fields.hasErrors('kasmServerNeeded')}" th:errors="*{kasmServerNeeded}">Birth Date Error</small>
+                                <small th:if="${#fields.hasErrors('kasmServerNeeded')}" th:errors="*{kasmServerNeeded}">Kasm Server Needed Error</small>
                             </div>
                             <div class="input-group mb-2 mr-sm-2">
                                 <label for="pfp">Profile Picture:</label>
-                                <input type="text" th:field="*{pfp}" id="pfp" accept="image/png, image/jpeg">
-                                <small th:if="${#fields.hasErrors('pfp')}" th:errors="*{pfp}">pfp Error</small>
+                                <input type="file" id="pfp_input" accept="image/png, image/jpeg, image/jpg" onchange="previewImage(event)">
+                                <input type="hidden" th:field="*{pfp}" id="pfp">
+                                <small th:if="${#fields.hasErrors('pfp')}" th:errors="*{pfp}">Profile Picture Error</small>
+                            </div>
+                            <!-- Preview area -->
+                            <div>
+                                <h4>Profile Picture Preview:</h4>
+                                <img id="pfp_preview" src="" alt="Profile Preview" style="max-width: 200px; max-height: 200px;"/>
                             </div>
                             <button type="submit" class="btn btn-primary">Update</button>
                         </form>
