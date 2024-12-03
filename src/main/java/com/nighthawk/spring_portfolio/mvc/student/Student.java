@@ -23,13 +23,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity // Annotation to simplify creating an entity, which is a lightweight persistence domain object. Typically, an entity represents a table in a relational database, and each entity instance corresponds to a row in that table.
-@Table(name = "students" , uniqueConstraints = @UniqueConstraint(columnNames = "name"))
+@Table(name = "students" , uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String name;
     private String username;
     private int tableNumber;
     private String course;
@@ -37,10 +36,8 @@ public class Student {
     private ArrayList<String> completed;
     private int trimester;
     private int period;
-    private String project;
 
-    public Student(String name, String username, int tableNumber, String course, ArrayList<String> tasks, ArrayList<String> completed, int trimester, int period, String project) {
-        this.name = name;
+    public Student(String username, int tableNumber, String course, ArrayList<String> tasks, ArrayList<String> completed, int trimester, int period) {
         this.username = username;
         this.tableNumber = tableNumber;
         this.course = course;
@@ -48,7 +45,6 @@ public class Student {
         this.completed = completed;
         this.trimester = trimester;
         this.period = period;
-        this.project = project;
     }
 
     @Service
@@ -63,10 +59,10 @@ public class Student {
                 throw new RuntimeException("studentJPARepository is not initialized!");
             }
             List<Student> students = new ArrayList<>();
-            students.add(new Student("Akhil Singamneni", "Akhil353", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
-            students.add(new Student("Srinivas Nampalli", "SrinivasNampalli", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
-            students.add(new Student("Aditya Samavedam", "adityasamavedam", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
-            students.add(new Student("Nitin Balaji", "nitinsandiego", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3, "Class Management"));
+            students.add(new Student("Akhil353", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            students.add(new Student("SrinivasNampalli", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            students.add(new Student("adityasamavedam", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
+            students.add(new Student("nitinsandiego", 4, "CSA", new ArrayList<String>(Arrays.asList("Task 1", "Task 2")), new ArrayList<String>(Arrays.asList("Completed 1", "Completed 2")), 1, 3));
 
             for (Student student : students) {
             Optional<Student> existingStudent = studentJPARepository.findByUsername(student.getUsername());
@@ -81,8 +77,8 @@ public class Student {
             return studentJPARepository.findAll();
         }
 
-        public List<Student> findByNameCourseTrimesterPeriod(String name, String course, int trimester, int period) {
-            return studentJPARepository.findByNameCourseTrimesterPeriod(name, course, trimester, period);
+        public List<Student> findByUsernameCourseTrimesterPeriod(String username, String course, int trimester, int period) {
+            return studentJPARepository.findByUsernameCourseTrimesterPeriod(username, course, trimester, period);
         }
 
         public Student createStudent(Student student) {
