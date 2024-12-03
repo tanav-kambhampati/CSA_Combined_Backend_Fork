@@ -16,7 +16,9 @@
             <a href="/">Go Home</a>
             <script>
                 window.addEventListener("DOMContentLoaded", (event) => {
-                    document.getElementById("errorMessage").innerText = "Error Message: "+window.location.hash.substring(1);
+                    if (window.location.hash != ""){
+                        document.getElementById("errorMessage").innerText = "Error Message: "+window.location.hash.substring(1);
+                    }
                 });
             </script>
         </div>
