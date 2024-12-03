@@ -16,6 +16,8 @@ import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
+import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +32,7 @@ public class ModelInit {
     @Autowired PersonRoleJpaRepository roleJpaRepository;
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
+    @Autowired IssueJPARepository issueJPARepository;
 
     @Bean
     @Transactional
@@ -83,6 +86,14 @@ public class ModelInit {
                     String text = "Test " + person.getEmail();
                     Note n = new Note(text, person);  // constructor uses new person as Many-to-One association
                     noteRepo.save(n);  // JPA Save                  
+                }
+            }
+            // Issue database initialization
+            Issue[] issueArray = Issue.init();
+            for (Issue issue : issueArray) {
+                List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
+                if (issueFound.isEmpty()) {
+                    issueJPARepository.save(issue);
                 }
             }
 
