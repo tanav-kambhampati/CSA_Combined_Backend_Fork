@@ -74,10 +74,13 @@ public class PersonViewController {
     public String personUpdateSave(@Valid Person person, BindingResult bindingResult) {
         // Validation of Decorated PersonForm attributes
         if (bindingResult.hasErrors()) {
-            return "redirect:/person/update/";
+            return "redirect:/e#there_were_errors_with_updating";
         }
 
         Person personToUpdate = repository.getByEmail(person.getEmail());
+        if(personToUpdate == null){
+            return "redirect:/e#email_doesn't_exist";
+        }
 
         personToUpdate.setPassword(person.getPassword());
         personToUpdate.setName(person.getName());
