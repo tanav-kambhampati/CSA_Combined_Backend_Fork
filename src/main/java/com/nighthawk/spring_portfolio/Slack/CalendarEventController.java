@@ -28,6 +28,27 @@ public class CalendarEventController {
         LocalDate weekStartDate = LocalDate.parse(formattedDate);
         calendarEventService.parseSlackMessage(jsonMap, weekStartDate);
     }
+    
+    @PostMapping("/add_event")
+    public void addEvents(@RequestBody Map<String, String> jsonMap) {
+        if (jsonMap.containsKey("text")) {
+            // Parse Slack message if "text" key exists
+            LocalDateTime now = LocalDateTime.now();
+            String formattedDate = String.format("%d-%02d-%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+            LocalDate weekStartDate = LocalDate.parse(formattedDate);
+            calendarEventService.parseSlackMessage(jsonMap, weekStartDate);
+        } else if (jsonMap.containsKey("date") && jsonMap.containsKey("title")) {
+            // Add single event manually if "date" and "title" keys exist
+            LocalDate date = LocalDate.parse(jsonMap.get("date"));
+            String title = jsonMap.get("title");
+            String description = jsonMap.getOrDefault("description", "");
+            String type = jsonMap.getOrDefault("type", "general"); 
+            CalendarEvent event = new CalendarEvent(date, title, description, type);
+            calendarEventService.saveEvent(event);
+        } else {
+            throw new IllegalArgumentException("Invalid input: Must include either 'text' for Slack messages or 'date' and 'title' for single event addition.");
+        }
+    }
 
     @GetMapping("/events/{date}")
     public List<CalendarEvent> getEventsByDate(@PathVariable String date) {
