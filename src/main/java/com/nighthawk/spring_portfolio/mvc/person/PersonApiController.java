@@ -236,55 +236,6 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    // @PostMapping(value = "/person/setSections", produces = MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<?> setSections(@AuthenticationPrincipal UserDetails userDetails, @RequestBody final List<SectionDTO> sections) {
-    //     // Check if the authentication object is null
-    //     if (userDetails == null) {
-    //         return ResponseEntity
-    //                 .status(HttpStatus.UNAUTHORIZED)
-    //                 .body("Error: Authentication object is null. User is not authenticated.");
-    //     }
-        
-    //     String email = userDetails.getUsername();
-        
-    //     // Manually wrap the result in Optional.ofNullable
-    //     Optional<Person> optional = Optional.ofNullable(repository.findByEmail(email));
-    //     if (optional.isPresent()) {
-    //         Person person = optional.get();
-
-    //         // Get existing sections and ensure it is not null
-    //         Collection<PersonSections> existingSections = person.getSections();
-    //         if (existingSections == null) {
-    //             existingSections = new ArrayList<>();
-    //         }
-
-    //         // Add  sections
-    //         for (SectionDTO sectionDTO : sections) {
-    //             if (!existingSections.stream().anyMatch(s -> s.getName().equals(sectionDTO.getName()))) {
-    //                 PersonSections newSection = new PersonSections(sectionDTO.getName(), sectionDTO.getAbbreviation(), sectionDTO.getYear());
-    //                 existingSections.add(newSection);
-    //             } else {
-    //                 return ResponseEntity
-    //                         .status(HttpStatus.CONFLICT)
-    //                         .body("Error: Section with name '" + sectionDTO.getName() + "' already exists.");
-    //             }
-    //         }
-
-    //         // Persist updated sections
-    //         person.setSections(existingSections);
-    //         repository.save(person);
-
-    //         // Return updated Person
-    //         return ResponseEntity.ok(person);
-    //     }
-
-    //     // Person not found
-    //     return ResponseEntity
-    //             .status(HttpStatus.NOT_FOUND)
-    //             .body("Error: Person not found with email: " + email);
-    // }
-
-
     @PutMapping("/person/{id}")
     public ResponseEntity<Object> updatePerson(@PathVariable long id, @RequestBody PersonDto personDto) {
         Optional<Person> optional = repository.findById(id);
@@ -380,5 +331,42 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @Getter
+    public static class AmountDto {
+        private Float amount;
+    }
+
+    /**
+     * Create a new Person entity.
+     * 
+     * @param AmountDto object which includes balance
+     * @return A ResponseEntity containing a success message if the Person entity is
+     *         created, or a BAD_REQUEST status if not created.
+     */
+    @PostMapping("/person/balance/update")
+    public ResponseEntity<Object> updateBalance(Authentication authentication, @RequestBody final AmountDto amountDto) {
+        // Get the email of the current user from the authentication context
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername(); // Assuming email is used as the username in Spring Security
+    
+        // Find the person by email
+        Optional<Person> optionalPerson = Optional.ofNullable(repository.findByEmail(email));
+        if (optionalPerson.isPresent()) {
+            Person existingPerson = optionalPerson.get();
+    
+            // Update fields only if they're provided in personDto
+            if (amountDto.getAmount() != null) {
+                existingPerson.setBalance(amountDto.getAmount());
+            }
+            // Save the updated person back to the repository
+            Person updatedPerson = repository.save(existingPerson);
+    
+            // Return the updated person entity
+            return new ResponseEntity<>(updatedPerson, HttpStatus.OK);
+        }
+    
+        // Return NOT_FOUND if person not found
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }
 

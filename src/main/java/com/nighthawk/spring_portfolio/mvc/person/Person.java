@@ -151,6 +151,11 @@ public class Person {
     @Column(columnDefinition = "jsonb")
     private Map<String, Map<String, Object>> stats = new HashMap<>();
 
+
+    @NonNull
+    private Float balance;
+
+
     /**
      * Custom constructor for Person when building a new Person object from an API
      * call
@@ -162,6 +167,7 @@ public class Person {
         this.dob = dob;
         this.kasmServerNeeded = kasmServerNeeded;
         this.pfp = pfp;
+        this.balance = Float.valueOf(0);
         this.roles.add(role);
     }
 
@@ -202,6 +208,7 @@ public class Person {
         person.setPassword(password);
         person.setKasmServerNeeded(kasmServerNeeded);
         person.setPfp(pfp);
+        person.setBalance(Float.valueOf(0));
         try {
             Date date = new SimpleDateFormat("MM-dd-yyyy").parse(dob);
             person.setDob(date);
