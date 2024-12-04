@@ -60,6 +60,10 @@ public class Assignment {
         assignmentQueue.getDone().add(person);
     }
 
+    public String getFront() {
+        return assignmentQueue.getFront();
+    }
+
     public String toString() {
         return "Assignment{" +
                 "assignmentId=" + assignmentId +

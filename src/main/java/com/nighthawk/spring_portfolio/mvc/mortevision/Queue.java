@@ -40,6 +40,10 @@ public class Queue {
         this.done = done;
     }
 
+    public String getFront() {
+        return queue.get(0);
+    }
+
     public void reset() {
         this.haventGone.clear();
         this.queue.clear();

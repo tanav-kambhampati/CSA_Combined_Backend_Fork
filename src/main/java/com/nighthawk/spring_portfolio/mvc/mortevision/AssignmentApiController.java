@@ -36,6 +36,17 @@ public class AssignmentApiController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/getFront/{id}")
+    public ResponseEntity<String> getFront(@PathVariable long id) {
+        Optional<Assignment> optional = repository.findById(id);
+        if (optional.isPresent()) {
+            Assignment assignment = optional.get();
+            
+            return new ResponseEntity<>(assignment.getFront(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 
     @PutMapping("/initQueue/{id}")
     public ResponseEntity<Assignment> initQueue(@PathVariable long id, @RequestBody List<String> people) {
