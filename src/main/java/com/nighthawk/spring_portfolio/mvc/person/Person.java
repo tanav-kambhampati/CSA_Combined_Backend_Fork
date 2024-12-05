@@ -161,7 +161,6 @@ public class Person implements Comparable<Person> {
     public Person(String email, String password, String name, Date dob, String pfp, Boolean kasmServerNeeded, PersonRole role) {
         this.email = email;
         this.password = password;
-        this.myplan = myplan;
         this.name = name;
         this.dob = dob;
         this.kasmServerNeeded = kasmServerNeeded;
@@ -193,7 +192,6 @@ public class Person implements Comparable<Person> {
      * @param name
      * @param email
      * @param password
-     * @param myplan
      * @param dob
      * @return Person
      */

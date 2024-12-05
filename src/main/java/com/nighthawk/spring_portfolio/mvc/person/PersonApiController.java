@@ -133,7 +133,6 @@ public class PersonApiController {
         private String email;
         private String password;
         private String name;
-        private String myplan;
         private String dob;
         private String pfp;
         private Boolean kasmServerNeeded; 
