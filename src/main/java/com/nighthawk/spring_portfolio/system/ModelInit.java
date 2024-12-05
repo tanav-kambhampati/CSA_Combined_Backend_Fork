@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
-import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
-import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
 import com.nighthawk.spring_portfolio.mvc.comment.Comment;
 import com.nighthawk.spring_portfolio.mvc.comment.CommentJPA;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
@@ -37,7 +35,7 @@ public class ModelInit {
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired AssignmentJpaRepository assignmentJpa;
     @Autowired CommentJPA CommentJPA;
-    @Autowired IssueJPARepository issueJPARepository;
+    // @Autowired IssueJPARepository issueJPARepository;
 
     @Bean
     @Transactional
@@ -101,13 +99,13 @@ public class ModelInit {
                 }
             }
             // Issue database initialization
-            Issue[] issueArray = Issue.init();
-            for (Issue issue : issueArray) {
-                List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
-                if (issueFound.isEmpty()) {
-                    issueJPARepository.save(issue);
-                }
-            }
+            // Issue[] issueArray = Issue.init();
+            // for (Issue issue : issueArray) {
+            //     List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
+            //     if (issueFound.isEmpty()) {
+            //         issueJPARepository.save(issue);
+            //     }
+            // }
 
         };
     }
