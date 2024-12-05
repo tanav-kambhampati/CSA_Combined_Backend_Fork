@@ -95,6 +95,7 @@ public class PersonViewController {
         personToUpdate.setPassword(person.getPassword());
         personToUpdate.setName(person.getName());
         personToUpdate.setDob(person.getDob());
+        personToUpdate.setPfp(person.getPfp());
         personToUpdate.setKasmServerNeeded(person.getKasmServerNeeded());
         repository.save(personToUpdate);
 

@@ -3,21 +3,20 @@
 <head>
     <title>Person Form</title>
     <script>
-        // Function to handle image file input
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const base64Image = e.target.result;
-                document.getElementById("pfp_preview").src = base64Image; // Set the preview image
-                document.getElementById("pfp").value = base64Image; // Set the base64 string in the hidden field
-            };
-
-            if (file) {
-                reader.readAsDataURL(file); // Read the image file as base64
+        function encodeImageFileAsURL(element) {
+            const file = element.files[0];
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                console.log('RESULT', reader.result)
+                document.getElementById("pfp_preview").src = URL.createObjectURL(file);
+                document.getElementById("pfp").value = reader.result;
             }
+            reader.readAsDataURL(file);
         }
+
+        window.addEventListener("load", (event) => {
+            document.getElementById("pfp_preview").src = document.getElementById("pfp").value;
+        });
 
         // Function to validate form (password confirmation)
         function validateForm(event) {
@@ -73,7 +72,7 @@
                             </div>
                             <div class="input-group mb-2 mr-sm-2">
                                 <label for="pfp">Profile Picture:</label>
-                                <input type="file" id="pfp_input" accept="image/png, image/jpeg, image/jpg" onchange="previewImage(event)">
+                                <input type="file" id="pfp_input" accept="image/png, image/jpeg, image/jpg" onchange="encodeImageFileAsURL(this)">
                                 <input type="hidden" th:field="*{pfp}" id="pfp">
                                 <small th:if="${#fields.hasErrors('pfp')}" th:errors="*{pfp}">Profile Picture Error</small>
                             </div>
