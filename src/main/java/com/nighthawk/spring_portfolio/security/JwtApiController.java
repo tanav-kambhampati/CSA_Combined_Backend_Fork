@@ -1,7 +1,5 @@
 package com.nighthawk.spring_portfolio.security;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,16 +12,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
-// import com.nighthawk.spring_portfolio.mvc.profile.ProfileJpaRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin
@@ -79,15 +81,51 @@ public class JwtApiController {
             .body(authenticationRequest.getEmail() + " was authenticated successfully");
         }
 
-    private void authenticate(String username, String password) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
+	private void authenticate(String username, String password) throws Exception {
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		} catch (DisabledException e) {
+			throw new Exception("USER_DISABLED", e);
+		} catch (BadCredentialsException e) {
+			throw new Exception("INVALID_CREDENTIALS", e);
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+	}
+	@RestController
+	public class CustomLogoutController {
+
+    private final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+	
+		@PostMapping("/my/logout")
+		public String performLogout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
+			// Perform logout using SecurityContextLogoutHandler
+			logoutHandler.logout(request, response, authentication);
+	
+			// Expire the JWT token immediately by setting a past expiration date
+			ResponseCookie cookie = ResponseCookie.from("jwt_java_spring", "")
+				.httpOnly(true)
+				.secure(true)
+				.path("/")
+				.maxAge(0)  // Set maxAge to 0 to expire the cookie immediately
+				.sameSite("None; Secure")
+				.build();
+	
+			// Set the cookie in the response to effectively "remove" the JWT
+			response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+	
+			// Optional: You can also clear the "Authorization" header if needed
+			response.setHeader("Authorization", null);
+	
+			// Redirect user to home page after logout
+			return "redirect:/home";
+		}
 }
+
+}
+
+
+
+
+	
+

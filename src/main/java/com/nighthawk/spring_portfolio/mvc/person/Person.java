@@ -7,11 +7,14 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,10 +53,9 @@ import lombok.NonNull;
 @NoArgsConstructor
 @Entity
 @Convert(attributeName = "person", converter = JsonType.class)
-public class Person {
+public class Person implements Comparable<Person> {
 
-    /**
-     * automatic unique identifier for Person record
+    /** Automatic unique identifier for Person record 
      * --- Id annotation is used to specify the identifier property of the entity.
      * ----GeneratedValue annotation is used to specify the primary key generation
      * strategy to use.
@@ -65,6 +67,14 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @ManyToMany(fetch = EAGER)
+    @JoinTable(
+        name = "person_person_sections",  // unique name to avoid conflicts
+        joinColumns = @JoinColumn(name = "person_id"),
+        inverseJoinColumns = @JoinColumn(name = "section_id")
+    )
+    private Collection<PersonSections> sections = new ArrayList<>();
 
     /**
      * Many to Many relationship with PersonRole
@@ -101,10 +111,6 @@ public class Person {
     @NotEmpty
     private String password;
 
-    @NotEmpty
-    @Size(min = 7, max = 7, message = "MyPlan username must be your 7 digit ID number.")
-    private String myplan;
-
     /**
      * name, dob are attributes to describe the person
      * --- @NonNull annotation is used to generate a constructor with
@@ -121,8 +127,15 @@ public class Person {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
 
+    /** Profile picture (pfp) in base64 */
+    @Column(length = 255, nullable = true)
+    private String pfp;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean kasmServerNeeded = false;
+    
     /**
-     * stats is used to store JSON for daily stat$
+     * stats is used to store JSON for daily stats
      * --- @JdbcTypeCode annotation is used to specify the JDBC type code for a
      * column, in this case json.
      * --- @Column annotation is used to specify the mapped column for a persistent
@@ -139,22 +152,26 @@ public class Person {
     @Column(columnDefinition = "jsonb")
     private Map<String, Map<String, Object>> stats = new HashMap<>();
 
-    /**
-     * Custom constructor for Person when building a new Person object from an API
-     * call
+    /** Custom constructor for Person when building a new Person object from an API call
+     * @param email, a String
+     * @param password, a String
+     * @param name, a String
+     * @param dob, a Date
      */
-    public Person(String email, String password, String myplan, String name, Date dob, PersonRole role) {
+    public Person(String email, String password, String name, Date dob, String pfp, Boolean kasmServerNeeded, PersonRole role) {
         this.email = email;
         this.password = password;
         this.myplan = myplan;
         this.name = name;
         this.dob = dob;
+        this.kasmServerNeeded = kasmServerNeeded;
+        this.pfp = pfp;
         this.roles.add(role);
     }
 
-    /**
-     * Custom getter to return age from dob attribute
-     */
+    /** Custom getter to return age from dob attribute
+     * @return int, the age of the person
+    */
     public int getAge() {
         if (this.dob != null) {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -163,9 +180,16 @@ public class Person {
         return -1;
     }
 
-    /**
-     * 1st telescoping method to create a Person object with USER role
-     * 
+    /** Custom compareTo method to compare Person objects by name
+     * @param other, a Person object
+     * @return int, the result of the comparison
+     */
+    @Override
+    public int compareTo(Person other) {
+        return this.name.compareTo(other.name);
+    }
+
+    /** 1st telescoping method to create a Person object with USER role
      * @param name
      * @param email
      * @param password
@@ -173,9 +197,9 @@ public class Person {
      * @param dob
      * @return Person
      */
-    public static Person createPerson(String name, String email, String password, String myplan, String dob) {
+    public static Person createPerson(String name, String email, String password, Boolean kasmServerNeeded, String dob) {
         // By default, Spring Security expects roles to have a "ROLE_" prefix.
-        return createPerson(name, email, password, myplan, dob, Arrays.asList("ROLE_USER"));
+        return createPerson(name, email, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER", "ROlE_STUDENT"));
     }
 
     /**
@@ -183,14 +207,13 @@ public class Person {
      * 
      * @param roles
      */
-    public static Person createPerson(String name, String email, String password, String myplan, String dob,
-            List<String> roleNames) {
+    public static Person createPerson(String name, String email, String password, String pfp, Boolean kasmServerNeeded, String dob, List<String> roleNames) {
         Person person = new Person();
         person.setName(name);
         person.setEmail(email);
         person.setPassword(password);
-        person.setMyplan(myplan);
-
+        person.setKasmServerNeeded(kasmServerNeeded);
+        person.setPfp(pfp);
         try {
             Date date = new SimpleDateFormat("MM-dd-yyyy").parse(dob);
             person.setDob(date);
@@ -207,26 +230,25 @@ public class Person {
 
         return person;
     }
-
+    
     /**
      * Static method to initialize an array list of Person objects
-     * 
+     * Uses createPerson method to create Person objects
+     * Sorts the list of Person objects using Collections.sort which uses the compareTo method 
      * @return Person[], an array of Person objects
      */
     public static Person[] init() {
-        ArrayList<Person> persons = new ArrayList<>();
-        persons.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "0000000", "01-01-1840",
-                Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER")));
-        persons.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "0000000", "01-01-1847"));
-        persons.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "0000000", "01-01-1850"));
-        persons.add(createPerson("Madam Currie", "madam@gmail.com", "123madam", "0000000", "01-01-1860"));
-        persons.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "0000000", "12-09-1906"));
-        persons.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "0000000", "10-21-1959",
-                Arrays.asList("ROLE_ADMIN")));
-        persons.add(createPerson("Tara Sehdave", "tarasehdave@gmail.com", "123tara", "0000000", "12-21-2006",
-                Arrays.asList("ROLE_ADMIN")));
-                
-        return persons.toArray(new Person[0]);
+        ArrayList<Person> people = new ArrayList<>();
+        people.add(createPerson("Thomas Edison", "toby@gmail.com", "123toby", "pfp1", true, "01-01-1840", Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_TESTER", "ROLE_TEACHER")));
+        people.add(createPerson("Alexander Graham Bell", "lexb@gmail.com", "123lex", "pfp2", true, "01-01-1847", Arrays.asList("ROLE_USER")));
+        people.add(createPerson("Nikola Tesla", "niko@gmail.com", "123niko", "pfp3", true, "01-01-1850", Arrays.asList("ROLE_USER")));
+        people.add(createPerson("Madam Curie", "madam@gmail.com", "123madam", "pfp4", true, "01-01-1860", Arrays.asList("ROLE_USER")));
+        people.add(createPerson("Grace Hopper", "hop@gmail.com", "123hop", "pfp5", true, "12-09-1906", Arrays.asList("ROLE_USER")));
+        people.add(createPerson("John Mortensen", "jm1021@gmail.com", "123Qwerty!", "pfp6", true, "10-21-1959", Arrays.asList("ROLE_ADMIN", "ROLE_TEACHER")));
+        
+        Collections.sort(people);
+
+        return people.toArray(new Person[0]);
     }
 
     /**
@@ -236,12 +258,12 @@ public class Person {
      */
     public static void main(String[] args) {
         // obtain Person from initializer
-        Person persons[] = init();
+        Person[] persons = init();
 
         // iterate using "enhanced for loop"
         for (Person person : persons) {
-            System.out.println(person); // print object
+            System.out.println(person);  // print object
+            System.out.println();
         }
     }
-
 }

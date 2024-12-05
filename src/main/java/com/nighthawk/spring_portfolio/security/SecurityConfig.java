@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
+
 /*
 * To enable HTTP Security in Spring
 */
@@ -69,10 +70,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/mvc/person/search/**").authenticated()
                         .requestMatchers("/mvc/person/create/**").permitAll()
-                        .requestMatchers("/mvc/person/read/**").permitAll()
+                        .requestMatchers("/mvc/person/read/**").authenticated()
                         .requestMatchers("/mvc/person/update/**").authenticated()
                         .requestMatchers("/mvc/person/delete/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/mvc/bathroom/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/authenticateForm").permitAll()
                         .requestMatchers("/**").permitAll())

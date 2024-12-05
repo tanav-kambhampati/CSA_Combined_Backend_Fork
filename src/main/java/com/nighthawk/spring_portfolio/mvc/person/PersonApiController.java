@@ -1,17 +1,31 @@
 package com.nighthawk.spring_portfolio.mvc.person;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.Getter;
-
-import java.util.*;
-import java.text.SimpleDateFormat;
 
 /**
  * This class provides RESTful API endpoints for managing Person entities.
@@ -32,6 +46,9 @@ public class PersonApiController {
     @Autowired
     private PersonJpaRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     /**
      * Service for managing Person entities.
      */
@@ -44,7 +61,7 @@ public class PersonApiController {
      * @return A ResponseEntity containing the Person entity if found, or a
      *         NOT_FOUND status if not found.
      */
-    @GetMapping("/person")
+    @GetMapping("/person/get")
     public ResponseEntity<Person> getPerson(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername(); // Email is mapped/unmapped to username for Spring Security
@@ -67,9 +84,7 @@ public class PersonApiController {
      */
     @GetMapping("/people")
     public ResponseEntity<List<Person>> getPeople() {
-        List<Person> people = repository.findAllByOrderByNameAsc();
-        ResponseEntity<List<Person>> responseEntity = new ResponseEntity<>(people, HttpStatus.OK);
-        return responseEntity;
+        return new ResponseEntity<>( repository.findAllByOrderByNameAsc(), HttpStatus.OK);
     }
 
     /**
@@ -120,6 +135,8 @@ public class PersonApiController {
         private String name;
         private String myplan;
         private String dob;
+        private String pfp;
+        private Boolean kasmServerNeeded; 
     }
 
     /**
@@ -129,7 +146,7 @@ public class PersonApiController {
      * @return A ResponseEntity containing a success message if the Person entity is
      *         created, or a BAD_REQUEST status if not created.
      */
-    @PostMapping("/person")
+    @PostMapping("/person/create")
     public ResponseEntity<Object> postPerson(@RequestBody PersonDto personDto) {
         // Validate dob input
         Date dob;
@@ -139,11 +156,65 @@ public class PersonApiController {
             return new ResponseEntity<>(personDto.getDob() + " error; try MM-dd-yyyy", HttpStatus.BAD_REQUEST);
         }
         // A person object WITHOUT ID will create a new record in the database
-        Person person = new Person(personDto.getEmail(), personDto.getPassword(), personDto.getMyplan(),
-                personDto.getName(), dob, personDetailsService.findRole("USER"));
+        Person person = new Person(personDto.getEmail(), personDto.getPassword(), personDto.getName(), dob, "USER", true, personDetailsService.findRole("USER"));
+
         personDetailsService.save(person);
-        return new ResponseEntity<>(personDto.getEmail() + " is created successfully", HttpStatus.CREATED);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        JSONObject responseObject = new JSONObject();
+        responseObject.put("response",personDto.getEmail() + " is created successfully");
+
+        String reponseString = responseObject.toString();
+
+        return new ResponseEntity<>(reponseString,responseHeaders, HttpStatus.OK);
     }
+
+
+
+
+
+@PostMapping(value = "/person/update", produces = MediaType.APPLICATION_JSON_VALUE)
+public ResponseEntity<Object> updatePerson(Authentication authentication, @RequestBody final PersonDto personDto) {
+    // Get the email of the current user from the authentication context
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    String email = userDetails.getUsername(); // Assuming email is used as the username in Spring Security
+
+    // Find the person by email
+    Optional<Person> optionalPerson = Optional.ofNullable(repository.findByEmail(email));
+    if (optionalPerson.isPresent()) {
+        Person existingPerson = optionalPerson.get();
+
+        // Update fields only if they're provided in personDto
+        if (personDto.getEmail() != null) {
+            existingPerson.setEmail(personDto.getEmail());
+        }
+        if (personDto.getPassword() != null) {
+            existingPerson.setPassword(passwordEncoder.encode(personDto.getPassword()));
+
+        }
+    
+        if (personDto.getName() != null) {
+            existingPerson.setName(personDto.getName());
+        }
+        if (personDto.getPfp() != null) {
+            existingPerson.setPfp(personDto.getPfp());
+        }
+        if (personDto.getKasmServerNeeded() != null) {
+            existingPerson.setKasmServerNeeded(personDto.getKasmServerNeeded());
+        }
+        // Save the updated person back to the repository
+        Person updatedPerson = repository.save(existingPerson);
+
+        // Return the updated person entity
+        return new ResponseEntity<>(updatedPerson, HttpStatus.OK);
+    }
+
+    // Return NOT_FOUND if person not found
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+}
+
 
     /**
      * Search for a Person entity by name or email.
@@ -153,6 +224,7 @@ public class PersonApiController {
      * @return A ResponseEntity containing a list of Person entities that match the
      *         search term.
      */
+
     @PostMapping(value = "/people/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> personSearch(@RequestBody final Map<String, String> map) {
         // extract term from RequestEntity
@@ -165,20 +237,95 @@ public class PersonApiController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+    // @PostMapping(value = "/person/setSections", produces = MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<?> setSections(@AuthenticationPrincipal UserDetails userDetails, @RequestBody final List<SectionDTO> sections) {
+    //     // Check if the authentication object is null
+    //     if (userDetails == null) {
+    //         return ResponseEntity
+    //                 .status(HttpStatus.UNAUTHORIZED)
+    //                 .body("Error: Authentication object is null. User is not authenticated.");
+    //     }
+        
+    //     String email = userDetails.getUsername();
+        
+    //     // Manually wrap the result in Optional.ofNullable
+    //     Optional<Person> optional = Optional.ofNullable(repository.findByEmail(email));
+    //     if (optional.isPresent()) {
+    //         Person person = optional.get();
+
+    //         // Get existing sections and ensure it is not null
+    //         Collection<PersonSections> existingSections = person.getSections();
+    //         if (existingSections == null) {
+    //             existingSections = new ArrayList<>();
+    //         }
+
+    //         // Add  sections
+    //         for (SectionDTO sectionDTO : sections) {
+    //             if (!existingSections.stream().anyMatch(s -> s.getName().equals(sectionDTO.getName()))) {
+    //                 PersonSections newSection = new PersonSections(sectionDTO.getName(), sectionDTO.getAbbreviation(), sectionDTO.getYear());
+    //                 existingSections.add(newSection);
+    //             } else {
+    //                 return ResponseEntity
+    //                         .status(HttpStatus.CONFLICT)
+    //                         .body("Error: Section with name '" + sectionDTO.getName() + "' already exists.");
+    //             }
+    //         }
+
+    //         // Persist updated sections
+    //         person.setSections(existingSections);
+    //         repository.save(person);
+
+    //         // Return updated Person
+    //         return ResponseEntity.ok(person);
+    //     }
+
+    //     // Person not found
+    //     return ResponseEntity
+    //             .status(HttpStatus.NOT_FOUND)
+    //             .body("Error: Person not found with email: " + email);
+    // }
+
+
+    @PutMapping("/person/{id}")
+    public ResponseEntity<Object> updatePerson(@PathVariable long id, @RequestBody PersonDto personDto) {
+        Optional<Person> optional = repository.findById(id);
+        if (optional.isPresent()) {  // If the person with the given ID exists
+            Person existingPerson = optional.get();
+
+            // Update the existing person's details
+            existingPerson.setEmail(personDto.getEmail());
+            existingPerson.setPassword(personDto.getPassword());
+            existingPerson.setName(personDto.getName());
+            
+            // Optional: Update other fields if they exist in Person
+            existingPerson.setPfp(personDto.getPfp());
+            existingPerson.setKasmServerNeeded(personDto.getKasmServerNeeded());
+
+            // Save the updated person back to the repository
+            repository.save(existingPerson);
+
+            // Return the updated person entity
+            return new ResponseEntity<>(existingPerson, HttpStatus.OK);
+        }
+
+        // Return NOT_FOUND if the person with the given ID does not exist
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     /**
      * Adds stats to the Person table
      * 
      * @param stat_map is a JSON object, example format:
-     *                 {"health":
-     *                 {"date": "2021-01-01",
-     *                 "measurements":
-     *                 {
-     *                 "weight": "150",
-     *                 "height": "70",
-     *                 "bmi": "21.52"
-     *                 }
-     *                 }
-     *                 }
+        {"health":
+            {"date": "2021-01-01",
+            "measurements":
+                {   
+                    "weight": "150",
+                    "height": "70",
+                    "bmi": "21.52"
+                }
+            }
+        }
      * @return A ResponseEntity containing the Person entity with updated stats, or
      *         a NOT_FOUND status if not found.
      */
@@ -234,4 +381,6 @@ public class PersonApiController {
         // return Bad ID
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
 }
+
