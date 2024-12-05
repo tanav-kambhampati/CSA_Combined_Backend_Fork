@@ -66,6 +66,7 @@ public class PersonViewController {
         }
 
         // Save new person to the database
+        person.setBalance(Float.valueOf(0)); //default balance to 0;
         repository.save(person);
         repository.addRoleToPerson(person.getEmail(), "ROLE_USER");
 
