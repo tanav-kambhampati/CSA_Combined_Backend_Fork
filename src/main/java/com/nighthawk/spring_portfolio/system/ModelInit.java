@@ -1,11 +1,21 @@
 package com.nighthawk.spring_portfolio.system;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
+import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
+import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
+import com.nighthawk.spring_portfolio.mvc.comment.Comment;
+import com.nighthawk.spring_portfolio.mvc.comment.CommentJPA;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
 import com.nighthawk.spring_portfolio.mvc.jokes.JokesJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.mortevision.Assignment;
@@ -16,18 +26,6 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
-import com.nighthawk.spring_portfolio.Slack.SlackMessageRepository;
-import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
-import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
-import com.nighthawk.spring_portfolio.mvc.bathroom.IssueJPARepository;
-import com.nighthawk.spring_portfolio.mvc.bathroom.Issue;
-import com.nighthawk.spring_portfolio.mvc.comment.CommentJPA;
-import com.nighthawk.spring_portfolio.mvc.comment.Comment;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @Configuration // Scans Application for ModelInit Bean, this detects CommandLineRunner
@@ -39,7 +37,7 @@ public class ModelInit {
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired AssignmentJpaRepository assignmentJpa;
     @Autowired CommentJPA CommentJPA;
-    // @Autowired IssueJPARepository issueJPARepository;
+    @Autowired IssueJPARepository issueJPARepository;
 
     @Bean
     @Transactional
@@ -102,14 +100,14 @@ public class ModelInit {
                     noteRepo.save(n);  // JPA Save                  
                 }
             }
-            // // Issue database initialization
-            // Issue[] issueArray = Issue.init();
-            // for (Issue issue : issueArray) {
-            //     List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
-            //     if (issueFound.isEmpty()) {
-            //         issueJPARepository.save(issue);
-            //     }
-            // }
+            // Issue database initialization
+            Issue[] issueArray = Issue.init();
+            for (Issue issue : issueArray) {
+                List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
+                if (issueFound.isEmpty()) {
+                    issueJPARepository.save(issue);
+                }
+            }
 
         };
     }
