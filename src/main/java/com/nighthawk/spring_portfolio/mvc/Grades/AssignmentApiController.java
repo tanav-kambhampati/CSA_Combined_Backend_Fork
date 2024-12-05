@@ -20,7 +20,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import com.nighthawk.spring_portfolio.mvc.Grades.Assignment;
+import com.nighthawk.spring_portfolio.mvc.assignments.Assignment;
+import com.nighthawk.spring_portfolio.mvc.assignments.AssignmentJpaRepository;
 import com.nighthawk.spring_portfolio.security.JwtTokenUtil;
 
 @RestController
