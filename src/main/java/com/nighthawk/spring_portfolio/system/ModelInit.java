@@ -39,7 +39,7 @@ public class ModelInit {
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired AssignmentJpaRepository assignmentJpa;
     @Autowired CommentJPA CommentJPA;
-    @Autowired IssueJPARepository issueJPARepository;
+    // @Autowired IssueJPARepository issueJPARepository;
 
     @Bean
     @Transactional
@@ -102,14 +102,14 @@ public class ModelInit {
                     noteRepo.save(n);  // JPA Save                  
                 }
             }
-            // Issue database initialization
-            Issue[] issueArray = Issue.init();
-            for (Issue issue : issueArray) {
-                List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
-                if (issueFound.isEmpty()) {
-                    issueJPARepository.save(issue);
-                }
-            }
+            // // Issue database initialization
+            // Issue[] issueArray = Issue.init();
+            // for (Issue issue : issueArray) {
+            //     List<Issue> issueFound = issueJPARepository.findByIssueAndBathroomIgnoreCase(issue.getIssue(), issue.getBathroom());
+            //     if (issueFound.isEmpty()) {
+            //         issueJPARepository.save(issue);
+            //     }
+            // }
 
         };
     }
