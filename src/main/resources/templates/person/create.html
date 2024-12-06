@@ -65,10 +65,6 @@
     <th:block layout:fragment="body" th:remove="tag">
         <div class="container">
             <div class="row justify-content-md-center">
-                <h2>Create Your Account</h2>
-            </div>
-
-            <div class="row justify-content-md-center">
                 <div class="col8">
                     <div class="jumbotron">
                         <h3>Create New Account</h3>
@@ -77,9 +73,8 @@
                             
                             <!-- GitHub Username Input -->
                             <div class="input-group mb-2 mr-sm-2">
-                                <label for="github_username">GitHub Username:</label>
-                                <input type="text" th:field="*{ghid}" id="ghid" placeholder="Enter GitHub Username">
-                                <small th:if="${#fields.hasErrors('ghid')}" th:errors="*{ghid}">GitHub Username Error</small>
+                                <input type="text" th:field="*{ghid}" id="ghid" placeholder="Enter GitHub ID">
+                                <small th:if="${#fields.hasErrors('ghid')}" th:errors="*{ghid}">GitHub ID Error</small>
                             </div>
 
                             <!-- GitHub Profile Picture -->
@@ -91,34 +86,30 @@
 
                             <!-- GitHub Username Input -->
                             <div class="input-group mb-2 mr-sm-2">
-                                <label for="name">Custom Usename:</label>
-                                <input type="text" th:field="*{name}" id="name" placeholder="Enter Custom Username">
-                                <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</small>
+                                <input type="text" th:field="*{name}" id="name" placeholder="Display Name">
+                                <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Username Error</small>
                             </div>
 
                             <!-- Password Input -->
                             <div class="form-group mb-2 mr-sm-2">
-                                <label for="password">Password:</label>
-                                <input type="password" th:field="*{password}" id="password">
+                                <input type="password" th:field="*{password}" id="password" placeholder="Password">
                                 <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</small>
                             </div>
 
                             <!-- Confirm Password Input -->
                             <div class="form-group mb-2 mr-sm-2">
-                                <label for="confirm_password">Confirm Password:</label>
-                                <input type="password" id="confirm_password">
+                                <input type="password" id="confirm_password" placeholder="Confirm Password">
                             </div>
 
                             <!-- Date of Birth Input -->
                             <div class="input-group mb-2 mr-sm-2">
-                                <label for="dob">Birth Date:</label>
-                                <input type="date" th:field="*{dob}" id="dob">
+                                <input type="date" th:field="*{dob}" id="dob" placeholder:"DOB mm/dd/yyyy">
                                 <small th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}">Birth Date Error</small>
                             </div>
 
                             <!-- Checkbox: Kasm Server Needed -->
                             <div class="input-group mb-2 mr-sm-2">
-                                <label for="kasmServerNeeded">Kasm Server Needed:</label>
+                                <label for="kasmServerNeeded"> Request Kasm Server: </label>
                                 <input type="checkbox" th:field="*{kasmServerNeeded}" id="kasmServerNeeded">
                                 <small th:if="${#fields.hasErrors('kasmServerNeeded')}" th:errors="*{kasmServerNeeded}">Kasm Server Needed Error</small>
                             </div>
