@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nighthawk.spring_portfolio.mvc.person.Person;
 import lombok.Getter;
 
 @RestController
@@ -28,19 +29,19 @@ public class TinkleApiController {
         private double averageDuration;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Object> timeInOut(@RequestBody TinkleDto tinkleDto) {
-        Optional<Tinkle> student = repository.findByStudentEmail(tinkleDto.getStudentEmail());
-        if (student.isPresent()) {
-            student.get().addTimeIn(tinkleDto.getTimeIn());
-            student.get().addAverageDuration(tinkleDto.getAverageDuration());
-            repository.save(student.get());
-            return new ResponseEntity<>(student.get(), HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
-        }
-    }
+    // @PostMapping("/add")
+    // public ResponseEntity<Object> timeInOut(@RequestBody TinkleDto tinkleDto) {
+    //     Optional<Tinkle> student = repository.findByStudentEmail(tinkleDto.getStudentEmail());
+    //     if (student.isPresent()) {
+    //         student.get().addTimeIn(tinkleDto.getTimeIn());
+    //         // student.get().addAverageDuration(tinkleDto.getAverageDuration());
+    //         repository.save(student.get());
+    //         return new ResponseEntity<>(student.get(), HttpStatus.OK);
+    //     }
+    //     else {
+    //         return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
+    //     }
+    // }
 
     @GetMapping("/all")
     public List<Tinkle> getAll() {

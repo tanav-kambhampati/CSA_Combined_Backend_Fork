@@ -1,12 +1,15 @@
 package com.nighthawk.spring_portfolio.mvc.bathroom;
 
 import java.util.ArrayList;
-
+import com.nighthawk.spring_portfolio.mvc.person.Person;
 import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,16 +23,24 @@ public class Tinkle {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
-    private String studentEmail;
+    @ManyToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
     private String timeIn;
-    private double averageDuration;
 
-    public Tinkle(String studentEmail, String timeIn, double averageDuration)
+    @Column
+    private String person_name;
+    // @Column
+
+    // private String studentEmail;
+    // private String timeIn;
+    // private double averageDuration;
+
+    public Tinkle(Person person, String statsInput)
     {
-        this.studentEmail = studentEmail;
-        this.timeIn = timeIn;
-        this.averageDuration = averageDuration;
+        this.person = person;
+        this.timeIn = statsInput;
+        this.person_name = person.getName();
     }
 
     public void addTimeIn(String timeIn)
@@ -45,28 +56,37 @@ public class Tinkle {
 
     }
 
-    public void addAverageDuration(double averageDuration)
-    {
-        if (this.averageDuration == 0.0)
-        {
-            this.averageDuration = averageDuration;
-        }
-        else 
-        {
-            this.averageDuration += averageDuration;
-        }
-    }
+    // public void addAverageDuration(double averageDuration)
+    // {
+    //     if (this.averageDuration == 0.0)
+    //     {
+    //         this.averageDuration = averageDuration;
+    //     }
+    //     else 
+    //     {
+    //         this.averageDuration += averageDuration;
+    //     }
+    // }
 
-    public static Tinkle[] init()
+    // public static Tinkle[] init()
+    // {
+    //     ArrayList<Tinkle> users = new ArrayList<>();
+    //     users.add(new Tinkle("toby@gmail.com", "", 0.0));
+    //     users.add(new Tinkle("lexb@gmail.com", "", 0.0));
+    //     users.add(new Tinkle("niko@gmail.com", "", 0.0));
+    //     users.add(new Tinkle("madam@gmail.com", "", 0.0));
+    //     users.add(new Tinkle("hop@gmail.com", "", 0.0));
+    //     users.add(new Tinkle("jm1021@gmail.com", "", 0.0));
+    //     users.add(new Tinkle("tarasehdave@gmail.com", "", 0.0));
+    //     return users.toArray(new Tinkle[0]);
+    // }
+    public static Tinkle[] init(Person[] persons)
     {
-        ArrayList<Tinkle> users = new ArrayList<>();
-        users.add(new Tinkle("toby@gmail.com", "", 0.0));
-        users.add(new Tinkle("lexb@gmail.com", "", 0.0));
-        users.add(new Tinkle("niko@gmail.com", "", 0.0));
-        users.add(new Tinkle("madam@gmail.com", "", 0.0));
-        users.add(new Tinkle("hop@gmail.com", "", 0.0));
-        users.add(new Tinkle("jm1021@gmail.com", "", 0.0));
-        users.add(new Tinkle("tarasehdave@gmail.com", "", 0.0));
-        return users.toArray(new Tinkle[0]);
+        ArrayList<Tinkle> tinkles = new ArrayList<>();
+        for(Person person: persons)
+        {
+            tinkles.add(new Tinkle(person,""));
+        }
+        return tinkles.toArray(new Tinkle[0]);
     }
 }

@@ -21,6 +21,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Convert;
 import static jakarta.persistence.FetchType.EAGER;
 import jakarta.validation.constraints.Email;
@@ -77,13 +78,16 @@ public class Person implements Comparable<Person> {
     )
     private Collection<PersonSections> sections = new ArrayList<>();
 
-    @ManyToMany(fetch = EAGER)
-    @JoinTable(
-        name = "person_bathroom",
-        joinColumns=@JoinColumn(name = "person_name"),
-        inverseJoinColumns = @JoinColumn(name = "tinkle_time")
-    )
-    private Collection<Tinkle> time_entries = new ArrayList<>();
+    @OneToMany(mappedBy = "person")
+    private List<Tinkle> time_entries;
+    // @ManyToMany(fetch = EAGER)
+    // @JoinTable(
+    //     name = "person_bathroom",
+    //     joinColumns=@JoinColumn(name = "person_name"),
+    //     inverseJoinColumns = @JoinColumn(name = "tinkle_time")
+    // )
+    // private Collection<Tinkle> time_entries = new ArrayList<>();
+    
     /**
      * Many to Many relationship with PersonRole
      * --- @ManyToMany annotation is used to specify a many-to-many relationship

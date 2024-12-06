@@ -24,7 +24,8 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
-
+import com.nighthawk.spring_portfolio.mvc.bathroom.Tinkle;
+import com.nighthawk.spring_portfolio.mvc.bathroom.TinkleJPARepository;
 @Component
 @Configuration // Scans Application for ModelInit Bean, this detects CommandLineRunner
 public class ModelInit {  
@@ -35,6 +36,8 @@ public class ModelInit {
     @Autowired AnnouncementJPA announcementJPA;
     @Autowired AssignmentJpaRepository assignmentJpa;
     @Autowired CommentJPA CommentJPA;
+    @Autowired TinkleJPARepository tinkleJPA;
+
     // @Autowired IssueJPARepository issueJPARepository;
 
     @Bean
@@ -97,6 +100,12 @@ public class ModelInit {
                     noteRepo.save(n);  // JPA Save                  
                 }
             }
+
+            Tinkle[] tinkleArray = Tinkle.init(personArray);
+            for(Tinkle tinkle: tinkleArray)
+            {
+                tinkleJPA.save(tinkle);
+            }
             // Issue database initialization
             // Issue[] issueArray = Issue.init();
             // for (Issue issue : issueArray) {
@@ -104,6 +113,15 @@ public class ModelInit {
             //     if (issueFound.isEmpty()) {
             //         issueJPARepository.save(issue);
             //     }
+            // }
+            // ArrayList<Tinkle> tinkles = new ArrayList<>();
+            // for(Person person: personArray)
+            // {
+            //     tinkles.add(new Tinkle(person, "2"));
+            // }
+            // for(Tinkle tinkle: tinkles)
+            // {
+            //     tinkleJPA.save(tinkle);
             // }
 
         };
