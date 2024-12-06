@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.bathroom.BathroomQueue;
+import com.nighthawk.spring_portfolio.mvc.bathroom.QueueJPARepository;
+import com.nighthawk.spring_portfolio.mvc.bathroom.Tinkle;
+import com.nighthawk.spring_portfolio.mvc.bathroom.TinkleJPARepository;
 import com.nighthawk.spring_portfolio.mvc.comment.Comment;
 import com.nighthawk.spring_portfolio.mvc.comment.CommentJPA;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
@@ -24,8 +28,6 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
-import com.nighthawk.spring_portfolio.mvc.bathroom.Tinkle;
-import com.nighthawk.spring_portfolio.mvc.bathroom.TinkleJPARepository;
 @Component
 @Configuration // Scans Application for ModelInit Bean, this detects CommandLineRunner
 public class ModelInit {  
@@ -37,6 +39,7 @@ public class ModelInit {
     @Autowired AssignmentJpaRepository assignmentJpa;
     @Autowired CommentJPA CommentJPA;
     @Autowired TinkleJPARepository tinkleJPA;
+    @Autowired QueueJPARepository queueJPA;
 
     // @Autowired IssueJPARepository issueJPARepository;
 
@@ -106,6 +109,13 @@ public class ModelInit {
             {
                 tinkleJPA.save(tinkle);
             }
+
+            BathroomQueue[] bathroomArray = BathroomQueue.init();
+            for(BathroomQueue bathroom: bathroomArray)
+            {
+                queueJPA.save(bathroom);
+            }
+        };
             // Issue database initialization
             // Issue[] issueArray = Issue.init();
             // for (Issue issue : issueArray) {
@@ -125,6 +135,5 @@ public class ModelInit {
             // }
 
         };
-    }
 }
 
