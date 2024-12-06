@@ -89,7 +89,10 @@
                                     <p style="font-size:0.75em;margin:1px" sec:authorize="hasRole('TESTER')">TESTER</p>
                                 </div>
                             </li>
+                            <li><a class="dropdown-item active" th:href='@{/logout}'>Profile</a></li>
+                            <li><a class="dropdown-item active" th:href='@{/mvc/bathroom/issues}'>Report Issues</a></li>
                             <li><a class="dropdown-item active" th:href='@{/logout}'>Logout</a></li>
+                        
                         </ul>
                     </div>
                 </th:block>

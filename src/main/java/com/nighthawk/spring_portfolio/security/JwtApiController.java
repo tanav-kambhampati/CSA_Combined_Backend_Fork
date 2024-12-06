@@ -31,43 +31,55 @@ import jakarta.servlet.http.HttpServletResponse;
 @CrossOrigin
 public class JwtApiController {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
-	@Autowired
-	private PersonDetailsService personDetailsService;
+    @Autowired
+    private PersonDetailsService personDetailsService;
 
-	@PostMapping("/authenticate")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody Person authenticationRequest) throws Exception {
-		authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
-		final UserDetails userDetails = personDetailsService
-				.loadUserByUsername(authenticationRequest.getEmail());
+    // @Autowired
+    // private ProfileJpaRepository profileJpaRepository;
 
-		// Get the roles of the user
-		List<String> roles = userDetails.getAuthorities().stream()
-			.map(GrantedAuthority::getAuthority)
-			.collect(Collectors.toList());
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody Person authenticationRequest) throws Exception {
+        authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+        final UserDetails userDetails = personDetailsService
+                .loadUserByUsername(authenticationRequest.getEmail());
 
-		// Generate the token with the roles
-		final String token = jwtTokenUtil.generateToken(userDetails, roles);
+        // Get the roles of the user
+        List<String> roles = userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
 
-		if (token == null) {
-			return new ResponseEntity<>("Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+        // Generate the token with the roles
+        final String token = jwtTokenUtil.generateToken(userDetails, roles);
 
-		final ResponseCookie tokenCookie = ResponseCookie.from("jwt_java_spring", token)
-			.httpOnly(true)
-			.secure(true)
-			.path("/")
-			.maxAge(3600)
-			.sameSite("None; Secure")
-			.build();
+        if (token == null) {
+            return new ResponseEntity<>("Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, tokenCookie.toString()).body(authenticationRequest.getEmail() + " was authenticated successfully");
-	}
+        // // Update login date and timeIn
+        // profileJpaRepository.findByEmail(authenticationRequest.getEmail()).ifPresent(user -> {
+        //     user.setDate(LocalDate.now());          // Save the current date
+        //     user.setTimeIn(LocalTime.now());     // Save the current time as timeIn
+        //     profileJpaRepository.save(user);         // Save updated profile with new date and timeIn
+        // });
+
+        final ResponseCookie tokenCookie = ResponseCookie.from("jwt_java_spring", token)
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(3600)
+            .sameSite("None; Secure")
+            .build();
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, tokenCookie.toString())
+            .body(authenticationRequest.getEmail() + " was authenticated successfully");
+        }
 
 	private void authenticate(String username, String password) throws Exception {
 		try {

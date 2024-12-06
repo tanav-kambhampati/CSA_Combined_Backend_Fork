@@ -69,8 +69,9 @@ public class ModelInit {
             String[] jokesArray = Jokes.init();
             for (String joke : jokesArray) {
                 List<Jokes> jokeFound = jokesRepo.findByJokeIgnoreCase(joke);  // JPA lookup
-                if (jokeFound.size() == 0)
-                    jokesRepo.save(new Jokes(null, joke, 0, 0)); //JPA save
+                if (jokeFound.size() == 0) {
+                    jokesRepo.save(new Jokes(null, joke, 0, 0)); // JPA save
+                }
             }
 
             Person[] personArray = Person.init();
@@ -80,12 +81,10 @@ public class ModelInit {
                     List<PersonRole> updatedRoles = new ArrayList<>();
                     for (PersonRole role : person.getRoles()) {
                         PersonRole roleFound = roleJpaRepository.findByName(role.getName());  // JPA lookup
-                        if (roleFound == null) { // add if not found
-                            // Save the new role to database
+                        if (roleFound == null) {
                             roleJpaRepository.save(role);  // JPA save
                             roleFound = role;
                         }
-                        // Accumulate reference to role from database
                         updatedRoles.add(roleFound);
                     }
                     // Update person with roles from role databasea

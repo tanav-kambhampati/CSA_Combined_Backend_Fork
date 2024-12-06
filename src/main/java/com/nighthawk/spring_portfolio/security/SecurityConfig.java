@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -14,6 +14,19 @@ import org.springframework.web.client.RestTemplate;
 /*
 * To enable HTTP Security in Spring
 */
+
+/*
+ * THIS FILE IS IMPORTANT
+ * 
+ * you can configure which http requests need to be authenticated or not
+ * for example, you can change the /authenticate to "authenticated()" or "permitAll()"
+ * --> obviously, you want to set it to permitAll() so anyone can login. it doesn't make sense
+ *     to have to login first before authenticating!
+ * 
+ * another example is /mvc/person/create/** which i changed to permitAll() so anyone can make an account.
+ * it doesn't make sense to have to login to make your account!
+ */
+
 @Configuration
 public class SecurityConfig {
     @Bean
