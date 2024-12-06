@@ -1,4 +1,4 @@
-package com.nighthawk.spring_portfolio.Slack;
+package com.nighthawk.spring_portfolio.mvc.Slack;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +23,9 @@ public class CalendarEventController {
 
     @PostMapping("/add")
     public void addEventsFromSlackMessage(@RequestBody Map<String, String> jsonMap) {
-        LocalDate weekStartDate = LocalDate.parse("2024-10-30"); // Example start date
+        LocalDateTime now = LocalDateTime.now();
+        String formattedDate = String.format("%d-%02d-%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        LocalDate weekStartDate = LocalDate.parse(formattedDate);
         calendarEventService.parseSlackMessage(jsonMap, weekStartDate);
     }
     
