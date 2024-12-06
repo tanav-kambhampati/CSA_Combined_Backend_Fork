@@ -1,9 +1,10 @@
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
+!**/src/main/**/targe/
 !**/src/test/**/target/
-volumes/
+volumes/sqlite.db
+
 
 ### STS ###
 .apt_generated
