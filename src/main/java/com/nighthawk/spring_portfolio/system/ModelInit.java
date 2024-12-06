@@ -107,7 +107,7 @@ public class ModelInit {
             {
                 // List<Tinkle> tinkleFound = 
                 Optional<Tinkle> tinkleFound = tinkleJPA.findByPersonName(tinkle.getPerson_name());
-                if(tinkleFound == null)
+                if(tinkleFound.isEmpty())
                 {
                     tinkleJPA.save(tinkle);
                 }
