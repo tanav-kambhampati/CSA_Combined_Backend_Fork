@@ -1,87 +1,101 @@
 <!DOCTYPE HTML>
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/base}" lang="en">
+
 <head>
-    <title>Person Form</title>
+    <title>Create Account</title>
     <script>
-        function encodeImageFileAsURL(element) {
-            const file = element.files[0];
+        function encodeImageFileAsURL(fileToConvert) {
+            const file = fileToConvert;
             var reader = new FileReader();
             reader.onloadend = function() {
                 console.log('RESULT', reader.result)
-                document.getElementById("pfp_preview").src = URL.createObjectURL(file);
                 document.getElementById("pfp").value = reader.result;
             }
             reader.readAsDataURL(file);
         }
 
-        window.addEventListener("load", (event) => {
-            document.getElementById("pfp_preview").src = document.getElementById("pfp").value;
-        });
+        window.addEventListener("load",()=>{
+            document.getElementById("github_pfp").src = document.getElementById("pfp").value;
+        })
 
-        // Function to validate form (password confirmation)
+        // Function to validate the form (password confirmation)
         function validateForm(event) {
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirm_password").value;
 
+            // Check if passwords match
             if (password !== confirmPassword) {
                 alert("Passwords do not match!");
                 event.preventDefault(); // Prevent form submission
+                return;
             }
         }
     </script>
 </head>
+
 <body>
     <th:block layout:fragment="body" th:remove="tag">
         <div class="container">
             <div class="row justify-content-md-center">
-                <h2>Enter the details to update</h2>
+                <h2>Create Your Account</h2>
             </div>
 
             <div class="row justify-content-md-center">
                 <div class="col8">
                     <div class="jumbotron">
-                        <h3>Update Person</h3>
+                        <h3>Update Account</h3>
+                        <!-- Form submits the data to the backend for account creation -->
                         <form class="form-inline" action="#" th:action="@{/mvc/person/update}" th:object="${person}" method="POST" onsubmit="validateForm(event)">
+                            
+                            <!-- GitHub Username Input -->
+                            <div class="input-group mb-2 mr-sm-2">
+                                <input type="text" th:field="*{ghid}" id="ghid" hidden>
+                                <small th:if="${#fields.hasErrors('ghid')}" th:errors="*{ghid}">GitHub Username Error</small>
+                            </div>
+
+                            <!-- GitHub Profile Picture -->
+                            <div id="github_pfp_container" style="margin-top: 10px;">
+                                <img id="github_pfp" src="" alt="GitHub Profile Picture" style="max-width: 100px; display: none;">
+                                <input  th:field="*{pfp}" id="pfp" hidden>
+                                <small th:if="${#fields.hasErrors('pfp')}" th:errors="*{pfp}">Pfp Error</small>
+                            </div>
+
+                            <!-- GitHub Username Input -->
                             <div class="input-group mb-2 mr-sm-2">
                                 <label for="name">Name:</label>
-                                <input type="text" th:field="*{name}" id="name">
+                                <input type="text" th:field="*{name}" id="name" placeholder="Enter Custom Username">
                                 <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</small>
                             </div>
-                            <div class="form-group mb-2 mr-sm-2">
-                                <input type="ghid" th:field="*{ghid}" id="ghid" hidden>
-                                <small th:if="${#fields.hasErrors('ghid')}" th:errors="*{ghid}">ghid Error</small>
-                            </div>
+
+                            <!-- Password Input -->
                             <div class="form-group mb-2 mr-sm-2">
                                 <label for="password">Password:</label>
                                 <input type="password" th:field="*{password}" id="password">
                                 <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</small>
                             </div>
+
+                            <!-- Confirm Password Input -->
                             <div class="form-group mb-2 mr-sm-2">
                                 <label for="confirm_password">Confirm Password:</label>
                                 <input type="password" id="confirm_password">
                             </div>
+
+                            <!-- Date of Birth Input -->
                             <div class="input-group mb-2 mr-sm-2">
                                 <label for="dob">Birth Date:</label>
                                 <input type="date" th:field="*{dob}" id="dob">
                                 <small th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}">Birth Date Error</small>
                             </div>
+
+                            <!-- Checkbox: Kasm Server Needed -->
                             <div class="input-group mb-2 mr-sm-2">
                                 <label for="kasmServerNeeded">Kasm Server Needed:</label>
                                 <input type="checkbox" th:field="*{kasmServerNeeded}" id="kasmServerNeeded">
                                 <small th:if="${#fields.hasErrors('kasmServerNeeded')}" th:errors="*{kasmServerNeeded}">Kasm Server Needed Error</small>
                             </div>
-                            <div class="input-group mb-2 mr-sm-2">
-                                <label for="pfp">Profile Picture:</label>
-                                <input type="file" id="pfp_input" accept="image/png, image/jpeg, image/jpg" onchange="encodeImageFileAsURL(this)">
-                                <input type="hidden" th:field="*{pfp}" id="pfp">
-                                <small th:if="${#fields.hasErrors('pfp')}" th:errors="*{pfp}">Profile Picture Error</small>
-                            </div>
-                            <!-- Preview area -->
-                            <div>
-                                <h4>Profile Picture Preview:</h4>
-                                <img id="pfp_preview" src="" alt="Profile Preview" style="max-width: 200px; max-height: 200px;"/>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Update</button>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary">Update Account</button>
                         </form>
                     </div>
                 </div>
@@ -89,4 +103,5 @@
         </div>
     </th:block>
 </body>
+
 </html>
