@@ -64,10 +64,10 @@ public class PersonApiController {
     @GetMapping("/person/get")
     public ResponseEntity<Person> getPerson(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername(); // Email is mapped/unmapped to username for Spring Security
+        String ghid = userDetails.getUsername(); // ghid is mapped/unmapped to username for Spring Security
 
         // Find a person by username
-        Person person = repository.findByEmail(email);
+        Person person = repository.findByGhid(ghid);
 
         // Return the person if found
         if (person != null) {
@@ -130,7 +130,7 @@ public class PersonApiController {
      */
     @Getter
     public static class PersonDto {
-        private String email;
+        private String ghid;
         private String password;
         private String name;
         private String dob;
@@ -155,7 +155,7 @@ public class PersonApiController {
             return new ResponseEntity<>(personDto.getDob() + " error; try MM-dd-yyyy", HttpStatus.BAD_REQUEST);
         }
         // A person object WITHOUT ID will create a new record in the database
-        Person person = new Person(personDto.getEmail(), personDto.getPassword(), personDto.getName(), dob, "USER", true, personDetailsService.findRole("USER"));
+        Person person = new Person(personDto.getGhid(), personDto.getPassword(), personDto.getName(), dob, "USER", true, personDetailsService.findRole("USER"));
 
         personDetailsService.save(person);
 
@@ -163,7 +163,7 @@ public class PersonApiController {
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 
         JSONObject responseObject = new JSONObject();
-        responseObject.put("response",personDto.getEmail() + " is created successfully");
+        responseObject.put("response",personDto.getGhid() + " is created successfully");
 
         String reponseString = responseObject.toString();
 
@@ -176,18 +176,18 @@ public class PersonApiController {
 
 @PostMapping(value = "/person/update", produces = MediaType.APPLICATION_JSON_VALUE)
 public ResponseEntity<Object> updatePerson(Authentication authentication, @RequestBody final PersonDto personDto) {
-    // Get the email of the current user from the authentication context
+    // Get the ghid of the current user from the authentication context
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    String email = userDetails.getUsername(); // Assuming email is used as the username in Spring Security
+    String ghid = userDetails.getUsername(); // Assuming ghid is used as the username in Spring Security
 
-    // Find the person by email
-    Optional<Person> optionalPerson = Optional.ofNullable(repository.findByEmail(email));
+    // Find the person by ghid
+    Optional<Person> optionalPerson = Optional.ofNullable(repository.findByGhid(ghid));
     if (optionalPerson.isPresent()) {
         Person existingPerson = optionalPerson.get();
 
         // Update fields only if they're provided in personDto
-        if (personDto.getEmail() != null) {
-            existingPerson.setEmail(personDto.getEmail());
+        if (personDto.getGhid() != null) {
+            existingPerson.setGhid(personDto.getGhid());
         }
         if (personDto.getPassword() != null) {
             existingPerson.setPassword(passwordEncoder.encode(personDto.getPassword()));
@@ -216,7 +216,7 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
 
 
     /**
-     * Search for a Person entity by name or email.
+     * Search for a Person entity by name or ghid.
      * 
      * @param map of a key-value (k,v), the key is "term" and the value is the
      *            search term.
@@ -230,7 +230,7 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
         String term = (String) map.get("term");
 
         // JPA query to filter on term
-        List<Person> list = repository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(term, term);
+        List<Person> list = repository.findByNameContainingIgnoreCaseOrGhidContainingIgnoreCase(term, term);
 
         // return resulting list and status, error checking should be added
         return new ResponseEntity<>(list, HttpStatus.OK);
@@ -243,7 +243,7 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
             Person existingPerson = optional.get();
 
             // Update the existing person's details
-            existingPerson.setEmail(personDto.getEmail());
+            existingPerson.setGhid(personDto.getGhid());
             existingPerson.setPassword(personDto.getPassword());
             existingPerson.setName(personDto.getName());
             
@@ -282,10 +282,10 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
     @PostMapping(value = "/person/setStats", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Person> personStats(Authentication authentication, @RequestBody final Map<String,Object> stat_map) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername(); // Email is mapped/unmapped to username for Spring Security
+        String ghid = userDetails.getUsername(); // ghid is mapped/unmapped to username for Spring Security
 
         // Find a person by username
-        Optional<Person> optional = Optional.ofNullable(repository.findByEmail(email));
+        Optional<Person> optional = Optional.ofNullable(repository.findByGhid(ghid));
         if (optional.isPresent()) { // Good ID
             Person person = optional.get(); // value from findByID
 
@@ -345,12 +345,12 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
      */
     @PostMapping("/person/balance/update")
     public ResponseEntity<Object> updateBalance(Authentication authentication, @RequestBody final AmountDto amountDto) {
-        // Get the email of the current user from the authentication context
+        // Get the ghid of the current user from the authentication context
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername(); // Assuming email is used as the username in Spring Security
+        String ghid = userDetails.getUsername(); // Assuming ghid is used as the username in Spring Security
     
-        // Find the person by email
-        Optional<Person> optionalPerson = Optional.ofNullable(repository.findByEmail(email));
+        // Find the person by ghid
+        Optional<Person> optionalPerson = Optional.ofNullable(repository.findByGhid(ghid));
         if (optionalPerson.isPresent()) {
             Person existingPerson = optionalPerson.get();
     

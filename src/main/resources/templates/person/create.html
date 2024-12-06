@@ -4,6 +4,16 @@
 <head>
     <title>Create Account</title>
     <script>
+        function encodeImageFileAsURL(fileToConvert) {
+            const file = fileToConvert;
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                console.log('RESULT', reader.result)
+                document.getElementById("pfp").value = reader.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
         // Function to validate the form (password confirmation)
         function validateForm(event) {
             const password = document.getElementById("password").value;
@@ -19,7 +29,7 @@
 
         // Function to check if the GitHub username exists
         function checkGitHubUsername() {
-            const githubUsername = document.getElementById("github_username").value;
+            const githubUsername = document.getElementById("ghid").value;
             const url = `https://api.github.com/users/${githubUsername}`;
 
             // Check if the GitHub username is valid and fetch profile picture
@@ -36,6 +46,13 @@
                     const pfpImage = document.getElementById("github_pfp");
                     pfpImage.src = data.avatar_url;
                     pfpImage.style.display = "block"; // Show the profile picture
+
+                    fetch(data.avatar_url)
+                        .then(res => res.blob()) // Gets the response and returns it as a blob
+                        .then(blob => {
+                          encodeImageFileAsURL(blob);
+                    });
+                    
                 })
                 .catch(error => {
                     alert(error.message);
@@ -61,8 +78,8 @@
                             <!-- GitHub Username Input -->
                             <div class="input-group mb-2 mr-sm-2">
                                 <label for="github_username">GitHub Username:</label>
-                                <input type="text" th:field="*{name}" id="github_username" placeholder="Enter GitHub Username">
-                                <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}">GitHub Username Error</small>
+                                <input type="text" th:field="*{ghid}" id="ghid" placeholder="Enter GitHub Username">
+                                <small th:if="${#fields.hasErrors('ghid')}" th:errors="*{ghid}">GitHub Username Error</small>
                             </div>
 
                             <!-- Button to Check GitHub Username -->
@@ -71,6 +88,15 @@
                             <!-- GitHub Profile Picture -->
                             <div id="github_pfp_container" style="margin-top: 10px;">
                                 <img id="github_pfp" src="" alt="GitHub Profile Picture" style="max-width: 100px; display: none;">
+                                <input  th:field="*{pfp}" id="pfp" hidden>
+                                <small th:if="${#fields.hasErrors('pfp')}" th:errors="*{pfp}">Pfp Error</small>
+                            </div>
+
+                            <!-- GitHub Username Input -->
+                            <div class="input-group mb-2 mr-sm-2">
+                                <label for="name">Name:</label>
+                                <input type="text" th:field="*{name}" id="name" placeholder="Enter Custom Username">
+                                <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</small>
                             </div>
 
                             <!-- Password Input -->

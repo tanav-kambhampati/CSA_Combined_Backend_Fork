@@ -59,16 +59,16 @@ public class PersonViewController {
             return "person/create";
         }
 
-        // Check if email already exists in the database
-        if (repository.existsByEmail(person.getEmail())) {
-            model.addAttribute("emailError", "This email is already in use. Please use a different email.");
+        // Check if ghid already exists in the database
+        if (repository.existsByGhid(person.getGhid())) {
+            model.addAttribute("ghidError", "This ghid is already in use. Please use a different ghid.");
             return "person/create"; // Return to form with error message
         }
 
         // Save new person to the database
         person.setBalance(Float.valueOf(0)); //default balance to 0;
         repository.save(person);
-        repository.addRoleToPerson(person.getEmail(), "ROLE_USER");
+        repository.addRoleToPerson(person.getGhid(), "ROLE_USER");
 
         // Redirect to the person list page
         return "redirect:/mvc/person/read";
@@ -87,9 +87,9 @@ public class PersonViewController {
             return "redirect:/e#there_were_errors_with_updating";
         }
 
-        Person personToUpdate = repository.getByEmail(person.getEmail());
+        Person personToUpdate = repository.getByGhid(person.getGhid());
         if(personToUpdate == null){
-            return "redirect:/e#email_doesn't_exist";
+            return "redirect:/e#ghid_doesn't_exist";
         }
 
         personToUpdate.setPassword(person.getPassword());
@@ -99,7 +99,7 @@ public class PersonViewController {
         personToUpdate.setKasmServerNeeded(person.getKasmServerNeeded());
         repository.save(personToUpdate);
 
-        repository.addRoleToPerson(person.getEmail(), "ROLE_USER");
+        repository.addRoleToPerson(person.getGhid(), "ROLE_USER");
 
         // Redirect to next step
         return "redirect:/mvc/person/read";

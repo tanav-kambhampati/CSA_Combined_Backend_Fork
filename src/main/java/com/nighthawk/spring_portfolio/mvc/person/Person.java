@@ -22,7 +22,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Convert;
 import static jakarta.persistence.FetchType.EAGER;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
@@ -91,21 +90,20 @@ public class Person {
     private Collection<PersonRole> roles = new ArrayList<>();
 
     /**
-     * email, password, roles are key attributes to login and authentication
+     * ghid, password, roles are key attributes to login and authentication
      * --- @NotEmpty annotation is used to validate that the annotated field is not
      * null or empty, meaning it has to have a value.
      * --- @Size annotation is used to validate that the annotated field is between
      * the specified boundaries, in this case greater than 5.
-     * --- @Email annotation is used to validate that the annotated field is a valid
-     * email address.
+     * --- @ghid annotation is used to validate that the annotated field is a valid
+     * ghid address.
      * --- @Column annotation is used to specify the mapped column for a persistent
-     * property or field, in this case unique and email.
+     * property or field, in this case unique and ghid.
      */
     @NotEmpty
     @Size(min = 5)
     @Column(unique = true)
-    @Email
-    private String email;
+    private String ghid;
 
     @NotEmpty
     private String password;
@@ -160,8 +158,8 @@ public class Person {
      * Custom constructor for Person when building a new Person object from an API
      * call
      */
-    public Person(String email, String password, String name, Date dob, String pfp, Boolean kasmServerNeeded, PersonRole role) {
-        this.email = email;
+    public Person(String ghid, String password, String name, Date dob, String pfp, Boolean kasmServerNeeded, PersonRole role) {
+        this.ghid = ghid;
         this.password = password;
         this.name = name;
         this.dob = dob;
@@ -186,14 +184,14 @@ public class Person {
      * 1st telescoping method to create a Person object with USER role
      * 
      * @param name
-     * @param email
+     * @param ghid
      * @param password
      * @param dob
      * @return Person
      */
-    public static Person createPerson(String name, String email, String password, Boolean kasmServerNeeded, String dob) {
+    public static Person createPerson(String name, String ghid, String password, Boolean kasmServerNeeded, String dob) {
         // By default, Spring Security expects roles to have a "ROLE_" prefix.
-        return createPerson(name, email, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER", "ROlE_STUDENT"));
+        return createPerson(name, ghid, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER", "ROlE_STUDENT"));
     }
 
     /**
@@ -201,10 +199,10 @@ public class Person {
      * 
      * @param roles
      */
-    public static Person createPerson(String name, String email, String password, String pfp, Boolean kasmServerNeeded, String dob, List<String> roleNames) {
+    public static Person createPerson(String name, String ghid, String password, String pfp, Boolean kasmServerNeeded, String dob, List<String> roleNames) {
         Person person = new Person();
         person.setName(name);
-        person.setEmail(email);
+        person.setGhid(ghid);
         person.setPassword(password);
         person.setKasmServerNeeded(kasmServerNeeded);
         person.setPfp(pfp);

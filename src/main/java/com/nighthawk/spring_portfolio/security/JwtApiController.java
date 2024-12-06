@@ -44,9 +44,9 @@ public class JwtApiController {
 
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody Person authenticationRequest) throws Exception {
-		authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+		authenticate(authenticationRequest.getGhid(), authenticationRequest.getPassword());
 		final UserDetails userDetails = personDetailsService
-				.loadUserByUsername(authenticationRequest.getEmail());
+				.loadUserByUsername(authenticationRequest.getGhid());
 
 		// Get the roles of the user
 		List<String> roles = userDetails.getAuthorities().stream()
@@ -74,7 +74,7 @@ public class JwtApiController {
 
         JSONObject responseObject = new JSONObject();
 		//success message
-        responseObject.put("response",authenticationRequest.getEmail() + " was authenticated successfully");
+        responseObject.put("response",authenticationRequest.getGhid() + " was authenticated successfully");
 		//pass through cookies just in case
 		responseObject.put("cookie",tokenCookie.toString());
 
@@ -82,7 +82,7 @@ public class JwtApiController {
 
         return new ResponseEntity<>(reponseString,responseHeaders, HttpStatus.OK);
 
-		//return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, tokenCookie.toString()).body(authenticationRequest.getEmail() + " was authenticated successfully");
+		//return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, tokenCookie.toString()).body(authenticationRequest.getGhid() + " was authenticated successfully");
 	}
 
 	private void authenticate(String username, String password) throws Exception {
