@@ -1,6 +1,5 @@
-package com.nighthawk.spring_portfolio.Slack;
+package com.nighthawk.spring_portfolio.mvc.Slack;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpHeaders;
@@ -15,8 +14,7 @@ import java.util.List;
 
 @RestController
 public class SlackController {
-    Dotenv dotenv = Dotenv.load();
-    private String slackToken = dotenv.get("SLACK_TOKEN");
+    private String slackToken = "xoxp-7892664186276-7887305704597-7924387129461-e2333e0f3c20a3ddb2ba833ec37f4e52";
     private final RestTemplate restTemplate;
 
     @Autowired
