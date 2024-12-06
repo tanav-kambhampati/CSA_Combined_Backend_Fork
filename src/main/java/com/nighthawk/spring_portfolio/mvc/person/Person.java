@@ -21,6 +21,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Convert;
 import static jakarta.persistence.FetchType.EAGER;
 import jakarta.validation.constraints.Email;
@@ -31,6 +32,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.nighthawk.spring_portfolio.mvc.synergy.Grade;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 
 import lombok.AllArgsConstructor;
@@ -68,6 +70,10 @@ public class Person implements Comparable<Person> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+<<<<<<< HEAD
+    @OneToMany(mappedBy="student")
+    private List<Grade> grades;
+=======
     @ManyToMany(fetch = EAGER)
     @JoinTable(
         name = "person_person_sections",  // unique name to avoid conflicts
@@ -75,6 +81,7 @@ public class Person implements Comparable<Person> {
         inverseJoinColumns = @JoinColumn(name = "section_id")
     )
     private Collection<PersonSections> sections = new ArrayList<>();
+>>>>>>> master
 
     /**
      * Many to Many relationship with PersonRole
@@ -168,9 +175,24 @@ public class Person implements Comparable<Person> {
         this.roles.add(role);
     }
 
+<<<<<<< HEAD
+    public boolean hasRoleWithName(String roleName) {
+        for (PersonRole role : roles) {
+            if (role.getName().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Custom getter to return age from dob attribute
+     */
+=======
     /** Custom getter to return age from dob attribute
      * @return int, the age of the person
     */
+>>>>>>> master
     public int getAge() {
         if (this.dob != null) {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -199,7 +221,7 @@ public class Person implements Comparable<Person> {
         // By default, Spring Security expects roles to have a "ROLE_" prefix.
         return createPerson(name, email, password, null, kasmServerNeeded, dob, Arrays.asList("ROLE_USER", "ROlE_STUDENT"));
     }
-
+    
     /**
      * 2nd telescoping method to create a Person object with parameterized roles
      * 
