@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Admin {
+public class Tinkle {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -25,7 +25,7 @@ public class Admin {
     private String timeIn;
     private double averageDuration;
 
-    public Admin(String studentEmail, String timeIn, double averageDuration)
+    public Tinkle(String studentEmail, String timeIn, double averageDuration)
     {
         this.studentEmail = studentEmail;
         this.timeIn = timeIn;
@@ -57,16 +57,16 @@ public class Admin {
         }
     }
 
-    public static Admin[] init()
+    public static Tinkle[] init()
     {
-        ArrayList<Admin> users = new ArrayList<>();
-        users.add(new Admin("toby@gmail.com", "", 0.0));
-        users.add(new Admin("lexb@gmail.com", "", 0.0));
-        users.add(new Admin("niko@gmail.com", "", 0.0));
-        users.add(new Admin("madam@gmail.com", "", 0.0));
-        users.add(new Admin("hop@gmail.com", "", 0.0));
-        users.add(new Admin("jm1021@gmail.com", "", 0.0));
-        users.add(new Admin("tarasehdave@gmail.com", "", 0.0));
-        return users.toArray(new Admin[0]);
+        ArrayList<Tinkle> users = new ArrayList<>();
+        users.add(new Tinkle("toby@gmail.com", "", 0.0));
+        users.add(new Tinkle("lexb@gmail.com", "", 0.0));
+        users.add(new Tinkle("niko@gmail.com", "", 0.0));
+        users.add(new Tinkle("madam@gmail.com", "", 0.0));
+        users.add(new Tinkle("hop@gmail.com", "", 0.0));
+        users.add(new Tinkle("jm1021@gmail.com", "", 0.0));
+        users.add(new Tinkle("tarasehdave@gmail.com", "", 0.0));
+        return users.toArray(new Tinkle[0]);
     }
 }

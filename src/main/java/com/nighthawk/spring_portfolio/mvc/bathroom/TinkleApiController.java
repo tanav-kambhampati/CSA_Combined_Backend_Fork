@@ -16,24 +16,24 @@ import lombok.Getter;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AdminApiController {
+public class TinkleApiController {
 
     @Autowired
-    private AdminJPARepository repository;
+    private TinkleJPARepository repository;
 
     @Getter
-    public static class AdminDto {
+    public static class TinkleDto {
         private String studentEmail;
         private String timeIn;
         private double averageDuration;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> timeInOut(@RequestBody AdminDto adminDto) {
-        Optional<Admin> student = repository.findByStudentEmail(adminDto.getStudentEmail());
+    public ResponseEntity<Object> timeInOut(@RequestBody TinkleDto tinkleDto) {
+        Optional<Tinkle> student = repository.findByStudentEmail(tinkleDto.getStudentEmail());
         if (student.isPresent()) {
-            student.get().addTimeIn(adminDto.getTimeIn());
-            student.get().addAverageDuration(adminDto.getAverageDuration());
+            student.get().addTimeIn(tinkleDto.getTimeIn());
+            student.get().addAverageDuration(tinkleDto.getAverageDuration());
             repository.save(student.get());
             return new ResponseEntity<>(student.get(), HttpStatus.OK);
         }
@@ -43,9 +43,7 @@ public class AdminApiController {
     }
 
     @GetMapping("/all")
-    public List<Admin> getAll() {
+    public List<Tinkle> getAll() {
         return repository.findAll();
     }
-
-
 }

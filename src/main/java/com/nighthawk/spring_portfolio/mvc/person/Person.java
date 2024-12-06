@@ -31,6 +31,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.nighthawk.spring_portfolio.mvc.bathroom.Tinkle;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 
 import lombok.AllArgsConstructor;
@@ -76,6 +77,13 @@ public class Person implements Comparable<Person> {
     )
     private Collection<PersonSections> sections = new ArrayList<>();
 
+    @ManyToMany(fetch = EAGER)
+    @JoinTable(
+        name = "person_bathroom",
+        joinColumns=@JoinColumn(name = "person_name"),
+        inverseJoinColumns = @JoinColumn(name = "tinkle_time")
+    )
+    private Collection<Tinkle> time_entries = new ArrayList<>();
     /**
      * Many to Many relationship with PersonRole
      * --- @ManyToMany annotation is used to specify a many-to-many relationship
