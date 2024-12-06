@@ -70,10 +70,9 @@ public class Person implements Comparable<Person> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-<<<<<<< HEAD
     @OneToMany(mappedBy="student")
     private List<Grade> grades;
-=======
+    
     @ManyToMany(fetch = EAGER)
     @JoinTable(
         name = "person_person_sections",  // unique name to avoid conflicts
@@ -81,7 +80,6 @@ public class Person implements Comparable<Person> {
         inverseJoinColumns = @JoinColumn(name = "section_id")
     )
     private Collection<PersonSections> sections = new ArrayList<>();
->>>>>>> master
 
     /**
      * Many to Many relationship with PersonRole
@@ -175,7 +173,6 @@ public class Person implements Comparable<Person> {
         this.roles.add(role);
     }
 
-<<<<<<< HEAD
     public boolean hasRoleWithName(String roleName) {
         for (PersonRole role : roles) {
             if (role.getName().equals(roleName)) {
@@ -188,11 +185,9 @@ public class Person implements Comparable<Person> {
     /**
      * Custom getter to return age from dob attribute
      */
-=======
     /** Custom getter to return age from dob attribute
      * @return int, the age of the person
     */
->>>>>>> master
     public int getAge() {
         if (this.dob != null) {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
