@@ -82,9 +82,6 @@
                                 <small th:if="${#fields.hasErrors('ghid')}" th:errors="*{ghid}">GitHub Username Error</small>
                             </div>
 
-                            <!-- Button to Check GitHub Username -->
-                            <button type="button" class="btn btn-secondary" onclick="checkGitHubUsername()">Check GitHub Username</button>
-
                             <!-- GitHub Profile Picture -->
                             <div id="github_pfp_container" style="margin-top: 10px;">
                                 <img id="github_pfp" src="" alt="GitHub Profile Picture" style="max-width: 100px; display: none;">
@@ -94,7 +91,7 @@
 
                             <!-- GitHub Username Input -->
                             <div class="input-group mb-2 mr-sm-2">
-                                <label for="name">Name:</label>
+                                <label for="name">Custom Usename:</label>
                                 <input type="text" th:field="*{name}" id="name" placeholder="Enter Custom Username">
                                 <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</small>
                             </div>
@@ -125,6 +122,9 @@
                                 <input type="checkbox" th:field="*{kasmServerNeeded}" id="kasmServerNeeded">
                                 <small th:if="${#fields.hasErrors('kasmServerNeeded')}" th:errors="*{kasmServerNeeded}">Kasm Server Needed Error</small>
                             </div>
+
+                            <!-- Button to Check GitHub Username -->
+                            <button type="button" class="btn btn-secondary" onclick="checkGitHubUsername()">Verify Github ID</button>
 
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary">Create Account</button>
