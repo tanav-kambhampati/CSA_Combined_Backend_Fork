@@ -2,6 +2,7 @@ package com.nighthawk.spring_portfolio.system;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
+import com.nighthawk.spring_portfolio.mvc.bathroom.Tinkle;
+import com.nighthawk.spring_portfolio.mvc.bathroom.TinkleJPARepository;
 import com.nighthawk.spring_portfolio.mvc.comment.Comment;
 import com.nighthawk.spring_portfolio.mvc.comment.CommentJPA;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
@@ -24,8 +27,6 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
-import com.nighthawk.spring_portfolio.mvc.bathroom.Tinkle;
-import com.nighthawk.spring_portfolio.mvc.bathroom.TinkleJPARepository;
 @Component
 @Configuration // Scans Application for ModelInit Bean, this detects CommandLineRunner
 public class ModelInit {  
@@ -104,7 +105,12 @@ public class ModelInit {
             Tinkle[] tinkleArray = Tinkle.init(personArray);
             for(Tinkle tinkle: tinkleArray)
             {
-                tinkleJPA.save(tinkle);
+                // List<Tinkle> tinkleFound = 
+                Optional<Tinkle> tinkleFound = tinkleJPA.findByPersonName(tinkle.getPerson_name());
+                if(tinkleFound == null)
+                {
+                    tinkleJPA.save(tinkle);
+                }
             }
             // Issue database initialization
             // Issue[] issueArray = Issue.init();
