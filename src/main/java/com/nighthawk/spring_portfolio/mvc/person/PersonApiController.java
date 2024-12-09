@@ -331,6 +331,11 @@ public ResponseEntity<Object> updatePerson(Authentication authentication, @Reque
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /*
+     * DTO (Data Transfer Object) to support POST request for postBalance method
+     * .. represents the data in the request body
+     */
+
     @Getter
     public static class AmountDto {
         private Float amount;

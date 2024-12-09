@@ -95,8 +95,6 @@ public class Person {
      * null or empty, meaning it has to have a value.
      * --- @Size annotation is used to validate that the annotated field is between
      * the specified boundaries, in this case greater than 5.
-     * --- @ghid annotation is used to validate that the annotated field is a valid
-     * ghid address.
      * --- @Column annotation is used to specify the mapped column for a persistent
      * property or field, in this case unique and ghid.
      */
@@ -128,6 +126,7 @@ public class Person {
     @Column(length = 255, nullable = true)
     private String pfp;
 
+    /** Kasm Server Needed (ksns) in True/false */
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean kasmServerNeeded = false;
     
@@ -149,7 +148,11 @@ public class Person {
     @Column(columnDefinition = "jsonb")
     private Map<String, Map<String, Object>> stats = new HashMap<>();
 
-
+    /**
+     * balance, is an attribute to describe the currency a person has
+     * --- @NonNull annotation is used to generate a constructor with
+     * AllArgsConstructor Lombox annotation.
+     */
     @NonNull
     private Float balance;
 
