@@ -4,7 +4,7 @@
 <head>
     <title>Create Account</title>
     <script>
-        function encodeImageFileAsURL(fileToConvert) {
+        function encodeImageFileAsURL(fileToConvert) { //currently unneeded, maybe add image upload?
             const file = fileToConvert;
             var reader = new FileReader();
             reader.onloadend = function() {
@@ -15,7 +15,16 @@
         }
 
         window.addEventListener("load",()=>{
-            document.getElementById("github_pfp").src = document.getElementById("pfp").value;
+            function checkImage(pfpSrc,success,error){
+                document.getElementById("github_pfp").onload = success;
+                document.getElementById("github_pfp").onerror = error;
+                document.getElementById("github_pfp").src = pfpSrc;
+            }
+            checkImage(document.getElementById("pfp").value,()=>{
+                document.getElementById("github_pfp").style.display = "block"; //unhide image
+            }, ()=>{
+                console.warn("Couldn't load profile picture"); //warning, this will exist after generated error when image failed
+            })
         })
 
         // Function to validate the form (password confirmation)
@@ -37,10 +46,6 @@
     <th:block layout:fragment="body" th:remove="tag">
         <div class="container">
             <div class="row justify-content-md-center">
-                <h2>Create Your Account</h2>
-            </div>
-
-            <div class="row justify-content-md-center">
                 <div class="col8">
                     <div class="jumbotron">
                         <h3>Update Account</h3>
@@ -54,7 +59,7 @@
                             </div>
 
                             <!-- GitHub Profile Picture -->
-                            <div id="github_pfp_container" style="margin-top: 10px;">
+                            <div id="github_pfp_container" class="form-group mb-2 mr-sm-2">
                                 <img id="github_pfp" src="" alt="GitHub Profile Picture" style="max-width: 100px; display: none;">
                                 <input  th:field="*{pfp}" id="pfp" hidden>
                                 <small th:if="${#fields.hasErrors('pfp')}" th:errors="*{pfp}">Pfp Error</small>
