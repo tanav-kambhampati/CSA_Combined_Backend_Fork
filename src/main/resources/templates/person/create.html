@@ -4,7 +4,13 @@
 <head>
     <title>Create Account</title>
     <script>
+        // @Boolean validatedGithub, false until user validates their github username
         var validatedGithub = false;
+
+        /**
+         * @Function encodeImageFileAsURL(); //Function to encode image files into Base64 String and set pfp field
+         * @Param @File || @Blob fileToConvert, image file to convert into base64
+        **/
 
         function encodeImageFileAsURL(fileToConvert) {
             const file = fileToConvert;
@@ -16,7 +22,10 @@
             reader.readAsDataURL(file);
         }
 
-        // Function to validate the form (password confirmation)
+        /**
+         * @Function validateForm(); // Function to validate the form (password and github username confirmation)
+         * @Param @Event event, form Submission event
+        **/
         function validateForm(event) {
             //check if github account has been checked
             if(!validatedGithub){
@@ -36,7 +45,15 @@
             }
         }
 
-        // Function to check if the GitHub username exists
+        /**
+         * @Function checkGitHubUsername(); // Function to check if the GitHub username exists
+         *      @Fetch
+         *      @Param url, github api for inputed github username
+         *      @Repsonse
+         *          @Ok => @Json data, public data returned by github about given username
+         *          @Else => @Error error, error Message
+        **/
+        
         function checkGitHubUsername() {
             const githubUsername = document.getElementById("ghid").value;
             const url = `https://api.github.com/users/${githubUsername}`;
