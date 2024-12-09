@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +49,7 @@ public class SynergyApiController {
     
     /**
      * Updates a the grades for many students and assignments at once.
-     * @param grades A map of strings of format grades[ASSIGNMENT_ID][STUDENT_ID] to numerical grades (or empty strings if there is no grade yet)
+     * @param grades A formdata which is a map of strings of format grades[ASSIGNMENT_ID][STUDENT_ID] to numerical grades (or empty strings if there is no grade yet)
      * @return A redirect to the gradebook page
      */
     @PostMapping("/update-all-grades")
@@ -83,7 +84,7 @@ public class SynergyApiController {
             }
         }
 
-        return "redirect:/mvc/synergy/gradebook";
+        return "{'message': 'Successfully updated the grades'}";
     }
     
     /**
