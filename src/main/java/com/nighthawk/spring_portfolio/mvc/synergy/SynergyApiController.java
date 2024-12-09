@@ -45,7 +45,7 @@ public class SynergyApiController {
     @Autowired
     private PersonJpaRepository personRepository;
 
-    @PostMapping("/update-grades")
+    @PostMapping("/update-all-grades")
     public String updateAllGrades(@RequestParam Map<String, String> grades) {
         for (String key : grades.keySet()) {
             String[] ids = key.replace("grades[", "").replace("]", "").split("\\[");
