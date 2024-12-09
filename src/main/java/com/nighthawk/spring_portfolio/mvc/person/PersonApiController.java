@@ -112,7 +112,9 @@ public class PersonApiController {
      * @return A ResponseEntity containing the Person entity if deleted, or a
      *         NOT_FOUND status if not found.
      */
+    
     @DeleteMapping("/person/{id}")
+    // @Transactional
     public ResponseEntity<Person> deletePerson(@PathVariable long id) {
         Optional<Person> optional = repository.findById(id);
         if (optional.isPresent()) { // Good ID
