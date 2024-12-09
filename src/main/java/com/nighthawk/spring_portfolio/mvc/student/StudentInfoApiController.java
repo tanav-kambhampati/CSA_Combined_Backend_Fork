@@ -75,27 +75,6 @@ public class StudentInfoApiController {
         }
     }
 
-    @Getter
-    public static class TeamDto {
-        private String course;
-        private int trimester;
-        private int period; 
-        private int table;
-    }
-
-    @PostMapping("/find-team")
-    public ResponseEntity<Iterable<StudentInfo>> getTeamByCriteria(
-            @RequestBody TeamDto teamDto) {
-        
-        List<StudentInfo> students = studentJPARepository.findTeam(teamDto.getCourse(), teamDto.getTrimester(), teamDto.getPeriod(), teamDto.getTable());
-        
-        if (students.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(students);
-        }
-    }
-
 
     @Getter 
     public static class StudentDto {
@@ -127,36 +106,6 @@ public class StudentInfoApiController {
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 }
-@Getter
-public static class TasksDto {
-    private String username;
-    private String task;
-}
-
-@PostMapping("/complete-task")
-public ResponseEntity<String> completeTask(@RequestBody TasksDto tasksDto) {
-    Optional<StudentInfo> optionalStudent = studentJPARepository.findByUsername(tasksDto.getUsername());
-    String task = tasksDto.getTask();
-
-    if (optionalStudent.isPresent()) {
-        StudentInfo student = optionalStudent.get();
-        if (student.getCompleted() == null) {
-            student.setCompleted(new ArrayList<>()); 
-        }
-
-        if (student.getTasks().contains(task)) {
-            student.getTasks().remove(task);
-            student.getCompleted().add(task + " - Completed");
-            studentJPARepository.save(student);
-            return ResponseEntity.ok("Task marked as completed.");
-        } else {
-            return ResponseEntity.badRequest().body("Task not found in the student's task list.");
-        }
-    } else {
-        return ResponseEntity.status(404).body("Student not found.");
-    }
-}
-
     @Getter 
     public static class PeriodDto {
         private String course;
