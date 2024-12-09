@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -53,7 +54,7 @@ public class SynergyApiController {
      * @return A redirect to the gradebook page
      */
     @PostMapping("/update-all-grades")
-    public String updateAllGrades(@RequestParam Map<String, String> grades) {
+    public ResponseEntity<Map<String, String>> updateAllGrades(@RequestParam Map<String, String> grades) {
         for (String key : grades.keySet()) {
             String[] ids = key.replace("grades[", "").replace("]", "").split("\\[");
             Long assignmentId = Long.parseLong(ids[0]);
@@ -84,7 +85,7 @@ public class SynergyApiController {
             }
         }
 
-        return "{'message': 'Successfully updated the grades'}";
+        return ResponseEntity.ok(Map.of("message", "Successfully updated the grades"));
     }
     
     /**
@@ -95,7 +96,7 @@ public class SynergyApiController {
      * @return A JSON object signifying that the request was created.
      */
     @PostMapping("/create-grade-request")
-    public String createGradeRequest(@AuthenticationPrincipal UserDetails userDetails, @RequestBody GradeRequestDTO requestData) {
+    public ResponseEntity<Map<String, String>> createGradeRequest(@AuthenticationPrincipal UserDetails userDetails, @RequestBody GradeRequestDTO requestData) {
         String email = userDetails.getUsername();
         Person grader = personRepository.findByEmail(email);
         if (grader == null) {
@@ -114,7 +115,7 @@ public class SynergyApiController {
         GradeRequest gradeRequest = new GradeRequest(assignment, student, grader, requestData.explanation, requestData.gradeSuggestion);
         gradeRequestRepository.save(gradeRequest);
 
-        return "{'message': 'Successfully created the grade request'}";
+        return ResponseEntity.ok(Map.of("message", "Successfully created the grade request"));
     }
 
     /**
@@ -123,7 +124,7 @@ public class SynergyApiController {
      * @return A JSON object signifying that the request was accepted.
      */
     @PostMapping("/accept-request")
-    public String acceptRequest(@Valid @RequestBody RequestIdDTO body) {
+    public ResponseEntity<Map<String, String>> acceptRequest(@Valid @RequestBody RequestIdDTO body) {
         if (body == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body");
         }
@@ -154,7 +155,7 @@ public class SynergyApiController {
         request.accept();
         gradeRequestRepository.save(request);
 
-        return "{'message': 'Successfully accepted the grade request'}";
+        return ResponseEntity.ok(Map.of("message", "Successfully accepted the grade request"));
     }
 
     /**
@@ -163,7 +164,7 @@ public class SynergyApiController {
      * @return A JSON object signifying that the request was rejected.
      */
     @PostMapping("/reject-request")
-    public String rejectRequest(@RequestBody RequestIdDTO body) {
+    public ResponseEntity<Map<String, String>> rejectRequest(@RequestBody RequestIdDTO body) {
         if (body == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body");
         }
@@ -183,7 +184,7 @@ public class SynergyApiController {
         request.reject();
         gradeRequestRepository.save(request);
 
-        return "{'message': 'Successfully rejected the grade request'}";
+        return ResponseEntity.ok(Map.of("message", "Successfully rejected the grade request"));
     }
 
     private boolean isNumeric(String str) {
