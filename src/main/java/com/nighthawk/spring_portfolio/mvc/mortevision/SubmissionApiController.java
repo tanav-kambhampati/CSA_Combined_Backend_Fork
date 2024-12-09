@@ -60,6 +60,8 @@ public class SubmissionApiController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    
+
     // DELETE a submission
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteSubmission(@PathVariable long id) {
