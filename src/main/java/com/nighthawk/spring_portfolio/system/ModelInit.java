@@ -2,6 +2,7 @@ package com.nighthawk.spring_portfolio.system;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
 import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
-import com.nighthawk.spring_portfolio.mvc.bathroom.BathroomQueue;
-import com.nighthawk.spring_portfolio.mvc.bathroom.QueueJPARepository;
 import com.nighthawk.spring_portfolio.mvc.bathroom.Tinkle;
 import com.nighthawk.spring_portfolio.mvc.bathroom.TinkleJPARepository;
 import com.nighthawk.spring_portfolio.mvc.comment.Comment;
@@ -39,7 +38,6 @@ public class ModelInit {
     @Autowired AssignmentJpaRepository assignmentJpa;
     @Autowired CommentJPA CommentJPA;
     @Autowired TinkleJPARepository tinkleJPA;
-    @Autowired QueueJPARepository queueJPA;
 
     // @Autowired IssueJPARepository issueJPARepository;
 
@@ -107,15 +105,13 @@ public class ModelInit {
             Tinkle[] tinkleArray = Tinkle.init(personArray);
             for(Tinkle tinkle: tinkleArray)
             {
-                tinkleJPA.save(tinkle);
+                // List<Tinkle> tinkleFound = 
+                Optional<Tinkle> tinkleFound = tinkleJPA.findByPersonName(tinkle.getPerson_name());
+                if(tinkleFound.isEmpty())
+                {
+                    tinkleJPA.save(tinkle);
+                }
             }
-
-            BathroomQueue[] bathroomArray = BathroomQueue.init();
-            for(BathroomQueue bathroom: bathroomArray)
-            {
-                queueJPA.save(bathroom);
-            }
-        };
             // Issue database initialization
             // Issue[] issueArray = Issue.init();
             // for (Issue issue : issueArray) {
@@ -135,5 +131,6 @@ public class ModelInit {
             // }
 
         };
+    }
 }
 

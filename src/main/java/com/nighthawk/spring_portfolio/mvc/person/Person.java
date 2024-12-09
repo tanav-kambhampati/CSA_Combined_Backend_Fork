@@ -27,6 +27,8 @@ import static jakarta.persistence.FetchType.EAGER;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -78,7 +80,7 @@ public class Person implements Comparable<Person> {
     )
     private Collection<PersonSections> sections = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade=CascadeType.ALL)
     private List<Tinkle> time_entries;
     // @ManyToMany(fetch = EAGER)
     // @JoinTable(
