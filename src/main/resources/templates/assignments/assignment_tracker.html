@@ -259,7 +259,7 @@
                 method: 'POST',
                 body: params
             })
-            .then(response => response.json())
+            .then(response => response.text())
             .then(updatedSubmission => {
                 alert('Submission graded successfully');
                 // Optionally, refresh the submissions list

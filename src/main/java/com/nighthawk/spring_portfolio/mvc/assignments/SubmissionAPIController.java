@@ -45,8 +45,11 @@ public class SubmissionAPIController {
             @RequestParam(required = false) String feedback) {
         
         Submission submission = submissionRepo.findById(submissionId).orElse(null);
+        submission.setGrade(grade);
+        submission.setFeedback(feedback);
+        System.out.println(submission.getContent());
         
-        if (submission != null) {
+        /*if (submission != null) {
             submission.setGrade(grade);
             submission.setFeedback(feedback);
             
@@ -57,7 +60,8 @@ public class SubmissionAPIController {
         
         Map<String, String> error = new HashMap<>();
         error.put("error", "Submission not found");
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);*/
+        return new ResponseEntity<>("All good", HttpStatus.OK);
     }
     
     @Transactional
