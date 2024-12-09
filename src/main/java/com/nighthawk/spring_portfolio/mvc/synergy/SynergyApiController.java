@@ -45,6 +45,12 @@ public class SynergyApiController {
     @Autowired
     private PersonJpaRepository personRepository;
 
+    @PostMapping("/update-grade")
+    public String updateGrade(@RequestBody Grade grade) {
+        gradeRepository.save(grade);
+        return "{'message': 'Successfully saved this grade.'}";
+    }
+    
     @PostMapping("/update-all-grades")
     public String updateAllGrades(@RequestParam Map<String, String> grades) {
         for (String key : grades.keySet()) {
