@@ -82,10 +82,6 @@ public class SubmissionAPIController {
         List<Submission> submissions = submissionRepo.findByAssignmentId(assignmentId);
         
         System.out.println("Found " + submissions.size() + " submissions");
-        for(Submission s: submissions){
-            s.printInfo();
-            //System.out.println(s.getAssignment().toString());
-        }
 
         ResponseEntity<List<Submission>> response = new ResponseEntity<>(submissions, HttpStatus.OK);
         System.out.println(response);
