@@ -46,15 +46,4 @@ public class Submission {
         this.grade = null;
         this.feedback = null;
     }
-
-    public void printInfo(){
-       System.out.println(this.assignment.getDescription() + ", " + this.student.getName() + ", " + this.content);
-    }
-
-    @Override
-    public String toString(){
-        return this.content;
-    }
-
-                                                                                
 }
