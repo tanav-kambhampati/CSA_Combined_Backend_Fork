@@ -1,11 +1,17 @@
 package com.nighthawk.spring_portfolio.system;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
+import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
 import com.nighthawk.spring_portfolio.mvc.jokes.Jokes;
 import com.nighthawk.spring_portfolio.mvc.jokes.JokesJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.note.Note;
@@ -14,13 +20,8 @@ import com.nighthawk.spring_portfolio.mvc.person.Person;
 import com.nighthawk.spring_portfolio.mvc.person.PersonDetailsService;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRole;
 import com.nighthawk.spring_portfolio.mvc.person.PersonRoleJpaRepository;
-import com.nighthawk.spring_portfolio.mvc.announcement.Announcement;
-import com.nighthawk.spring_portfolio.mvc.announcement.AnnouncementJPA;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.nighthawk.spring_portfolio.mvc.rpg.question.Question;
+import com.nighthawk.spring_portfolio.mvc.rpg.question.QuestionJpaRepository;
 
 @Component
 @Configuration // Scans Application for ModelInit Bean, this detects CommandLineRunner
@@ -30,6 +31,7 @@ public class ModelInit {
     @Autowired PersonRoleJpaRepository roleJpaRepository;
     @Autowired PersonDetailsService personDetailsService;
     @Autowired AnnouncementJPA announcementJPA;
+    @Autowired QuestionJpaRepository questionJpaRepository;
 
     @Bean
     @Transactional
@@ -45,6 +47,13 @@ public class ModelInit {
                 }
             }
 
+            Question[] questionArray = Question.init();
+            for (Question question : questionArray) {
+                Question questionFound = questionJpaRepository.findByTitle(question.getTitle());
+                if (questionFound == null) {
+                    questionJpaRepository.save(new Question(question.getTitle(), question.getContent(), question.getPoints()));
+                }
+            }
 
             // Joke database is populated with starting jokes
             String[] jokesArray = Jokes.init();

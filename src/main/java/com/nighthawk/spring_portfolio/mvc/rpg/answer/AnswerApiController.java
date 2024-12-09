@@ -53,7 +53,20 @@ public class AnswerApiController {
         private Long personId;
         private Long chatScore; 
     }
-    
+
+    @GetMapping("getQuestions")
+    public ResponseEntity<List<Question>> getQuestions() {
+        List<Question> questions = questionJpaRepository.findAllByOrderByTitleAsc();
+
+        return new ResponseEntity<>(questions, HttpStatus.OK);
+    }
+
+    @GetMapping("getQuestion/{questionid}") 
+    public ResponseEntity<Question> getQuestion(@PathVariable Integer questionid) {
+        Question question = questionJpaRepository.findById(questionid);
+
+        return new ResponseEntity<>(question, HttpStatus.OK);
+    }
 
     @GetMapping("/getChatScore/{personid}")
     public ResponseEntity<Long> getChatScore(@PathVariable Integer personid) {

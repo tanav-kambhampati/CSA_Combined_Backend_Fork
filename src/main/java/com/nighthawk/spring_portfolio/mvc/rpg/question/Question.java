@@ -70,11 +70,100 @@ public class Question {
         ArrayList<Question> questions = new ArrayList<>();
         
         // byte[] badgeIcon = loadImageAsByteArray("path/to/your/image.png");
-        questions.add(createQuestion("Unit 1 Popcorn Hack 1", "What is the output of the following code cell?", 10000));
-        questions.add(createQuestion("Unit 1 Popcorn Hack 2", "What is?", 10000));
-        questions.add(createQuestion("Unit 1 Popcorn Hack 3", "What is the ", 10000));
-        questions.add(createQuestion("Unit 2 Popcorn Hack 1", "What is the output ", 10000));
-        questions.add(createQuestion("Unit 2 Popcorn Hack 1", "What is the output of ", 10000));
+        questions.add(createQuestion("Unit 1 Popcorn Hack 1", """
+                                                              Which of the following is a valid declaration of a variable of type int in Java?
+                                                              a) int 123variable;
+                                                              b) int variable123;
+                                                              c) int variable#123;
+                                                              d) int variable 123;""" //
+        //
+        //
+        //
+        , 10000));
+        questions.add(createQuestion("Unit 1 Popcorn Hack 2", """
+                                                              What is the value of the following expression in Java: 5 / 2?
+                                                              a) 2.5
+                                                              b) 3
+                                                              c) 2
+                                                              d) 2.0""" //
+        //
+        //
+        //
+        , 10000));
+        questions.add(createQuestion("Unit 1 Popcorn Hack 3", """
+                                                              Which primitive type is used to represent a single character in Java?
+                                                              a) char
+                                                              b) String
+                                                              c) int
+                                                              d) byte""" //
+        //
+        //
+        //
+        , 10000));
+        questions.add(createQuestion("Unit 2 Popcorn Hack 1", """
+                                                              Try and create a class in the following code space to represent a dog.
+                                                              
+                                                              class Dog {
+                                                                  ...
+                                                              }
+                                                              
+                                                              public class Main {
+                                                                  public static void main(String[] args) {
+                                                                      Dog myDog = new Dog("Shelby", "Golden Retriever", 5); // name, breed, age
+                                                                      myDog.bark(); // should print "Woof!"
+                                                                  }
+                                                              }
+                                                              """ //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        , 10000));
+        questions.add(createQuestion("Unit 2 Popcorn Hack 1", //
+        """
+        // Uncomment the following method call to run the code and check your answer!
+        What will the following code segment print?
+        
+        public class Concatentations
+        {
+            public static void main(String[] args)
+            {
+                String name1 = "Skibidi";
+                String name2 = new String("Sigma");
+                String name3 = new String(name1);
+        
+                name1 += "!!"
+                String mystery = name1 + name2 + name3
+        
+                System.out.println(mystery);
+            }
+        }
+        
+        // Concatentations.main(null);""" //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        , 10000));
 
         return questions.toArray(new Question[0]);
     }
