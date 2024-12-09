@@ -18,10 +18,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.nighthawk.spring_portfolio.mvc.person.Person;
-import com.nighthawk.spring_portfolio.mvc.person.PersonJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.rpg.question.Question;
 import com.nighthawk.spring_portfolio.mvc.rpg.question.QuestionJpaRepository;
+import com.nighthawk.spring_portfolio.mvc.user.User;
+import com.nighthawk.spring_portfolio.mvc.user.UserJpaRepository;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
@@ -31,7 +31,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 @RestController
 @RequestMapping("/rpg_answer")
-@CrossOrigin(origins = "http://localhost:5500")
+@CrossOrigin(origins = "http://localhost:5500") 
 public class AnswerApiController {
 
     // Load environment variables using dotenv
@@ -42,7 +42,7 @@ public class AnswerApiController {
     @Autowired
     private AnswerJpaRepository answerJpaRepository;
     @Autowired
-    private PersonJpaRepository personJpaRepository;
+    private UserJpaRepository userJpaRepository;
     @Autowired
     private QuestionJpaRepository questionJpaRepository;
 
@@ -50,9 +50,10 @@ public class AnswerApiController {
     public static class AnswerDto {
         private String content;
         private Long questionId;
-        private Long personId;
+        private Long userId;
         private Long chatScore; 
     }
+
 
     @GetMapping("getQuestions")
     public ResponseEntity<List<Question>> getQuestions() {
@@ -68,13 +69,13 @@ public class AnswerApiController {
         return new ResponseEntity<>(question, HttpStatus.OK);
     }
 
-    @GetMapping("/getChatScore/{personid}")
-    public ResponseEntity<Long> getChatScore(@PathVariable Integer personid) {
-        List<Answer> personsanswers = answerJpaRepository.findByPersonId(personid);
+    @GetMapping("/getChatScore/{userid}")
+    public ResponseEntity<Long> getChatScore(@PathVariable Integer userid) {
+        List<Answer> useranswers = answerJpaRepository.findByUserId(userid);
         Long totalChatScore = 0L;
 
-        for (Answer personanswer : personsanswers) {
-            Long questionChatScore = personanswer.getChatScore();
+        for (Answer useranswer : useranswers) {
+            Long questionChatScore = useranswer.getChatScore();
             totalChatScore += questionChatScore;
         }
 
@@ -82,34 +83,31 @@ public class AnswerApiController {
 
     }
 
-    /* WAITING FOR PERSON BALANCE
-    @GetMapping("/getBalance/{personid}") 
-    public ResponseEntity<Double> getBalance(@PathVariable Integer personid) {
-        Person personOpt = personJpaRepository.findById(personid);
+    @GetMapping("/getBalance/{userid}") 
+    public ResponseEntity<Double> getBalance(@PathVariable Integer userid) {
+        User userOpt = userJpaRepository.findById(userid);
         
-
-        Double balance = personOpt.getBalance();
+        Double balance = userOpt.getBalance();
 
         return new ResponseEntity<>(balance, HttpStatus.OK);
 
     }
-         */
 
     @PostMapping("/submitAnswer")
     public ResponseEntity<Answer> postAnswer(@RequestBody AnswerDto answerDto) {
         Optional<Question> questionOpt = questionJpaRepository.findById(answerDto.getQuestionId());
-        Optional<Person> personOpt = personJpaRepository.findById(answerDto.getPersonId());
+        Optional<User> userOpt = userJpaRepository.findById(answerDto.getUserId());
 
         System.out.println("API Key: " + apiKey);
 
-        if (questionOpt.isEmpty() || personOpt.isEmpty()) {
+        if (questionOpt.isEmpty() || userOpt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Question question = questionOpt.get();
-        Person person = personOpt.get();
+        User user = userOpt.get();
 
-        System.out.println(person);
+        System.out.println(user);
         System.out.println(question);
 
         String rubric = "Correctness and Completeness (500 points): 500 - completely correct, "
@@ -128,16 +126,13 @@ public class AnswerApiController {
 
         Long chatScore = getChatScore(answerDto.getContent(), rubric);
 
-        Answer answer = new Answer(answerDto.getContent(), question, person, chatScore);
+        Answer answer = new Answer(answerDto.getContent(), question, user, chatScore);
         answerJpaRepository.save(answer);
 
         // updateBalance
-
-        /* WAITING FOR PERSON BALANCE 
         double questionPoints = question.getPoints();
-        person.setBalance(person.getBalance() + questionPoints);
-        personJpaRepository.save(person);
-        */
+        user.setBalance(user.getBalance() + questionPoints);
+        userJpaRepository.save(user);
 
         return new ResponseEntity<>(answer, HttpStatus.OK);
     }
@@ -185,4 +180,17 @@ public class AnswerApiController {
         return 0L;
     }
 
+
+    @GetMapping("/leaderboard")
+    public List<LeaderboardDto> getLeaderboard() {
+    List<LeaderboardDto> leaderboardEntries = answerJpaRepository.findTop10UsersByTotalScore();
+
+    for (LeaderboardDto entry : leaderboardEntries) {
+        Optional<User> user = userJpaRepository.findById(entry.getId());
+        String userName = user.isPresent() ? user.get().getUsername() : "Unknown";
+        entry.setuserName(userName);
+    }
+
+    return leaderboardEntries;
+    }  
 }
