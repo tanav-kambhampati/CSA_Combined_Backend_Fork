@@ -24,13 +24,13 @@ public class PersonViewController {
     private PersonDetailsService repository;
 
     @GetMapping("/read")
-    public String person(Model model) {
+    public String person(Model model) { //read all ids
         List<Person> list = repository.listAll();
         model.addAttribute("list", list);
         return "person/read";
     }
 
-    @GetMapping("/read/{id}")
+    @GetMapping("/read/{id}") //read a specific id
     public String person(@PathVariable("id") int id, Model model) {
         Person person = repository.get(id);
         List<Person> list = Arrays.asList(person);
@@ -61,7 +61,7 @@ public class PersonViewController {
 
         // Check if ghid already exists in the database
         if (repository.existsByGhid(person.getGhid())) {
-            model.addAttribute("ghidError", "This ghid is already in use. Please use a different ghid.");
+            model.addAttribute("ghidError", "This Github Id is already in use. Please use a different Github Id.");
             return "person/create"; // Return to form with error message
         }
 

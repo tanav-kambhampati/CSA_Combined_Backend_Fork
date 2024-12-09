@@ -95,6 +95,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		Optional<String> jwtToken = getJwtTokenFromCookies(request.getCookies()); 
 
 		if (!jwtToken.isPresent()) { 
+			//!! this should be a backup, use cookies first!!
 			//then check if cookies were passed through authorization header
 			//frontend needs to pass cookies as the value for the authorization header
 			if(request.getHeader("authorization") != null){
