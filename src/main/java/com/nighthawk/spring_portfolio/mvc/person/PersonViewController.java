@@ -23,12 +23,21 @@ public class PersonViewController {
     @Autowired
     private PersonDetailsService repository;
 
+    /*
+        @return - template for person read page for all ids
+    */
+
     @GetMapping("/read")
     public String person(Model model) { //read all ids
         List<Person> list = repository.listAll();
         model.addAttribute("list", list);
         return "person/read";
     }
+
+      /*
+        @return - template for person read page for the specific id
+        @param - Id
+    */
 
     @GetMapping("/read/{id}") //read a specific id
     public String person(@PathVariable("id") int id, Model model) {
@@ -74,11 +83,22 @@ public class PersonViewController {
         return "redirect:/mvc/person/read";
     }
 
+    /*  The HTML template Forms and PersonForm attributes are bound
+        @return - template for person update form for the specific id
+        @param - Id
+    */
+
     @GetMapping("/update/{id}")
     public String personUpdate(@PathVariable("id") int id, Model model) {
         model.addAttribute("person", repository.get(id));
         return "person/update";
     }
+
+    /* Gathers the attributes filled out in the form, tests for and retrieves validation error
+        @param - Person object with @Valid
+        @param - BindingResult object
+        @return - Redirects to error page if errors, or read page if successful
+     */
 
     @PostMapping("/update")
     public String personUpdateSave(@Valid Person person, BindingResult bindingResult) {
@@ -105,12 +125,19 @@ public class PersonViewController {
         return "redirect:/mvc/person/read";
     }
 
+    /*
+        @param - Id
+        @return - Redirect to read page
+    */
     @GetMapping("/delete/{id}")
     public String personDelete(@PathVariable("id") long id) {
-        repository.delete(id);
+        repository.delete(id); //delete user with given id
         return "redirect:/mvc/person/read";
     }
 
+    /*
+        @return - Search page
+    */
     @GetMapping("/search")
     public String person() {
         return "person/search";
