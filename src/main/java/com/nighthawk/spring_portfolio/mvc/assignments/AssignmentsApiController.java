@@ -41,7 +41,7 @@ public class AssignmentsApiController {
         return new ResponseEntity<>(savedAssignment, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<?> getAllAssignments() {
         List<Assignment> assignments = assignmentRepo.findAll();
         return new ResponseEntity<>(assignments, HttpStatus.OK);
