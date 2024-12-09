@@ -181,5 +181,16 @@ public class AnswerApiController {
     }
 
 
+    @GetMapping("/leaderboard")
+    public List<LeaderboardDto> getLeaderboard() {
+    List<LeaderboardDto> leaderboardEntries = answerJpaRepository.findTop10UsersByTotalScore();
 
+    for (LeaderboardDto entry : leaderboardEntries) {
+        Optional<User> user = userJpaRepository.findById(entry.getId());
+        String userName = user.isPresent() ? user.get().getUsername() : "Unknown";
+        entry.setuserName(userName);
+    }
+
+    return leaderboardEntries;
+    }  
 }
