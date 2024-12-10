@@ -22,6 +22,9 @@ import com.nighthawk.spring_portfolio.mvc.rpg.question.Question;
 import com.nighthawk.spring_portfolio.mvc.rpg.question.QuestionJpaRepository;
 import com.nighthawk.spring_portfolio.mvc.user.User;
 import com.nighthawk.spring_portfolio.mvc.user.UserJpaRepository;
+import com.nighthawk.spring_portfolio.mvc.person.Person;
+import com.nighthawk.spring_portfolio.mvc.person.PersonJpaRepository;
+
 
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
@@ -45,6 +48,8 @@ public class AnswerApiController {
     private UserJpaRepository userJpaRepository;
     @Autowired
     private QuestionJpaRepository questionJpaRepository;
+    @Autowired
+    private PersonJpaRepository personJpaRepository;
 
     @Getter 
     public static class AnswerDto {
@@ -186,9 +191,9 @@ public class AnswerApiController {
     List<LeaderboardDto> leaderboardEntries = answerJpaRepository.findTop10UsersByTotalScore();
 
     for (LeaderboardDto entry : leaderboardEntries) {
-        Optional<User> user = userJpaRepository.findById(entry.getId());
-        String userName = user.isPresent() ? user.get().getUsername() : "Unknown";
-        entry.setuserName(userName);
+        Optional<Person> person = personJpaRepository.findById(entry.getId());
+        String Name = person.isPresent() ? person.get().getName() : "Unknown";
+        entry.setuserName(Name);
     }
 
     return leaderboardEntries;
