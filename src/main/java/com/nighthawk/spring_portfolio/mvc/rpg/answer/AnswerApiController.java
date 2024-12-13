@@ -187,10 +187,10 @@ public class AnswerApiController {
 
 
     @GetMapping("/leaderboard")
-    public List<LeaderboardDto> getLeaderboard() {
-    List<LeaderboardDto> leaderboardEntries = answerJpaRepository.findTop10UsersByTotalScore();
+    public List<AnswerLeaderboardDto> getLeaderboard() {
+    List<AnswerLeaderboardDto> leaderboardEntries = answerJpaRepository.findTop10UsersByTotalScore();
 
-    for (LeaderboardDto entry : leaderboardEntries) {
+    for (AnswerLeaderboardDto entry : leaderboardEntries) {
         Optional<Person> person = personJpaRepository.findById(entry.getId());
         String Name = person.isPresent() ? person.get().getName() : "Unknown";
         entry.setuserName(Name);

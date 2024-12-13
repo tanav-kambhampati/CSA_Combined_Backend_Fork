@@ -1,11 +1,11 @@
 package com.nighthawk.spring_portfolio.mvc.rpg.answer;
 
-public class LeaderboardDto {
+public class AnswerLeaderboardDto {
     private Long id;
     private String userName;
     private Long totalScore;
 
-    public LeaderboardDto(Long id, Long totalScore) {
+    public AnswerLeaderboardDto(Long id, Long totalScore) {
         this.id = id;
         this.totalScore = totalScore;
     }
